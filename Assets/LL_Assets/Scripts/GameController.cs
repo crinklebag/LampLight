@@ -6,8 +6,8 @@ public class GameController : MonoBehaviour {
     Jar player;
     UI uiController;
 
-    [SerializeField] GameObject fireflyPrefab;
-	[SerializeField] GameObject fireflyLightPrefab;
+    [SerializeField] GameObject fireflyPrefab;//with glow sprite
+	[SerializeField] GameObject fireflyLightPrefab;//with point light
 
     int bugGoal = 10;
     int bugCounter;
@@ -31,6 +31,7 @@ public class GameController : MonoBehaviour {
     void InitializeBugs ()
 	{
 		int count = uiController.GetBugCount ();
+		int bandIndex = 0;
 
 		for (int i = 0; i < count; i++) {
 			float randX = Random.Range (minX, maxX);
@@ -38,14 +39,12 @@ public class GameController : MonoBehaviour {
 			Vector3 randPos = new Vector3 (randX, randY, -0.5f);
 			GameObject newBug = Instantiate (fireflyPrefab, randPos, Quaternion.identity) as GameObject;
 
-			//Assign each bug a frequency band,band range 0-5
-			if (i > 5) {
-				int tempBand = i - 6;
-				newBug.GetComponentInChildren<Flicker> ()._band = tempBand;
-			} else {
-				newBug.GetComponentInChildren<Flicker> ()._band = i;
-			}
+			//Assign each bug a frequency band, band range 0-6
+			if (bandIndex > 6)
+				bandIndex = 0;
 
+			newBug.GetComponentInChildren<Flicker> ()._band = bandIndex;
+			bandIndex++;
         }
     }
 

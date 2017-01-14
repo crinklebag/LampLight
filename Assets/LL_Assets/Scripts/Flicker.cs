@@ -5,14 +5,12 @@ public class Flicker : MonoBehaviour {
 
 	public int _band;
 	[SerializeField] GameObject bugParent;
-	[SerializeField] float minIntensity;
-	[SerializeField] float maxIntensity;
 	[SerializeField] float minAudioFreq;
 
-	public float _startScale;
-	public float _scaleMultiplier;
+	[SerializeField] float _startScale;
+	[SerializeField] float _scaleMultiplier;
 
-	public bool _useBuffer = false;
+	[SerializeField] bool _useBuffer = false;
 
 	void Start ()
 	{
@@ -25,22 +23,20 @@ public class Flicker : MonoBehaviour {
 		audioScale();
 	}
 
+	//Adjusts the bug's glow sprite's alpha value to match its frequency band's levels
+	//Tells the bug parent whether its bug sprite obj should be enabled on or not, depending on whether the band's frequency levels meet
+	//	meet the minimum audio frequency
+	//Glow sprite object is always enabled
     void audioFlicker ()
 	{
 		Color tempColor = this.GetComponent<SpriteRenderer> ().color;
-		//float Amp = AudioPeer._amplitudeBuffer;
 		float bandFreq = AudioPeer._audioBandBuffer[_band];
-		//float newAlpha = AudioPeer._amplitudeBuffer;
-		float newAlpha = AudioPeer._audioBandBuffer[_band];
-		//float newAlpha = (AudioPeer._audioBandBuffer[_band] * (maxIntensity - minIntensity)) +  minIntensity;
 
 		if (bandFreq < minAudioFreq) {
-			//tempColor.a = 0.0f;
-			tempColor.a = newAlpha;
+			tempColor.a = bandFreq;
 			bugParent.GetComponent<FireFly>().isOn = false;
-		}
-		else{
-			tempColor.a = newAlpha;
+		}else{
+			tempColor.a = bandFreq;
 			bugParent.GetComponent<FireFly>().isOn = true;
 		}
 
@@ -48,11 +44,13 @@ public class Flicker : MonoBehaviour {
 		//Debug.Log(this.GetComponent<SpriteRenderer>().color.a);
 	}
 
+	//Scale bug glow by amplitude levels, takes bug start scale and a scale multiplier into consideration
+	//Buffer provides smoother level drops and increases
 	void audioScale ()
 	{
 		if (!_useBuffer) 
-			this.transform.localScale = new Vector3((AudioPeer._amplitude * _scaleMultiplier) + _startScale, (AudioPeer._amplitude * _scaleMultiplier) + _startScale, (AudioPeer._amplitude * _scaleMultiplier) + _startScale);
+			this.transform.localScale = new Vector3((AudioPeer._amplitude * _scaleMultiplier) + _startScale, (AudioPeer._amplitude * _scaleMultiplier) + _startScale, 1.0f);
 		if(_useBuffer)
-			this.transform.localScale = new Vector3((AudioPeer._amplitudeBuffer * _scaleMultiplier) + _startScale, (AudioPeer._amplitudeBuffer * _scaleMultiplier) + _startScale, (AudioPeer._amplitudeBuffer * _scaleMultiplier) + _startScale);
+			this.transform.localScale = new Vector3((AudioPeer._amplitudeBuffer * _scaleMultiplier) + _startScale, (AudioPeer._amplitudeBuffer * _scaleMultiplier) + _startScale, 1.0f);
 	}
 }

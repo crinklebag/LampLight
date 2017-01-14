@@ -16,7 +16,7 @@ public class AudioManager : MonoBehaviour {
 
 	void Start ()
 	{
-		
+		aSource.Pause();
 	}
 
 	void Update ()
@@ -29,45 +29,14 @@ public class AudioManager : MonoBehaviour {
 			allAudioClips = aLoader.GetComponent<AudioLoader> ().allAudioClips;
 			startAudio ();
 		}
-		//TODO check, once started, enable user input
-		//Check for play
-		if (Input.GetKeyDown (KeyCode.U)) {
-			PlayAudio ();
-		}
-		//Pause
-		if (Input.GetKeyDown (KeyCode.P)) {
-			PauseAudio();
-		}
-		//Forward Seek
-		if (Input.GetKeyDown (KeyCode.RightArrow)) {
-			NextSong();
-		}
-		//Backwards Seek
-		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			PreviousSong();
-		}
+		//Allow user input for play, pause, next song, previous song
+		if(hasStarted)
+			getUserInput();
 	}
 
 	void startAudio ()
 	{
-		/*//Loop through the audio clips, give the audio source the first clip, set clipLength to the current clip length for counting down, play the audio
-		for (int i = 0; i < allAudioClips.Count; i++) {
-			aSource.clip = allAudioClips [i];
-			clipLength = aSource.clip.length;
-			aSource.Play ();
-
-			//while the song has not ended
-			//if audio is playing, decrease the time count, wait for audio to finish before starting the next
-			while (clipLength > 0.0f) {
-				if (!isPaused) {
-					clipLength -= Time.deltaTime;
-					Debug.Log(clipLength);
-				}
-				yield return null;
-			}
-		}*/
-
-		//Set song index to random song, set audio clip, play audio
+		//Set song index to random song, set audio clip for audio source, set clip length for countdown, play audio
 		songIndex = Random.Range(0, allAudioClips.Count);
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
@@ -94,12 +63,17 @@ public class AudioManager : MonoBehaviour {
 		}
 	}
 
-	//TODO wrap around audio clip array
 	public void NextSong ()
 	{
 		Debug.Log("Next Song");
 		aSource.Stop();
 		songIndex = songIndex+1;
+
+		//Prevent index from going out of bounds
+		if(songIndex > (allAudioClips.Count -1))
+			songIndex = 0;
+
+		Debug.Log("Song Index: " + songIndex);
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
 		aSource.Play ();
@@ -109,6 +83,12 @@ public class AudioManager : MonoBehaviour {
 		Debug.Log("Previous Song");
 		aSource.Stop();
 		songIndex = songIndex-1;
+
+		//Prevent index from going out of bounds
+		if(songIndex < 0)
+			songIndex = allAudioClips.Count -1;
+
+		Debug.Log("Song Index: " + songIndex);
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
 		aSource.Play ();
@@ -116,17 +96,40 @@ public class AudioManager : MonoBehaviour {
 
 	IEnumerator AutoNextSong ()
 	{
-		//Auto Next Song
-		//While the song has not ended
-		//If audio is playing, decrease the time count, wait for audio to finish before starting the next
+		//While the song has not ended & if audio is playing, decrease clipLength, when clipLength <= 0.0 the next song is started
 		while (clipLength > 0.0f) {
 			if (!isPaused) {
 				clipLength -= Time.deltaTime;
-				Debug.Log(clipLength);
+				Debug.Log("Clip Length Remaining: " + clipLength);
 			}
 			yield return null;
 		}
 		NextSong();
 		StartCoroutine(AutoNextSong());
+	}
+
+	void getUserInput ()
+	{
+		//Play
+		if (Input.GetKeyDown (KeyCode.UpArrow)) {
+			PlayAudio ();
+		}
+		//Pause
+		if (Input.GetKeyDown (KeyCode.DownArrow)) {
+			PauseAudio();
+		}
+		//Forward Seek
+		if (Input.GetKeyDown (KeyCode.RightArrow)) {
+			NextSong();
+		}
+		//Backwards Seek
+		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
+			PreviousSong();
+		}
+	}
+
+	public float getCurretClipLength ()
+	{
+		return aSource.clip.length;
 	}
 }

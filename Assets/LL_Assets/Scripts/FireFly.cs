@@ -15,10 +15,10 @@ public class FireFly : MonoBehaviour {
 
 	public bool isOn;
     bool caught = false;
-    float lightMin = 0.3f;
-    float lightMax = 0.8f;
-    float maxWaitTime = 6.0f;
-    float minWaitTime = 2.0f;
+    //float lightMin = 0.3f;
+    //float lightMax = 0.8f;
+    //float maxWaitTime = 6.0f;
+    //float minWaitTime = 2.0f;
     float minMoveX = -9.0f;
     float maxMoveX = 3.0f;
 	float minMoveY = -3.5f;
@@ -121,10 +121,10 @@ public class FireFly : MonoBehaviour {
 	IEnumerator ChangeState() 
 	{
         if (isOn) {
-            // Debug.Log("Turning On");
+            // Debug.Log("Turning Off");
             image.SetActive(false);
         } else {
-            // Debug.Log("Turning Off");
+            // Debug.Log("Turning On");
             image.SetActive(true);
         }
 		yield return new WaitForSeconds(0.1f);
