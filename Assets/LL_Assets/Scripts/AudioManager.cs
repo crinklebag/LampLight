@@ -100,7 +100,7 @@ public class AudioManager : MonoBehaviour {
 		while (clipLength > 0.0f) {
 			if (!isPaused) {
 				clipLength -= Time.deltaTime;
-				Debug.Log("Clip Length Remaining: " + clipLength);
+				//Debug.Log("Clip Length Remaining: " + clipLength);
 			}
 			yield return null;
 		}

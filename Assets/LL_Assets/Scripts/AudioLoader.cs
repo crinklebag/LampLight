@@ -5,12 +5,15 @@ using UnityEngine;
 
 [System.Serializable]
 public class AudioLoader : MonoBehaviour {
+	//TODO ADD READ EXTERNAL STORAGE PERMISSION FOR ANDROID, not necessary
+		//now, but will be necessary in future android releases
+
 
 	public List<AudioClip> allAudioClips;
 
 	public bool audioReady = false;
 
-	[SerializeField] string filePath = "D:\\Music";
+	[SerializeField] string filePath = "D:\\Music"; //"/mnt/sdcard/"?
 
 	void Start () 
 	{
@@ -22,12 +25,12 @@ public class AudioLoader : MonoBehaviour {
 	{
 		//Get each audio file's path, store in list
 		allAudioClips = new List<AudioClip>();
-		string[] audioFilePaths = Directory.GetFiles(filePath, "*.wav");//TODO SERIALIZE PATH & FILE .EXT
+		string[] audioFilePaths = Directory.GetFiles(filePath, "*.wav"); 
 
 		for(int i = 0; i < audioFilePaths.Length; i++){
-			//Debug.Log(audioFilePaths[i]);
+			Debug.Log(audioFilePaths[i]);
 			//Load file from each path
-			WWW diskAudioDir = new WWW("file://" + audioFilePaths[i]);
+			WWW diskAudioDir = new WWW("file://" + audioFilePaths[i]); //"jar:file:// + audioFilePaths[i]"
 			//Wait for file to load
 			while(!diskAudioDir.isDone){
 				yield return null;
