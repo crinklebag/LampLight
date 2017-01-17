@@ -3,26 +3,30 @@ using UnityEngine.UI;
 using System.Collections;
 
 
-public class UIBug : MonoBehaviour {
+public class UIBug : MonoBehaviour
+{
 
     [SerializeField]
     string number;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         StartCoroutine("Flicker");
         number = gameObject.name.Substring(gameObject.name.IndexOf('(') + 1, 1);
 
         Debug.Log(number);
-	}
+    }
 
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
-    IEnumerator Flicker() {
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    IEnumerator Flicker()
+    {
         yield return new WaitForSeconds(0.1f);
 
         Color tempColor = this.GetComponent<Image>().color;
@@ -35,7 +39,7 @@ public class UIBug : MonoBehaviour {
 
         StartCoroutine("Flicker");
     }
-    
+
     void OnEnable()
     {
         StartCoroutine("Flicker");

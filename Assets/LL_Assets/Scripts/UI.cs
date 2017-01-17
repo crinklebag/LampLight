@@ -7,7 +7,6 @@ public class UI : MonoBehaviour {
     [SerializeField] List<GameObject> offBugs;
 
     List<GameObject> onBugs;
-    [SerializeField]
     int bugCount;
 
 	// Use this for initialization
@@ -20,7 +19,7 @@ public class UI : MonoBehaviour {
 	void Update () {
 	    
 	}
-		
+
     public void AddBug() {
         // Choose a random Bug
         int randBug = Random.Range(0, offBugs.Count - 1);
