@@ -5,37 +5,17 @@ using UnityEngine;
 
 [System.Serializable]
 public class AudioLoader : MonoBehaviour {
-	//TODO ADD READ EXTERNAL STORAGE PERMISSION FOR ANDROID, not necessary
-		//now, but will be necessary in future android releases
-
 
 	public List<AudioClip> allAudioClips;
-
+	[SerializeField] string filePathWindows = @"D:\Music"; 
+	[SerializeField] string filePathAndroid = @"/storage/emulated/0/Android/media";
 	public bool audioReady = false;
 
-<<<<<<< HEAD
-	[SerializeField] string filePath = "D:\\Music"; //"/mnt/sdcard/"?
-
 	void Start () 
 	{
-		StartCoroutine(LoadAllSongs());
-
-	}
-
-	IEnumerator LoadAllSongs()
-	{
-		//Get each audio file's path, store in list
-		allAudioClips = new List<AudioClip>();
-		string[] audioFilePaths = Directory.GetFiles(filePath, "*.wav"); 
-=======
-	[SerializeField] string filePathWindows = @"D:\Music"; 
-	[SerializeField] string filePathAndroid = @"/mnt/sdcard/music";
-
-	void Start () 
-	{
-		if(Application.platform == RuntimePlatform.WindowsEditor){
+		/*if(Application.platform == RuntimePlatform.WindowsEditor){
 			StartCoroutine(LoadAllSongsWindows());
-		}
+		}*/
 		if(Application.platform == RuntimePlatform.Android){
 			StartCoroutine(LoadAllSongsAndroid());
 		}
@@ -69,7 +49,6 @@ public class AudioLoader : MonoBehaviour {
 		//Get each audio file's path, store in list
 		allAudioClips = new List<AudioClip>();
 		string[] audioFilePaths = Directory.GetFiles(filePathAndroid, "*.mp3"); 
->>>>>>> feature/Audio
 
 		for(int i = 0; i < audioFilePaths.Length; i++){
 			Debug.Log(audioFilePaths[i]);
@@ -80,11 +59,7 @@ public class AudioLoader : MonoBehaviour {
 				yield return null;
 			}
 			//Get the audio clip, name it, add it to the list of audio clips
-<<<<<<< HEAD
-			AudioClip clip = diskAudioDir.GetAudioClip(false, false, AudioType.WAV);//(IGNORED BY UNITY 5.X(2D/3D SOUND), NOT STREAMING, FILE FORMAT)
-=======
 			AudioClip clip = diskAudioDir.GetAudioClip(false, false, AudioType.MPEG);//(IGNORED BY UNITY 5.X(2D/3D SOUND), NOT STREAMING, FILE FORMAT)
->>>>>>> feature/Audio
 			clip.name = Path.GetFileName(audioFilePaths[i]);
 			allAudioClips.Add(clip);
 		}

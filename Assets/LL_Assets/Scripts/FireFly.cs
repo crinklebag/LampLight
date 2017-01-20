@@ -61,7 +61,7 @@ public class FireFly : MonoBehaviour {
             Debug.Log("Hit Jar Top");
         }*/
         
-        if (other.gameObject.CompareTag("JarTop") && isOn && other.GetComponentInParent<Jar>().Boosting()) {
+        if (other.gameObject.CompareTag("JarTop") && isOn) {
             Debug.Log("Hit Jar Top");
             // gameController.CatchBug("Firefly");
             caught = true;
@@ -78,7 +78,7 @@ public class FireFly : MonoBehaviour {
     }
 
     void OnTriggerStay2D(Collider2D other) {
-        if (other.gameObject.CompareTag("JarTop") && isOn && other.GetComponentInParent<Jar>().Boosting()) {
+        if (other.gameObject.CompareTag("JarTop") && isOn) {
             // Debug.Log("Hit Jar Top");
             Destroy(this.gameObject);
             gameController.CatchBug("Firefly");

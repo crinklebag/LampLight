@@ -42,6 +42,10 @@ public class BackgroundScroller : MonoBehaviour
         width = tree.transform.localScale.y * Screen.width / Screen.height;
 
         tree.gameObject.transform.localScale = new Vector3(width, height / tree.bounds.size.y, 1);
+
+        clipLength = audioPeer.GetComponent<AudioSource>().clip.length;
+
+        Reset(clipLength);
     }
 
     void Update()

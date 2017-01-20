@@ -8,11 +8,8 @@ public class AudioManager : MonoBehaviour {
 	public int songIndex = 0;
 
 	[SerializeField] GameObject aLoader;
-<<<<<<< HEAD
-	[SerializeField] AudioSource aSource;
-=======
 	[SerializeField] AudioSource aSource;//Audio Peer
->>>>>>> feature/Audio
+
 
 	bool hasStarted = false;
 	bool isPaused = false;
@@ -44,14 +41,11 @@ public class AudioManager : MonoBehaviour {
 		songIndex = Random.Range(0, allAudioClips.Count);
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
-<<<<<<< HEAD
 
         // Needed for making BG scroll to length of song
         GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
         aSource.Play ();
-=======
-		aSource.Play ();
->>>>>>> feature/Audio
+
 		StartCoroutine(AutoNextSong());
 	}
 
@@ -74,11 +68,7 @@ public class AudioManager : MonoBehaviour {
 		}
 	}
 
-<<<<<<< HEAD
-	public void NextSong ()
-=======
 	public IEnumerator NextSong ()
->>>>>>> feature/Audio
 	{
 		Debug.Log("Next Song");
 		aSource.Stop();
@@ -88,28 +78,20 @@ public class AudioManager : MonoBehaviour {
 		if(songIndex > (allAudioClips.Count -1))
 			songIndex = 0;
 
-<<<<<<< HEAD
-=======
 		//Reset band highest average in the audio peer class for the next song
 		//aSource.GetComponent<AudioPeer>().ResetBandAverage();
 		yield return StartCoroutine(AudioPeer.ResetFreqHighest());
 
->>>>>>> feature/Audio
 		Debug.Log("Song Index: " + songIndex);
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
 
-<<<<<<< HEAD
         // Needed for making BG scroll to length of song
         GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
         aSource.Play ();
 	}
-	public void PreviousSong()
-=======
-		aSource.Play ();
-	}
+
 	public IEnumerator PreviousSong()
->>>>>>> feature/Audio
 	{
 		Debug.Log("Previous Song");
 		aSource.Stop();
@@ -119,24 +101,17 @@ public class AudioManager : MonoBehaviour {
 		if(songIndex < 0)
 			songIndex = allAudioClips.Count -1;
 
-<<<<<<< HEAD
-=======
 		//Reset band highest average in the audio peer class for the next song
 		//aSource.GetComponent<AudioPeer>().ResetBandAverage();
 		yield return StartCoroutine(AudioPeer.ResetFreqHighest());
 
->>>>>>> feature/Audio
 		Debug.Log("Song Index: " + songIndex);
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
 
-<<<<<<< HEAD
         // Needed for making BG scroll to length of song
         GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
         aSource.Play ();
-=======
-		aSource.Play ();
->>>>>>> feature/Audio
 	}
 
 	IEnumerator AutoNextSong ()
@@ -149,11 +124,9 @@ public class AudioManager : MonoBehaviour {
 			}
 			yield return null;
 		}
-<<<<<<< HEAD
 		NextSong();
-=======
 		StartCoroutine(NextSong());
->>>>>>> feature/Audio
+
 		StartCoroutine(AutoNextSong());
 	}
 
@@ -167,21 +140,13 @@ public class AudioManager : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.DownArrow)) {
 			PauseAudio();
 		}
-		//Forward Seek
+		//Forwards Seek
 		if (Input.GetKeyDown (KeyCode.RightArrow)) {
-<<<<<<< HEAD
-			NextSong();
-		}
-		//Backwards Seek
-		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			PreviousSong();
-=======
 			StartCoroutine(NextSong());
 		}
 		//Backwards Seek
 		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
 			StartCoroutine(PreviousSong());
->>>>>>> feature/Audio
 		}
 	}
 
