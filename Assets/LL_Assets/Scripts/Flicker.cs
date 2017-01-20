@@ -33,24 +33,24 @@ public class Flicker : MonoBehaviour {
 		float bandFreq = AudioPeer._audioBandBuffer[_band];
 
 		if (bandFreq < minAudioFreq) {
-			tempColor.a = bandFreq;
 			bugParent.GetComponent<FireFly>().isOn = false;
 		}else{
-			tempColor.a = bandFreq;
 			bugParent.GetComponent<FireFly>().isOn = true;
 		}
 
+		tempColor.a = bandFreq;
 		this.GetComponent<SpriteRenderer>().color = tempColor;
 		//Debug.Log(this.GetComponent<SpriteRenderer>().color.a);
 	}
 
-	//Scale bug glow by amplitude levels, takes bug start scale and a scale multiplier into consideration
-	//Buffer provides smoother level drops and increases
+	//Scale bug glow by audioBandBuffer value (0-1), takes bug start scale and a scale multiplier into consideration
 	void audioScale ()
 	{
-		if (!_useBuffer) 
-			this.transform.localScale = new Vector3((AudioPeer._amplitude * _scaleMultiplier) + _startScale, (AudioPeer._amplitude * _scaleMultiplier) + _startScale, 1.0f);
-		if(_useBuffer)
-			this.transform.localScale = new Vector3((AudioPeer._amplitudeBuffer * _scaleMultiplier) + _startScale, (AudioPeer._amplitudeBuffer * _scaleMultiplier) + _startScale, 1.0f);
+		if (!_useBuffer) {
+			this.transform.localScale = new Vector3 ((AudioPeer._audioBand [_band] * _scaleMultiplier) + _startScale, (AudioPeer._audioBand [_band] * _scaleMultiplier) + _startScale, 1.0f);
+		}
+		if (_useBuffer) {
+			this.transform.localScale = new Vector3 ((AudioPeer._audioBandBuffer [_band] * _scaleMultiplier) + _startScale, (AudioPeer._audioBandBuffer [_band] * _scaleMultiplier) + _startScale, 1.0f);
+		}
 	}
 }

@@ -20,14 +20,14 @@ public class ScaleCubes : MonoBehaviour {
 	{
 		if (_useBuffer) 
 		{
-			this.transform.localScale = new Vector3(this.transform.localScale.x, (AudioPeer._bandBuffer[_band] * _scaleMultiplier) + _startScale, this.transform.localScale.z);
+			this.transform.localScale = new Vector3(this.transform.localScale.x, (AudioPeer._audioBandBuffer[_band] * _scaleMultiplier) + _startScale, this.transform.localScale.z);
 			Color _colour = new Color(AudioPeer._audioBandBuffer[_band], AudioPeer._audioBandBuffer[_band], AudioPeer._audioBandBuffer[_band]);
 			_material.SetColor("_EmissionColor", _colour);
 
 		} 
 		if(!_useBuffer)
 		{
-			this.transform.localScale = new Vector3(this.transform.localScale.x, (AudioPeer._freqBands[_band] * _scaleMultiplier) + _startScale, this.transform.localScale.z);
+			this.transform.localScale = new Vector3(this.transform.localScale.x, (AudioPeer._audioBand[_band] * _scaleMultiplier) + _startScale, this.transform.localScale.z);
 			Color _colour = new Color(AudioPeer._audioBand[_band], AudioPeer._audioBand[_band], AudioPeer._audioBand[_band]);
 			_material.SetColor("_EmissionColor", _colour);
 		}

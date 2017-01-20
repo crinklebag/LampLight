@@ -8,7 +8,7 @@ public class AudioManager : MonoBehaviour {
 	public int songIndex = 0;
 
 	[SerializeField] GameObject aLoader;
-	[SerializeField] AudioSource aSource;
+	[SerializeField] AudioSource aSource;//Audio Peer
 
 	bool hasStarted = false;
 	bool isPaused = false;
@@ -63,7 +63,7 @@ public class AudioManager : MonoBehaviour {
 		}
 	}
 
-	public void NextSong ()
+	public IEnumerator NextSong ()
 	{
 		Debug.Log("Next Song");
 		aSource.Stop();
@@ -73,12 +73,17 @@ public class AudioManager : MonoBehaviour {
 		if(songIndex > (allAudioClips.Count -1))
 			songIndex = 0;
 
+		//Reset band highest average in the audio peer class for the next song
+		//aSource.GetComponent<AudioPeer>().ResetBandAverage();
+		yield return StartCoroutine(AudioPeer.ResetFreqHighest());
+
 		Debug.Log("Song Index: " + songIndex);
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
+
 		aSource.Play ();
 	}
-	public void PreviousSong()
+	public IEnumerator PreviousSong()
 	{
 		Debug.Log("Previous Song");
 		aSource.Stop();
@@ -88,9 +93,14 @@ public class AudioManager : MonoBehaviour {
 		if(songIndex < 0)
 			songIndex = allAudioClips.Count -1;
 
+		//Reset band highest average in the audio peer class for the next song
+		//aSource.GetComponent<AudioPeer>().ResetBandAverage();
+		yield return StartCoroutine(AudioPeer.ResetFreqHighest());
+
 		Debug.Log("Song Index: " + songIndex);
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
+
 		aSource.Play ();
 	}
 
@@ -104,7 +114,7 @@ public class AudioManager : MonoBehaviour {
 			}
 			yield return null;
 		}
-		NextSong();
+		StartCoroutine(NextSong());
 		StartCoroutine(AutoNextSong());
 	}
 
@@ -120,11 +130,11 @@ public class AudioManager : MonoBehaviour {
 		}
 		//Forward Seek
 		if (Input.GetKeyDown (KeyCode.RightArrow)) {
-			NextSong();
+			StartCoroutine(NextSong());
 		}
 		//Backwards Seek
 		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			PreviousSong();
+			StartCoroutine(PreviousSong());
 		}
 	}
 

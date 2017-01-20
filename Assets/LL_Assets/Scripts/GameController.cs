@@ -39,8 +39,8 @@ public class GameController : MonoBehaviour {
 			Vector3 randPos = new Vector3 (randX, randY, -0.5f);
 			GameObject newBug = Instantiate (fireflyPrefab, randPos, Quaternion.identity) as GameObject;
 
-			//Assign each bug a frequency band, band range 0-6
-			if (bandIndex > 6)
+			//Assign each bug a frequency band, band range 0-7, all bands
+			if (bandIndex > 7)
 				bandIndex = 0;
 
 			newBug.GetComponentInChildren<Flicker> ()._band = bandIndex;
