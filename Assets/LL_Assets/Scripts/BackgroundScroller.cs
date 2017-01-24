@@ -82,7 +82,7 @@ public class BackgroundScroller : MonoBehaviour
 
     public void Reset(float cl)
     {
-        Debug.Log("Called reset to play song: " + audioPeer.GetComponent<AudioSource>().clip.name + " with length: " + cl);
+        //Debug.Log("Called reset to play song: " + audioPeer.GetComponent<AudioSource>().clip.name + " with length: " + cl);
 
         startScroll = false;
         setHeight = false;
