@@ -13,9 +13,9 @@ public class AudioLoader : MonoBehaviour {
 
 	void Start () 
 	{
-		/*if(Application.platform == RuntimePlatform.WindowsEditor){
+		if(Application.platform == RuntimePlatform.WindowsEditor){
 			StartCoroutine(LoadAllSongsWindows());
-		}*/
+		}
 		if(Application.platform == RuntimePlatform.Android){
 			StartCoroutine(LoadAllSongsAndroid());
 		}
