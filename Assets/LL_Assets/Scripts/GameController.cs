@@ -1,75 +1,161 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
-public class GameController : MonoBehaviour {
+public class GameController : MonoBehaviour
+{
 
     Jar player;
     UI uiController;
 
-    [SerializeField] GameObject fireflyPrefab;//with glow sprite
-	[SerializeField] GameObject fireflyLightPrefab;//with point light
+    [SerializeField]
+    GameObject fireflyPrefab;
+    [SerializeField]
+    GameObject fireflyLightPrefab;
+    [SerializeField]
+    private GameObject[] fireflies;
+
+    [SerializeField]
+    float[] bounds;
+
+    [SerializeField]
+    bool finishGame = false;
+    [SerializeField]
+    bool stopDoingThis = false;
 
     int bugGoal = 10;
     int bugCounter;
-    float maxX = 3;
-    float minX = -10;
-    float maxY = 6;
-    float minY = -4;
+    int maxBugs = 10;
+
+    public static int[] bandFrequencies;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
+        bounds = new float[4];
+        fireflies = new GameObject[10];
+        bandFrequencies = new int[10];
+
+        bounds[0] = GameObject.Find("Top").gameObject.transform.position.y;
+        bounds[1] = GameObject.Find("Bottom").gameObject.transform.position.y;
+        bounds[2] = GameObject.Find("Left").gameObject.transform.position.x;
+        bounds[3] = GameObject.Find("Right").gameObject.transform.position.x;
+
         uiController = GameObject.FindGameObjectWithTag("UIController").GetComponent<UI>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Jar>();
         InitializeBugs();
     }
-	
-	// Update is called once per frame
-	void Update () {
-	    
-	}
 
-    void InitializeBugs ()
-	{
-		int count = uiController.GetBugCount ();
-		int bandIndex = 0;
+    // Update is called once per frame
+    void Update()
+    {
 
-		for (int i = 0; i < count; i++) {
-			float randX = Random.Range (minX, maxX);
-			float randY = Random.Range (minY, maxY);
-			Vector3 randPos = new Vector3 (randX, randY, -0.5f);
-			GameObject newBug = Instantiate (fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+    }
 
-			//Assign each bug a frequency band, band range 0-7, all bands
-			if (bandIndex > 7)
-				bandIndex = 0;
 
-			newBug.GetComponentInChildren<Flicker> ()._band = bandIndex;
-			bandIndex++;
+    void InstantiateBug()
+    {
+        for (int i = 0; i < fireflies.Length; i++)
+        {
+            if (fireflies[i] == null)
+            {
+                // Instantiate a new bug at a random position
+                Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
+                GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+
+                newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[i];
+                fireflies[i] = newBug;
+                Debug.LogWarning("Firefly " + i + " with band frequency " + bandFrequencies[i]);
+                return;
+            }
         }
     }
 
-    public void CatchBug(string bugType) {
-        bugCounter++;
-        uiController.AddBug();
+    void InitializeBugs()
+    {
+        for (int i = 0; i < maxBugs; i++)
+        {
+            float randX = Random.Range(bounds[2], bounds[3]);
+            float randY = Random.Range(bounds[0], bounds[1]);
+            Vector3 randPos = new Vector3(randX, randY, -0.5f);
+            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
 
-        if (bugCounter == bugGoal) {
-            Debug.Log("End Game");
+            //Assign each bug a frequency band, band range 0-5
+            if (i > 5)
+            {
+                int tempBand = i - 6;
+                newBug.GetComponentInChildren<Flicker>()._band = tempBand;
+            }
+            else
+            {
+                newBug.GetComponentInChildren<Flicker>()._band = i;
+            }
+
+            fireflies[i] = newBug;
+            bandFrequencies[i] = newBug.GetComponentInChildren<Flicker>()._band;
+
+            //Debug.Log("Firefly " + i + " with band frequency " + bandFrequencies[i]);
+        }
+
+        StartCoroutine("CheckToMakeNewBug");
+    }
+
+    public void CatchBug(string bugType)
+    {
+        if (!stopDoingThis)
+        {
+            bugCounter++;
+            uiController.AddBug();
+        }
+
+        if (finishGame)
+        {
+            if (bugCounter >= bugGoal)
+            {
+                stopDoingThis = true;
+                StopAllCoroutines();
+                Destroy(player);
+                Destroy(GameObject.Find("Top Collider").gameObject);
+                uiController.FinishGame(bugCounter);
+                finishGame = false;
+            }
         }
     }
 
-    public void ReleaseBug() {
-        if (bugCounter > 0) {
+    public void ReleaseBug()
+    {
+        if (!stopDoingThis)
+        {
             // Remove the Bug from the UI
             uiController.RemoveBug();
-            // Intsantiate a new bug at a random position
-            Vector2 randPos = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
-            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
-            // decrease the counter
-            bugCounter--;
+
+            if (bugCounter > 0)
+            {
+                InstantiateBug();
+                // decrease the counter
+                bugCounter--;
+            }
         }
     }
 
-    public int GetBugCount() {
+    public int GetBugCount()
+    {
         return bugCounter;
+    }
+
+    IEnumerator CheckToMakeNewBug()
+    {
+        if (!stopDoingThis)
+        {
+            int seconds = Random.Range(1, 10);
+
+            InstantiateBug();
+
+            Debug.Log("Went to CheckToMakeNewBug, seconds: " + seconds);
+
+            yield return new WaitForSecondsRealtime(seconds);
+
+            StartCoroutine("CheckToMakeNewBug");
+        }
     }
 }
