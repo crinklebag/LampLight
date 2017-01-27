@@ -47,9 +47,9 @@ public class BackgroundScroller : MonoBehaviour
 
         float height = Camera.main.orthographicSize * 2.0f;
 
-        width = tree.transform.localScale.y * Screen.width / Screen.height;
+        width = height / Screen.height * Screen.width;
 
-        tree.gameObject.transform.localScale = new Vector3(width, height / tree.bounds.size.y, 1);
+        tree.gameObject.transform.localScale = new Vector3(width / tree.sprite.bounds.size.x, width / tree.bounds.size.x, 1);
 
         width = bounds[0].transform.localScale.y * Screen.width / 10.0f;
 
@@ -97,7 +97,7 @@ public class BackgroundScroller : MonoBehaviour
             Vector2 offset = new Vector2(0, y);
             GetComponent<Renderer>().sharedMaterial.SetTextureOffset("_MainTex", offset);
 
-            tree.color = Color32.Lerp(darkGrey, Color.white, -y);
+            tree.color = Color32.Lerp(Color.white, Color.white, -y);
 
             treeColor = tree.color;
             treeColorBar = tree.color;
