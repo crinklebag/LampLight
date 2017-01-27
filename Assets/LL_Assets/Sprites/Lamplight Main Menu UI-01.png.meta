@@ -1,4 +1,5 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: d6ab896a2580ec244ad3f5545e23306f
 timeCreated: 1485458328
 licenseType: Free
@@ -14,6 +15,13 @@ TextureImporter:
     21300014: Lamplight Main Menu UI-01_7
     21300016: Lamplight Main Menu UI-01_8
     21300018: Lamplight Main Menu UI-01_9
+=======
+guid: 309109427bde4444d864ad1526759658
+timeCreated: 1485216949
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName: {}
+>>>>>>> 64a38190378d559f3c5a6c9fb27a1bcb7da712e7
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -44,7 +52,11 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
+<<<<<<< HEAD
   spriteMode: 2
+=======
+  spriteMode: 1
+>>>>>>> 64a38190378d559f3c5a6c9fb27a1bcb7da712e7
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -76,6 +88,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+<<<<<<< HEAD
   - buildTarget: Android
     maxTextureSize: 2048
     textureFormat: -1
@@ -217,6 +230,11 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
+=======
+  spriteSheet:
+    serializedVersion: 2
+    sprites: []
+>>>>>>> 64a38190378d559f3c5a6c9fb27a1bcb7da712e7
     outline: []
   spritePackingTag: 
   userData: 
