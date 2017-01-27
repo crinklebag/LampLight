@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class FireFly : MonoBehaviour {
@@ -39,7 +40,9 @@ public class FireFly : MonoBehaviour {
         StartCoroutine("ChoosePath");
 		StartCoroutine(ChangeState());
 
-		image.SetActive(false);
+        destination = GameObject.Find("Destination");
+
+        image.SetActive(false);
 	}
 	
 	// Update is called once per frame
