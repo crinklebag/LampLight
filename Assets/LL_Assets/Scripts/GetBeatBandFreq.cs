@@ -13,6 +13,6 @@ public float scaleMultiplier = 5.0f;
 	
 	// Update is called once per frame
 	void Update () {
-		this.transform.localScale = new Vector3(scaleMultiplier * AudioPeer._beatSamples[0], transform.localScale.y, transform.localScale.z);
+		this.transform.localScale = new Vector3(scaleMultiplier * AudioPeer.beatAverage, transform.localScale.y, transform.localScale.z);
 	}
 }

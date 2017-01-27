@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof (AudioSource))]
 public class AudioPeer : MonoBehaviour {
 
+	private string path = @"D:\Text\test.txt";
+
 	private AudioSource _audioSource;
 	public static float[] _samples = new float[512];	//20,000 hz into 512 samples
 
@@ -21,7 +23,7 @@ public class AudioPeer : MonoBehaviour {
 	public static float _amplitudeBuffer;
 	private static float _amplitudeHighest;
 
-	public static float[] _beatSamples = new float[128];//20,000 hz into 128 samples [0]: 0-172hz :D
+	//public static float[] _beatSamples = new float[128];//20,000 hz into 128 samples [0]: 0-172hz :D
 														//60-120hz bass kick
 														//120-150hz snare
 	[SerializeField] float beatThreshValue = 0.3f;
@@ -35,6 +37,7 @@ public class AudioPeer : MonoBehaviour {
 	private static Queue<float> beatTimes;
 	private static float lastQueuedTime;						//List of how many milliseconds ago the last beat was
 	private  static float beatQueueCutoff = 10000;		//Number of milliseconds of previous beats to keep in the queue
+	public static float beatAverage = 0;
 
 	static float msPerBeat;
 	public static float EstimateBPM;
@@ -60,7 +63,7 @@ public class AudioPeer : MonoBehaviour {
 	void GetSpectrumAudioSource()
 	{
 		_audioSource.GetSpectrumData(_samples, 0, FFTWindow.BlackmanHarris);
-		_audioSource.GetSpectrumData(_beatSamples, 0, FFTWindow.BlackmanHarris);
+		//_audioSource.GetSpectrumData(_beatSamples, 0, FFTWindow.BlackmanHarris);
 	}
 
 	void MakeFreqBands ()
@@ -154,6 +157,13 @@ public class AudioPeer : MonoBehaviour {
 
 			_audioBand[i] = (_freqBands[i] / _freqBandHighest[i]);
 			_audioBandBuffer[i] = (_bandBuffer[i] / _freqBandHighest[i]);
+			//WRITE TO TEXT FILE AUDIOBANDBUFFER
+			System.IO.File.AppendAllText(path, _audioBandBuffer[i].ToString() + ", ");
+			Debug.Log(_audioBandBuffer[i]);
+			if(i == 7)
+			{
+				System.IO.File.AppendAllText(path, "\r\n");
+			}
 		}
 	}
 
@@ -206,8 +216,18 @@ public class AudioPeer : MonoBehaviour {
 	void DetectBeat ()
 	{
 		beatDetected = false;
-		//Beat occurs when threshold has been exceeded in the first band of _beatSamples
-		if (_beatSamples [0] >= beatThreshValue && beatLastTime == 0) {
+		beatAverage = 0;
+
+		//Get average frequency of first 4 samples
+		for(int i = 0; i < 4; i++)
+		{
+			beatAverage += _samples[i];
+		}
+
+		beatAverage /= 4;
+
+		//Beat occurs when average of first 4 samples passes threshold
+		if (beatAverage >= beatThreshValue && beatLastTime == 0) {
 			beatLastTime = GetAudioClipTime ();
 			beatDetected = true;
 

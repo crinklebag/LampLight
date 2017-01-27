@@ -13,10 +13,12 @@ public class Dragonfly : MonoBehaviour {
 	private bool goingUp = false;
 	private bool goingLeft = false;
 	private Rigidbody2D rb;
+	private GameController gameController;
 
 	void Start ()
 	{
 		rb = GetComponent<Rigidbody2D> ();
+		gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 
 		//Check which side of the screen were starting on
 		if (this.transform.position.x > 0) {
@@ -74,22 +76,9 @@ public class Dragonfly : MonoBehaviour {
 		}
 	}
 
-	void GetInput()
-	{
-		if (Input.GetKeyDown(KeyCode.UpArrow)) 
-		{
-			Debug.Log ("YES");
-			//this.transform.position += new Vector3(0,1,0);
-			//rb.MovePosition = new Vector3(0,1,0);
-			rb.MovePosition(this.transform.localPosition + new Vector3(0,1.5f,0));
-		}
-
-		if (Input.GetKeyDown(KeyCode.DownArrow)) 
-		{
-			//this.transform.localPosition -= new Vector3(0,1,0);
-			//rb.MovePosition = new Vector3(0,1,0);
-			rb.MovePosition(this.transform.localPosition - new Vector3(0,1.5f,0));
-		}
-	}
-
+	void OnTriggerEnter2D(Collider2D other) {
+        if (other.gameObject.CompareTag("JarTop") && gameController.GetBugCount() > 0) {
+            gameController.ReleaseBug();
+        }
+    }
 }
