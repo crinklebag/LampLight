@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Dragonfly : MonoBehaviour {
 
-	[SerializeField] float force;
+    GameController gameController;
+
+    [SerializeField] float force;
 	[SerializeField] float jumpDistance;
 	[SerializeField] float jumpSpeed;
 	[SerializeField] float lowPoint;
@@ -12,11 +14,14 @@ public class Dragonfly : MonoBehaviour {
 
 	private bool goingUp = false;
 	private bool goingLeft = false;
+
 	private Rigidbody2D rb;
 
 	void Start ()
 	{
-		rb = GetComponent<Rigidbody2D> ();
+        gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+
+        rb = GetComponent<Rigidbody2D> ();
 
 		//Check which side of the screen were starting on
 		if (this.transform.position.x > 0) {
@@ -25,8 +30,11 @@ public class Dragonfly : MonoBehaviour {
 			goingLeft = false;
 		}
 
-		//Add Force to move across screen
-		StartCoroutine(MoveHorizontal()); 
+        highPoint = GameObject.Find("Top").gameObject.transform.position.y - 0.5f;
+        lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 0.5f;
+
+        //Add Force to move across screen
+        StartCoroutine(MoveHorizontal()); 
 	}
 
 	void Update ()
@@ -92,4 +100,26 @@ public class Dragonfly : MonoBehaviour {
 		}
 	}
 
+    public void SetSpawnSide(bool lr)
+    {
+        goingLeft = lr;
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("DragonflyDestroyer"))
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("Hit player!!");
+
+            gameController.CrackJar();
+        }
+    }
 }

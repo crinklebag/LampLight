@@ -13,6 +13,8 @@ public class UI : MonoBehaviour {
     public Image FGOverlay;
     public GameObject exitButtonFG;
 
+    public ParticleSystem crackedJarFireflies;
+
     [SerializeField]
     GameController gc;
 
@@ -25,7 +27,7 @@ public class UI : MonoBehaviour {
     private Color32 previousColor = new Color32(255, 255, 255, 0);
 
     [SerializeField]
-    int fireflyColorConvert = 0;
+    float fireflyColorConvert = 0;
 
     [SerializeField]
     byte fireflyTransparency = 0;
@@ -34,22 +36,72 @@ public class UI : MonoBehaviour {
 
     Image fireflyUIImage;
 
+    [SerializeField]
     int score = 0;
+    [SerializeField]
     int totalScore = 0;
+    [SerializeField]
     int tempScoreCounter = 0;
+    [SerializeField]
+    bool startJarParticles = false;
 
     // Use this for initialization
     void Start () {
         fireflyUIImage = fireflyUI.gameObject.GetComponent<Image>();
         gc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+        crackedJarFireflies = GameObject.Find("CrackedJarFireflies").GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame
     void Update () {
-        multiplierText.text = "x " + gc.GetBugCount().ToString();
+        multiplierText.text = "x " + gc.GetFilledJars().ToString();
         scoreText.text = score.ToString();
 
         fireflyUIImage.color = Color32.Lerp(previousColor, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
+
+        if (startJarParticles && fireflyUIImage.color == currentColor)
+        {
+            FinishGame(gc.GetFilledJars());
+        }
+
+        Debug.Log(crackedJarFireflies.isPlaying);
+
+        /*if (Input.GetKeyDown(KeyCode.J))
+        {
+            RemoveBug();
+        }
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            AddBug();
+        }*/
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            ResetGlow();
+        }
+    }
+
+    public void setStartJarParticles(bool val)
+    {
+        startJarParticles = val;
+    }
+
+    public void ResetGlow()
+    {
+        lerpColorTime = 0;
+
+        fireflyColorConvert = 0;
+
+        fireflyTransparency = (byte)fireflyColorConvert;
+
+        previousColor = fireflyUIImage.color;
+        currentColor = new Color32(255, 255, 255, fireflyTransparency);
+
+        if (startJarParticles)
+        {
+            crackedJarFireflies.Play();
+        }
     }
 
     public void AddBug() {
@@ -58,7 +110,7 @@ public class UI : MonoBehaviour {
 
         if (fireflyColorConvert >= 0 && fireflyColorConvert < 255)
         {
-            fireflyColorConvert += 10;
+            fireflyColorConvert += 25.5f;
         }
 
         //Mathf.Clamp(fireflyColorConvert, 0, 255);
@@ -76,9 +128,11 @@ public class UI : MonoBehaviour {
 
     public void RemoveBug()
     {
+        lerpColorTime = 0;
+
         if (fireflyColorConvert > 0)
         {
-            fireflyColorConvert -= 10;
+            fireflyColorConvert -= 25.5f;
         }
 
         //Mathf.Clamp(fireflyColorConvert, 0, 255);
@@ -101,7 +155,15 @@ public class UI : MonoBehaviour {
 
         FGOverlay.gameObject.SetActive(true);
 
-        totalScore = score * multiplier;
+        if (multiplier > 0)
+        {
+            totalScore = score * multiplier;
+        }
+        else
+        {
+            totalScore = score;
+        }
+        
 
         StartCoroutine("CountUpScore");
     }
@@ -112,18 +174,18 @@ public class UI : MonoBehaviour {
         //yield return new WaitForFixedUpdate();
         //yield return new WaitForEndOfFrame();
 
-        tempScoreCounter++;
-
         totalScoreFG.text = tempScoreCounter.ToString();
 
         if (tempScoreCounter < totalScore)
         {
-            StartCoroutine("CountUpScore");
+            tempScoreCounter++;
         }
 
         if (tempScoreCounter == totalScore)
         {
             exitButtonFG.SetActive(true);
         }
+
+        StartCoroutine("CountUpScore");
     }
 }

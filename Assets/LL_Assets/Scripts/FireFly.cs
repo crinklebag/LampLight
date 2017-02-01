@@ -65,7 +65,7 @@ public class FireFly : MonoBehaviour {
         }*/
         
         if (other.gameObject.CompareTag("JarTop") && isOn) {
-            Debug.Log("Hit Jar Top");
+            Debug.Log("Hit Jar Top Trigger Enter");
             // gameController.CatchBug("Firefly");
             caught = true;
             // Turn off bug and glow
@@ -81,10 +81,12 @@ public class FireFly : MonoBehaviour {
     }
 
     void OnTriggerStay2D(Collider2D other) {
-        if (other.gameObject.CompareTag("JarTop") && isOn) {
-            // Debug.Log("Hit Jar Top");
+        if (other.gameObject.CompareTag("Dragonfly") && isOn)
+        {
+            Debug.Log("Hit Dragonfly");
+            //Destroy(other.gameObject);
             Destroy(this.gameObject);
-            gameController.CatchBug("Firefly");
+            //gameController.CatchBug("Firefly");
         }
     }
 
