@@ -24,14 +24,14 @@ public class Dragonfly : MonoBehaviour {
         rb = GetComponent<Rigidbody2D> ();
 
 		//Check which side of the screen were starting on
-		if (this.transform.position.x > 0) {
+		/*if (this.transform.position.x > 0) {
 			goingLeft = true;
 		} else {
 			goingLeft = false;
-		}
+		}*/
 
-        highPoint = GameObject.Find("Top").gameObject.transform.position.y - 0.5f;
-        lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 0.5f;
+        highPoint = GameObject.Find("Top").gameObject.transform.position.y - 2.5f;
+        lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 2.5f;
 
         //Add Force to move across screen
         StartCoroutine(MoveHorizontal()); 

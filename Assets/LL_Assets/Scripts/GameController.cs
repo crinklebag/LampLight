@@ -108,7 +108,7 @@ public class GameController : MonoBehaviour
                 Vector2 randPos = new Vector2(bounds[2] - 4.0f, Random.Range(bounds[0], bounds[1]));
                 GameObject newBug = Instantiate(dragonflyPrefab, randPos, Quaternion.identity) as GameObject;
 
-                newBug.GetComponent<Dragonfly>().SetSpawnSide(true);
+                newBug.GetComponent<Dragonfly>().SetSpawnSide(false);
 
                 dragonflies[i] = newBug;
 
@@ -120,7 +120,7 @@ public class GameController : MonoBehaviour
                 Vector2 randPos = new Vector2(bounds[3] + 4.0f, Random.Range(bounds[0], bounds[1]));
                 GameObject newBug = Instantiate(dragonflyPrefab, randPos, Quaternion.identity) as GameObject;
 
-                newBug.GetComponent<Dragonfly>().SetSpawnSide(false);
+                newBug.GetComponent<Dragonfly>().SetSpawnSide(true);
 
                 dragonflies[i] = newBug;
 
