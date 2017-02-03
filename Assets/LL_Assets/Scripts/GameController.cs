@@ -232,6 +232,7 @@ public class GameController : MonoBehaviour
         if (jarCurrentDamage <= jarDamageLimit)
         {
             uiController.setJarImage(jarCurrentDamage);
+            player.GetComponent<Jar>().ChangeSprite(jarCurrentDamage);
         }
 
         if (jarCurrentDamage == jarDamageLimit)

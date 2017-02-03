@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class SceneLoad : MonoBehaviour {
-
+   
 	// Use this for initialization
 	void Start () {
 		
