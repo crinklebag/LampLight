@@ -14,6 +14,8 @@ public class UI : MonoBehaviour {
     public GameObject exitButtonFG;
 
     public ParticleSystem crackedJarFireflies;
+    public Image jar;
+    public Sprite[] jarImages; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
 
     [SerializeField]
     GameController gc;
@@ -50,6 +52,7 @@ public class UI : MonoBehaviour {
         fireflyUIImage = fireflyUI.gameObject.GetComponent<Image>();
         gc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
         crackedJarFireflies = GameObject.Find("CrackedJarFireflies").GetComponent<ParticleSystem>();
+        jar = GameObject.Find("Jar").GetComponent<Image>();
     }
 
     // Update is called once per frame
@@ -85,6 +88,11 @@ public class UI : MonoBehaviour {
     public void setStartJarParticles(bool val)
     {
         startJarParticles = val;
+    }
+
+    public void setJarImage(int val)
+    {
+        jar.sprite = jarImages[val];
     }
 
     public void ResetGlow()

@@ -229,6 +229,11 @@ public class GameController : MonoBehaviour
 
         jarCurrentDamage++;
 
+        if (jarCurrentDamage <= jarDamageLimit)
+        {
+            uiController.setJarImage(jarCurrentDamage);
+        }
+
         if (jarCurrentDamage == jarDamageLimit)
         {
             Destroy(player.GetComponent<Jar>());

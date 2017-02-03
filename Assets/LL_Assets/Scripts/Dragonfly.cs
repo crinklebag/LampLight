@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Dragonfly : MonoBehaviour {
 
+    public GameObject sprite;
+
     GameController gameController;
 
     [SerializeField] float force;
@@ -23,12 +25,20 @@ public class Dragonfly : MonoBehaviour {
 
         rb = GetComponent<Rigidbody2D> ();
 
-		//Check which side of the screen were starting on
-		/*if (this.transform.position.x > 0) {
-			goingLeft = true;
-		} else {
-			goingLeft = false;
-		}*/
+        //Debug.Log("Before: " + sprite.gameObject.transform.rotation);
+
+        if (goingLeft)
+        {
+            sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, 1.0f, sprite.gameObject.transform.rotation.w);
+            GetComponent<BoxCollider2D>().offset = new Vector2(-1.2f, 0);
+        }
+        else
+        {
+            sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, -1.0f, sprite.gameObject.transform.rotation.w);
+            GetComponent<BoxCollider2D>().offset = new Vector2(1.2f, 0);
+        }
+
+        //Debug.Log("After: " + sprite.gameObject.transform.rotation);
 
         highPoint = GameObject.Find("Top").gameObject.transform.position.y - 2.5f;
         lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 2.5f;
