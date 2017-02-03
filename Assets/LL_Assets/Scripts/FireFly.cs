@@ -20,9 +20,9 @@ public class FireFly : MonoBehaviour {
     //float lightMax = 0.8f;
     //float maxWaitTime = 6.0f;
     //float minWaitTime = 2.0f;
-    float minMoveX = -9.0f;
-    float maxMoveX = 3.0f;
-	float minMoveY = -3.5f;
+    float minMoveX = -10.0f;
+    float maxMoveX = 10.0f;
+	float minMoveY = -5.5f;
     float maxMoveY = 5.5f;
     Vector2 newPos;
 
@@ -94,7 +94,7 @@ public class FireFly : MonoBehaviour {
 		yield return new WaitForSeconds(0.1f);
 
     	int band = glow.GetComponent<Flicker>()._band;
-    	float bandFreq = AudioPeer._audioBandBuffer[band];
+    	float bandFreq = AudioTxtReader._currAudioSamples[band];
 
     	if(bandFreq >= freqMoveThresh)
     	{

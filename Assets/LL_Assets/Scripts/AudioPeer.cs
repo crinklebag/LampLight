@@ -62,7 +62,7 @@ public class AudioPeer : MonoBehaviour {
 
 	void GetSpectrumAudioSource()
 	{
-		_audioSource.GetSpectrumData(_samples, 0, FFTWindow.BlackmanHarris);
+		_audioSource.GetSpectrumData(_samples, 0, FFTWindow.Rectangular);
 		//_audioSource.GetSpectrumData(_beatSamples, 0, FFTWindow.BlackmanHarris);
 	}
 
@@ -148,21 +148,21 @@ public class AudioPeer : MonoBehaviour {
 	//create audioband & audiobandbuffer for freq band & bufferband 0 to 1 values
 	void CreateAudioBands ()
 	{
-		for (int i = 0; i < 8; i++) 
-		{
-			if(_freqBands[i] > _freqBandHighest[i])
-			{
-				_freqBandHighest[i] = _freqBands[i];
+		path = @"D:\Text\" + _audioSource.clip.name + ".txt";
+		for (int i = 0; i < 8; i++) {
+			if (_freqBands [i] > _freqBandHighest [i]) {
+				_freqBandHighest [i] = _freqBands [i];
 			}
 
-			_audioBand[i] = (_freqBands[i] / _freqBandHighest[i]);
-			_audioBandBuffer[i] = (_bandBuffer[i] / _freqBandHighest[i]);
-			//WRITE TO TEXT FILE AUDIOBANDBUFFER
-			System.IO.File.AppendAllText(path, _audioBandBuffer[i].ToString() + ", ");
-			Debug.Log(_audioBandBuffer[i]);
-			if(i == 7)
-			{
-				System.IO.File.AppendAllText(path, "\r\n");
+			_audioBand [i] = (_freqBands [i] / _freqBandHighest [i]);
+			_audioBandBuffer [i] = (_bandBuffer [i] / _freqBandHighest [i]);
+
+			//Write to txt file
+			if (i == 7) {
+				System.IO.File.AppendAllText (path, _audioBandBuffer [i].ToString ());
+				System.IO.File.AppendAllText (path, "\r\n");
+			} else {
+				System.IO.File.AppendAllText (path, _audioBandBuffer [i].ToString () + ",");
 			}
 		}
 	}

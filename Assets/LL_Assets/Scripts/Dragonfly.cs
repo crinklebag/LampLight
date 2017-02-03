@@ -35,7 +35,7 @@ public class Dragonfly : MonoBehaviour {
 	{
 		CheckDirection();//check if we need to switch vertical direction
 
-		if (AudioPeer.GetBeat ()) { //Move vertically on beat
+		if (AudioManager.beatCheck) { //Move vertically on beat
 			MoveVertical();
 		}
 	}

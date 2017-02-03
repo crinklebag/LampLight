@@ -4,49 +4,69 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour {
 
-	private List<AudioClip> allAudioClips;
+	public List<AudioClip> allAudioClips;//Songs to be included
+	public float[] bpm;
 	public int songIndex = 0;
 
-	[SerializeField] GameObject aLoader;
+	private float timePassed;
+	public static bool beatCheck = false;
+	float timeBetweenBeats = 0.0f;
+
+	//[SerializeField] GameObject aLoader;
 	[SerializeField] AudioSource aSource;//Audio Peer
 
-
-	bool hasStarted = false;
 	bool isPaused = false;
 	float clipLength = 0.0f;
 
 	void Start ()
 	{
 		aSource.Pause();
+		StartCoroutine(startAudio(songIndex));
 	}
 
 	void Update ()
 	{
-		bool isReady = aLoader.GetComponent<AudioLoader> ().audioReady;
+		//bool isReady = aLoader.GetComponent<AudioLoader> ().audioReady;
 
 		//If the audio loader has finished loading all audio files and the startAudio function hasnt already run, start the audio
-		if (!hasStarted && isReady) {
+		/*if (!hasStarted && isReady) {
 			hasStarted = true;
-			allAudioClips = aLoader.GetComponent<AudioLoader> ().allAudioClips;
-			startAudio ();
-		}
+			//allAudioClips = aLoader.GetComponent<AudioLoader> ().allAudioClips;
+			startAudio();
+		}*/
+
 		//Allow user input for play, pause, next song, previous song
-		if(hasStarted)
-			getUserInput();
+		//getUserInput();
+
+
+		beatCheck = getBeat();
+		//Debug.Log(beatCheck);
 	}
 
-	void startAudio ()
+	IEnumerator startAudio (int index)
 	{
 		//Set song index to random song, set audio clip for audio source, set clip length for countdown, play audio
-		songIndex = Random.Range(0, allAudioClips.Count);
+		songIndex = index;//Random.Range (0, allAudioClips.Count);
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
+		timeBetweenBeats = 60000.0f / bpm[songIndex];
+		//Debug.Log("time between beats = " + timeBetweenBeats);
 
-        // Needed for making BG scroll to length of song
-        GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
-        aSource.Play ();
+		// Needed for making BG scroll to length of song
+		GameObject.Find ("BG").GetComponent<BackgroundScroller> ().Reset (clipLength);
 
-		StartCoroutine(AutoNextSong());
+		///*
+		//try to load the values
+		if (AudioTxtReader.loadTxtFile (aSource.clip.name)) {
+			aSource.Play ();
+		} else {
+			Debug.Log("Audio data text file not loaded");
+		}
+		//*/
+		//aSource.Play();
+
+		yield return null;
+		//StartCoroutine(AutoNextSong());
 	}
 
 	//Un-Pause
@@ -67,7 +87,7 @@ public class AudioManager : MonoBehaviour {
 			aSource.Pause ();
 		}
 	}
-
+	/*
 	public IEnumerator NextSong ()
 	{
 		Debug.Log("Next Song");
@@ -90,7 +110,8 @@ public class AudioManager : MonoBehaviour {
         GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
         aSource.Play ();
 	}
-
+	*/
+	/*
 	public IEnumerator PreviousSong()
 	{
 		Debug.Log("Previous Song");
@@ -113,7 +134,8 @@ public class AudioManager : MonoBehaviour {
         GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
         aSource.Play ();
 	}
-
+	*/
+	/*
 	IEnumerator AutoNextSong ()
 	{
 		//While the song has not ended & if audio is playing, decrease clipLength, when clipLength <= 0.0 the next song is started
@@ -129,7 +151,8 @@ public class AudioManager : MonoBehaviour {
 
 		StartCoroutine(AutoNextSong());
 	}
-
+	*/
+	/*
 	void getUserInput ()
 	{
 		//Play
@@ -148,6 +171,22 @@ public class AudioManager : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
 			StartCoroutine(PreviousSong());
 		}
+
+	}*/
+
+	private bool getBeat ()
+	{
+		//Keep track of time in ms since last beat
+		timePassed += Time.deltaTime * 1000;
+		//Debug.Log("time passed = " + timePassed);
+
+		//Reset the time passed conuter and return true, there is a beat
+		if (timePassed >= timeBetweenBeats) {
+			timePassed = 0.0f;
+			return true;
+		}
+
+		return false;
 	}
 
 	public float getCurretClipLength ()
