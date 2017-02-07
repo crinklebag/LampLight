@@ -5,6 +5,8 @@ using UnityEngine;
 public class Dragonfly : MonoBehaviour {
 
     public GameObject sprite;
+    public GameObject musicClef;
+    public GameObject musicClefPrefab;
 
     GameController gameController;
 
@@ -14,13 +16,35 @@ public class Dragonfly : MonoBehaviour {
 	[SerializeField] float lowPoint;
 	[SerializeField] float highPoint;
 
-	private bool goingUp = false;
-	private bool goingLeft = false;
+    [SerializeField]
+    private Color32 opaqueColor = new Color32(255, 255, 255, 255);
+    [SerializeField]
+    private Color32 transparentColor = new Color32(255, 255, 255, 0);
+    [SerializeField]
+    private Color32 currentColor = new Color32(255, 255, 255, 0);
+
+    [SerializeField]
+    private bool goingUp = false;
+    [SerializeField]
+    private bool goingLeft = false;
 
 	private Rigidbody2D rb;
 
-	void Start ()
+    [SerializeField]
+    float lerpColorTime = 0;
+
+    [SerializeField]
+    bool boundsComingIn = false;
+    [SerializeField]
+    bool boundsGoingOut = false;
+
+    void Start ()
 	{
+        force = 3300.0f;
+
+        musicClef = GameObject.Instantiate(musicClefPrefab);
+        GameObject.Find("BG").GetComponent<BackgroundScroller>().ResizeObjectToBounds(musicClef.GetComponent<SpriteRenderer>());
+
         gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 
         rb = GetComponent<Rigidbody2D> ();
@@ -30,18 +54,18 @@ public class Dragonfly : MonoBehaviour {
         if (goingLeft)
         {
             sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, 1.0f, sprite.gameObject.transform.rotation.w);
-            GetComponent<BoxCollider2D>().offset = new Vector2(-1.2f, 0);
+            GetComponent<BoxCollider2D>().offset = new Vector2(-0.6f, 0);
         }
         else
         {
             sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, -1.0f, sprite.gameObject.transform.rotation.w);
-            GetComponent<BoxCollider2D>().offset = new Vector2(1.2f, 0);
+            GetComponent<BoxCollider2D>().offset = new Vector2(0.6f, 0);
         }
 
         //Debug.Log("After: " + sprite.gameObject.transform.rotation);
 
-        highPoint = GameObject.Find("Top").gameObject.transform.position.y - 2.5f;
-        lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 2.5f;
+        highPoint = GameObject.Find("Top").gameObject.transform.position.y - 3.5f;
+        lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 3.5f;
 
         //Add Force to move across screen
         StartCoroutine(MoveHorizontal()); 
@@ -53,13 +77,67 @@ public class Dragonfly : MonoBehaviour {
 
 		if (AudioPeer.GetBeat ()) { //Move vertically on beat
 			MoveVertical();
+
+            if (boundsComingIn == true && boundsGoingOut == false)
+            {
+                if (musicClef.GetComponent<SpriteRenderer>().color != transparentColor)
+                {
+                    currentColor = musicClef.GetComponent<SpriteRenderer>().color;
+
+                    musicClef.GetComponent<SpriteRenderer>().color = Color32.Lerp(currentColor, opaqueColor, (lerpColorTime += Time.deltaTime * 5.0f) / 1f);
+                }
+                else
+                {
+                    musicClef.GetComponent<SpriteRenderer>().color = Color32.Lerp(transparentColor, opaqueColor, (lerpColorTime += Time.deltaTime * 5.0f) / 1f);
+                }
+            }
 		}
+        else
+        {
+            if (boundsComingIn == true && boundsGoingOut == false)
+            {
+                musicClef.GetComponent<SpriteRenderer>().color = Color32.Lerp(opaqueColor, transparentColor, (lerpColorTime += Time.deltaTime * 2.0f) / 1f);
+            }
+            else if (boundsComingIn == true && boundsGoingOut == true)
+            {
+                musicClef.GetComponent<SpriteRenderer>().color = transparentColor;
+            }
+        }
 	}
 
 	//Add/Subtract the jump distance and this position based off direction
 	void MoveVertical ()
 	{
-		if (goingUp) {
+        lerpColorTime = 0;
+
+        if (!goingLeft)
+        {
+            if (transform.position.x > GameObject.Find("Left").gameObject.transform.position.x + 0.5f)
+            {
+                boundsComingIn = true;
+                boundsGoingOut = false;
+            }
+
+            if (transform.position.x > GameObject.Find("Right").gameObject.transform.position.x - 0.5f)
+            {
+                boundsGoingOut = true;
+            }
+        }
+        else
+        {
+            if (transform.position.x < GameObject.Find("Left").gameObject.transform.position.x + 1.0f)
+            {
+                boundsGoingOut = true;
+            }
+
+            if (transform.position.x < GameObject.Find("Right").gameObject.transform.position.x + 0.5f && transform.position.x > 0)
+            {
+                boundsComingIn = true;
+                boundsGoingOut = false;
+            }
+        }
+
+        if (goingUp) {
 			//rb.MovePosition(this.transform.localPosition + new Vector3(0,jumpDistance,0));
 			Vector3 newPos = new Vector3(this.transform.localPosition.x, this.transform.position.y + jumpDistance, this.transform.position.z);
 			this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
@@ -119,6 +197,7 @@ public class Dragonfly : MonoBehaviour {
     {
         if (other.gameObject.CompareTag("DragonflyDestroyer"))
         {
+            Destroy(musicClef.gameObject);
             Destroy(this.gameObject);
         }
     }

@@ -46,4 +46,20 @@ public class Jar : MonoBehaviour {
         jarImage.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         jarImage.transform.localRotation = Quaternion.identity;
     }
+
+    public IEnumerator FlashJar()
+    {
+        jarImage.GetComponent<SpriteRenderer>().color = Color.clear;
+        yield return new WaitForSecondsRealtime(0.3f);
+        jarImage.GetComponent<SpriteRenderer>().color = Color.white;
+        yield return new WaitForSecondsRealtime(0.3f);
+        jarImage.GetComponent<SpriteRenderer>().color = Color.clear;
+        yield return new WaitForSecondsRealtime(0.3f);
+        jarImage.GetComponent<SpriteRenderer>().color = Color.white;
+        yield return new WaitForSecondsRealtime(0.3f);
+        jarImage.GetComponent<SpriteRenderer>().color = Color.clear;
+        yield return new WaitForSecondsRealtime(0.3f);
+        jarImage.GetComponent<SpriteRenderer>().color = Color.white;
+        yield return new WaitForSecondsRealtime(0.3f);
+    }
 }

@@ -58,7 +58,7 @@ public class UI : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         multiplierText.text = "x " + gc.GetFilledJars().ToString();
-        scoreText.text = score.ToString();
+        scoreText.text = "x " + gc.GetAmountOfBugs().ToString();
 
         fireflyUIImage.color = Color32.Lerp(previousColor, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
 
@@ -67,7 +67,7 @@ public class UI : MonoBehaviour {
             FinishGame(gc.GetFilledJars());
         }
 
-        Debug.Log(crackedJarFireflies.isPlaying);
+        //Debug.Log(crackedJarFireflies.isPlaying);
 
         /*if (Input.GetKeyDown(KeyCode.J))
         {
