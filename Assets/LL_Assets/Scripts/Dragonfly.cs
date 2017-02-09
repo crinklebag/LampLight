@@ -43,6 +43,7 @@ public class Dragonfly : MonoBehaviour {
         force = 3300.0f;
 
         musicClef = GameObject.Instantiate(musicClefPrefab);
+        musicClef.GetComponent<SpriteRenderer>().sortingLayerName = "Bug";
         GameObject.Find("BG").GetComponent<BackgroundScroller>().ResizeObjectToBounds(musicClef.GetComponent<SpriteRenderer>());
 
         gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -76,6 +77,7 @@ public class Dragonfly : MonoBehaviour {
 		CheckDirection();//check if we need to switch vertical direction
 
 		if (AudioPeer.GetBeat ()) { //Move vertically on beat
+            Debug.Log("Getting Beat");
 			MoveVertical();
 
             if (boundsComingIn == true && boundsGoingOut == false)
@@ -138,12 +140,14 @@ public class Dragonfly : MonoBehaviour {
         }
 
         if (goingUp) {
+            Debug.Log("goingUp");
 			//rb.MovePosition(this.transform.localPosition + new Vector3(0,jumpDistance,0));
 			Vector3 newPos = new Vector3(this.transform.localPosition.x, this.transform.position.y + jumpDistance, this.transform.position.z);
 			this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
 		} else {
-			//rb.MovePosition(this.transform.localPosition - new Vector3(0,jumpDistance,0));
-			Vector3 newPos = new Vector3(this.transform.localPosition.x, this.transform.position.y - jumpDistance, this.transform.position.z);
+            Debug.Log("goingDown");
+            //rb.MovePosition(this.transform.localPosition - new Vector3(0,jumpDistance,0));
+            Vector3 newPos = new Vector3(this.transform.localPosition.x, this.transform.position.y - jumpDistance, this.transform.position.z);
 			this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
 		}
 	}
