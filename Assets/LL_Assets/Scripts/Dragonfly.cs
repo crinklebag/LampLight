@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Dragonfly : MonoBehaviour {
 
@@ -17,7 +18,7 @@ public class Dragonfly : MonoBehaviour {
 	[SerializeField] float highPoint;
 
     [SerializeField]
-    private Color32 opaqueColor = new Color32(255, 255, 255, 255);
+    private Color32 opaqueColor = new Color32(255, 255, 255, 10);
     [SerializeField]
     private Color32 transparentColor = new Color32(255, 255, 255, 0);
     [SerializeField]
@@ -65,8 +66,8 @@ public class Dragonfly : MonoBehaviour {
 
         //Debug.Log("After: " + sprite.gameObject.transform.rotation);
 
-        highPoint = GameObject.Find("Top").gameObject.transform.position.y - 3.5f;
-        lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 3.5f;
+        // highPoint = GameObject.Find("Top").gameObject.transform.position.y - 3.5f;
+        // lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 3.5f;
 
         //Add Force to move across screen
         StartCoroutine(MoveHorizontal()); 
@@ -141,13 +142,19 @@ public class Dragonfly : MonoBehaviour {
 
         if (goingUp) {
             Debug.Log("goingUp");
-			//rb.MovePosition(this.transform.localPosition + new Vector3(0,jumpDistance,0));
-			Vector3 newPos = new Vector3(this.transform.localPosition.x, this.transform.position.y + jumpDistance, this.transform.position.z);
+            //rb.MovePosition(this.transform.localPosition + new Vector3(0,jumpDistance,0));
+            float newY = this.transform.position.y + jumpDistance;
+            double roundedY = System.Math.Round(newY, 2);
+
+            Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
 			this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
 		} else {
             Debug.Log("goingDown");
             //rb.MovePosition(this.transform.localPosition - new Vector3(0,jumpDistance,0));
-            Vector3 newPos = new Vector3(this.transform.localPosition.x, this.transform.position.y - jumpDistance, this.transform.position.z);
+            float newY = this.transform.position.y - jumpDistance;
+            double roundedY = System.Math.Round(newY, 2);
+
+            Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
 			this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
 		}
 	}
@@ -167,9 +174,11 @@ public class Dragonfly : MonoBehaviour {
 	//Check if this position.y against high and low points to determine if we need to switch
 	void CheckDirection ()
 	{
-		if (this.transform.position.y >= highPoint) {
+		if (this.transform.position.y == highPoint) {
+            Debug.Log("Hit High");
 			goingUp = false;
-		} else if (this.transform.position.y <= lowPoint) {
+		} else if (this.transform.position.y == lowPoint) {
+            Debug.Log("Hit Low");
 			goingUp = true;
 		}
 	}

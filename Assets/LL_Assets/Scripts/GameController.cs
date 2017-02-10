@@ -121,8 +121,10 @@ public class GameController : MonoBehaviour
             if (dragonflies[i] == null && i == 0)
             {
                 // Instantiate a new bug at a random position
-                Vector2 randPos = new Vector2(bounds[2] - 4.0f, Random.Range(bounds[0], bounds[1]));
+                Vector2 randPos = new Vector2(bounds[2] - 4.0f, 4);
                 GameObject newBug = Instantiate(dragonflyPrefab, randPos, Quaternion.identity) as GameObject;
+
+                Debug.Log("Starting Bug: " + randPos);
 
                 newBug.GetComponent<Dragonfly>().SetSpawnSide(false);
 
@@ -133,7 +135,7 @@ public class GameController : MonoBehaviour
             else if (dragonflies[i] == null && i == 1)
             {
                 // Instantiate a new bug at a random position
-                Vector2 randPos = new Vector2(bounds[3] + 4.0f, Random.Range(bounds[0], bounds[1]));
+                Vector2 randPos = new Vector2(bounds[3] + 4.0f, -3.25f);
                 GameObject newBug = Instantiate(dragonflyPrefab, randPos, Quaternion.identity) as GameObject;
 
                 newBug.GetComponent<Dragonfly>().SetSpawnSide(true);
