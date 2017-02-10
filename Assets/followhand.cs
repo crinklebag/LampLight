@@ -12,6 +12,10 @@ public class followhand : BodySourceView {
 
 	[SerializeField]public float speed;
 
+	[SerializeField]public float distance;
+
+	public Vector3 temp;
+
 	// Use this for initialization
 	void Start () {
 		bodyManager = BodySourceManager.GetComponent<BodySourceManager> ();
@@ -37,16 +41,29 @@ public class followhand : BodySourceView {
 			}
 			if (body.IsTracked) 
 			{
-				var pos = body.Joints [TrackedJoint].Position;
+				if (body.Joints [TrackedJoint].Position.Z < distance) {
+					var pos = body.Joints [TrackedJoint].Position;
 
-				//var rot = body.Joints [TrackedJoint].Position;
-				gameObject.transform.position = new Vector3 (pos.X, pos.Y,0)*Time.time*speed;
-				//gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(pos.X,pos.Y,0), Time.deltaTime * speed * 1000);
-				//gameObject.transform.rotation = new Quaternion (rot.X, rot.Y,0,0);
+					Debug.Log (body.Joints [TrackedJoint].Position.Z);
+					temp = new Vector3 (pos.X, pos.Y);
+
+					//var rot = body.Joints [TrackedJoint].Position;
+					//gameObject.transform.position = new Vector3 (pos.X, pos.Y,0)*Time.time*speed;
+					//gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(pos.X,pos.Y,0), Time.deltaTime * speed * 1000);
+					//gameObject.transform.rotation = new Quaternion (rot.X, rot.Y,0,0);
+
+					SmoothMove ();
+				}
 			}
 		}
 
 
+
+	}
+
+	void SmoothMove()
+	{
+		this.transform.position = Vector3.Lerp (this.transform.position, temp * speed, Time.smoothDeltaTime);
 
 	}
 }
