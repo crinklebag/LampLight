@@ -47,6 +47,9 @@ public class UI : MonoBehaviour {
     [SerializeField]
     bool startJarParticles = false;
 
+    [SerializeField]
+    bool hasTouchedAtEnd = false;
+
     // Use this for initialization
     void Start () {
         fireflyUIImage = fireflyUI.gameObject.GetComponent<Image>();
@@ -71,17 +74,23 @@ public class UI : MonoBehaviour {
 
         /*if (Input.GetKeyDown(KeyCode.J))
         {
-            RemoveBug();
-        }
+            FinishGame(gc.GetFilledJars());
+        }*/
 
-        if (Input.GetKeyDown(KeyCode.K))
+        /*if (Input.GetKeyDown(KeyCode.K))
         {
             AddBug();
         }*/
 
         if (Input.GetKeyDown(KeyCode.L))
         {
-            ResetGlow();
+            //ResetGlow();
+
+            if (!hasTouchedAtEnd)
+            {
+                Debug.Log("Touched at end using key");
+                hasTouchedAtEnd = true;
+            }
         }
     }
 
@@ -176,6 +185,11 @@ public class UI : MonoBehaviour {
         StartCoroutine("CountUpScore");
     }
 
+    public void SetHasTouchedAtEnd(bool val)
+    {
+        hasTouchedAtEnd = val;
+    }
+
     IEnumerator CountUpScore()
     {
         yield return new WaitForSecondsRealtime(0.001f);
@@ -189,8 +203,9 @@ public class UI : MonoBehaviour {
             tempScoreCounter++;
         }
 
-        if (tempScoreCounter == totalScore)
+        if (tempScoreCounter == totalScore || hasTouchedAtEnd)
         {
+            tempScoreCounter = totalScore;
             exitButtonFG.SetActive(true);
         }
 

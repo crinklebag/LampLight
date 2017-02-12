@@ -121,10 +121,10 @@ public class GameController : MonoBehaviour
             if (dragonflies[i] == null && i == 0)
             {
                 // Instantiate a new bug at a random position
-                Vector2 randPos = new Vector2(bounds[2] - 4.0f, 4);
+                Vector2 randPos = new Vector2(bounds[2] - 4.0f, Random.Range(bounds[0], bounds[1]));
                 GameObject newBug = Instantiate(dragonflyPrefab, randPos, Quaternion.identity) as GameObject;
 
-                Debug.Log("Starting Bug: " + randPos);
+                //Debug.Log("Starting Bug: " + randPos);
 
                 newBug.GetComponent<Dragonfly>().SetSpawnSide(false);
 
@@ -135,7 +135,7 @@ public class GameController : MonoBehaviour
             else if (dragonflies[i] == null && i == 1)
             {
                 // Instantiate a new bug at a random position
-                Vector2 randPos = new Vector2(bounds[3] + 4.0f, -3.25f);
+                Vector2 randPos = new Vector2(bounds[3] + 4.0f, Random.Range(bounds[0], bounds[1]));
                 GameObject newBug = Instantiate(dragonflyPrefab, randPos, Quaternion.identity) as GameObject;
 
                 newBug.GetComponent<Dragonfly>().SetSpawnSide(true);
@@ -198,11 +198,7 @@ public class GameController : MonoBehaviour
             if (bugCounter >= bugGoal)
             {
                 stopDoingThis = true;
-                StopAllCoroutines();
-                Destroy(player.GetComponent<Jar>());
-                Destroy(player.GetComponent<BoxCollider2D>());
-                Destroy(JarTopCollider);
-                uiController.FinishGame(filledJars);
+                FinishGameTime();
                 finishGame = false;
             }
         }
@@ -211,11 +207,24 @@ public class GameController : MonoBehaviour
     public void FinishGameTime()
     {
         stopDoingThis = true;
+		player.GetComponent<Drag>().SetEndGame (true);
         StopAllCoroutines();
         Destroy(player.GetComponent<Jar>());
         Destroy(player.GetComponent<BoxCollider2D>());
         Destroy(JarTopCollider);
         uiController.FinishGame(filledJars);
+    }
+
+    public void FinishGameDie()
+    {
+        stopDoingThis = true;
+        player.GetComponent<Drag>().SetEndGame(true);
+        StopAllCoroutines();
+        Destroy(player.GetComponent<Jar>());
+        Destroy(player.GetComponent<BoxCollider2D>());
+        Destroy(JarTopCollider);
+        uiController.setStartJarParticles(true);
+        uiController.ResetGlow();
     }
 
     public void ReleaseBug()
@@ -280,12 +289,7 @@ public class GameController : MonoBehaviour
 
         if (jarCurrentDamage == jarDamageLimit)
         {
-            stopDoingThis = true;
-            Destroy(player.GetComponent<Jar>());
-            Destroy(player.GetComponent<BoxCollider2D>());
-            Destroy(JarTopCollider);
-            uiController.setStartJarParticles(true);
-            uiController.ResetGlow();
+            FinishGameDie();
         }
     }
 
