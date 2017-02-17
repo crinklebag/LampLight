@@ -5,7 +5,7 @@ using System.Collections;
 public class FireFly : MonoBehaviour {
 
     GameController gameController;
-
+    [SerializeField] GameObject[] jars;
     //[SerializeField] Light bugLight;
     [SerializeField] GameObject image;
     [SerializeField] GameObject glow;
@@ -15,6 +15,7 @@ public class FireFly : MonoBehaviour {
     [SerializeField] GameObject destination;
 
 	public bool isOn;
+    [SerializeField]
     bool caught = false;
     //float lightMin = 0.3f;
     //float lightMax = 0.8f;
@@ -35,6 +36,15 @@ public class FireFly : MonoBehaviour {
 
     private float timeTillNewPosition;
 
+    Vector3 startMarker = Vector3.zero;
+    float startTime = 0;
+    float journeyLength = 0;
+    float maxLightIntensity = 8;
+
+    bool setDest = false;
+
+    int randJar = 0;
+
     // Use this for initialization
     void Start () {
         gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -44,22 +54,73 @@ public class FireFly : MonoBehaviour {
 
         destination = GameObject.Find("Destination");
 
+        jars = new GameObject[3];
+        jars[0] = GameObject.Find("Jar1");
+        jars[1] = GameObject.Find("Jar2");
+        jars[2] = GameObject.Find("Jar3");
+
         image.SetActive(false);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		moveBug();
 
-        if (caught) {
-            if (this.transform.position.x < destination.transform.position.x - 0.1f) {
-                this.transform.position = Vector3.MoveTowards(this.transform.position, destination.transform.position,  10 * Time.deltaTime);
-            } else {
-                gameController.CatchBug("Firefly");
-                Destroy(this.gameObject);
-            }
+    // Update is called once per frame
+    void Update()
+    {
+        
+
+        if (caught)
+        {
+           // if (this.transform.position.x < destination.transform.position.x - 0.1f)
+           //  {
+                 this.transform.position = Vector3.MoveTowards(this.transform.position, destination.transform.position, 10 * Time.deltaTime);
+
+                 if ((this.transform.position.x < destination.transform.position.x - 0.01f || this.transform.position.x > destination.transform.position.x + 0.01f) &&
+                     (this.transform.position.y < destination.transform.position.y - 0.01f || this.transform.position.y > destination.transform.position.y + 0.01f))
+                 {
+                     Debug.Log("Travelling");
+                     float distCovered = (Time.time - startTime) * speed;
+                     float fracJourney = distCovered / journeyLength;
+                     this.transform.position = Vector3.MoveTowards(this.transform.position, destination.transform.position, fracJourney);
+                 } 
+                 else
+                 {
+                     Debug.Log("Light intensity: " + destination.GetComponentInChildren<Light>().intensity);
+                     Debug.Log("Max Light intensity: " + maxLightIntensity);
+                     if (destination.GetComponentInChildren<Light>().intensity < maxLightIntensity)
+                     {
+                         Debug.Log("Lighting");
+                         float newLightIntensity = destination.GetComponentInChildren<Light>().intensity + 0.05f;
+                         destination.GetComponentInChildren<Light>().intensity = newLightIntensity;
+                     }
+                     gameController.CatchBug("Firefly", destination.name);
+                     Destroy(this.gameObject);
+                 }
+           //  }
+
+            /*newPos = destination.transform.position;
+
+            if (transform.position.x == newPos.x && transform.position.y == newPos.y)
+            {
+                Debug.Log("Light intensity: " + destination.GetComponentInChildren<Light>().intensity);
+                Debug.Log("Max Light intensity: " + maxLightIntensity);
+                if (destination.GetComponentInChildren<Light>().intensity < maxLightIntensity)
+                {
+                    Debug.Log("Lighting");
+                    float newLightIntensity = destination.GetComponentInChildren<Light>().intensity + Vector3.Distance(this.transform.position, newPos) / 10;
+                    destination.GetComponentInChildren<Light>().intensity = newLightIntensity;
+                }
+
+                if (destination.GetComponentInChildren<Light>().intensity == maxLightIntensity)
+                {
+                    gameController.CatchBug("Firefly");
+                    Destroy(this.gameObject);
+                }
+            }*/
+
+        } else
+        {
+            moveBug();
         }
-	}
+    }
 
     void OnTriggerEnter2D(Collider2D other) {
         /*if(other.gameObject.CompareTag("JarTop")){
@@ -79,7 +140,19 @@ public class FireFly : MonoBehaviour {
             this.GetComponent<CircleCollider2D>().enabled = false;
             // Play Sound
             this.GetComponent<AudioSource>().Play();
+            // Calculate the journey length and get the start pos
+            SetDestination();
+            startMarker = this.transform.position;
+            startTime = Time.time;
+            journeyLength = Vector3.Distance(startMarker, destination.transform.position);
         }
+    }
+
+    void SetDestination()
+    {
+        setDest = true;
+        randJar = Random.Range(0, jars.Length - 1);
+        destination = jars[randJar];
     }
 
     void OnTriggerStay2D(Collider2D other) {
@@ -112,16 +185,19 @@ public class FireFly : MonoBehaviour {
 
 	IEnumerator RandomPosition()
 	{
-        timeTillNewPosition = Random.Range(0.1f, 3.5f);
+        if (!caught)
+        {
+            timeTillNewPosition = Random.Range(0.1f, 3.5f);
 
-        yield return new WaitForSecondsRealtime (timeTillNewPosition);
+            yield return new WaitForSecondsRealtime(timeTillNewPosition);
 
-		float randY = Random.Range(minMoveY, maxMoveY);
-		float randX = Random.Range(minMoveX, maxMoveX);
+            float randY = Random.Range(minMoveY, maxMoveY);
+            float randX = Random.Range(minMoveX, maxMoveX);
 
-		newPos = new Vector2(randX, randY);
+            newPos = new Vector2(randX, randY);
 
-		StartCoroutine(RandomPosition());
+            StartCoroutine(RandomPosition());
+        }
 	}
 
     //Move to and face the target position

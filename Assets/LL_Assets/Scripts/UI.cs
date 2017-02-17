@@ -4,17 +4,18 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class UI : MonoBehaviour {
-
-    public Text multiplierText;
-    public Text scoreText;
-
     public Text scoreTextFG;
     public Text totalScoreFG;
     public Image FGOverlay;
     public GameObject exitButtonFG;
 
-    public ParticleSystem crackedJarFireflies;
-    public Image jar;
+    public ParticleSystem[] crackedJarFireflies;
+
+    [SerializeField]
+    public SpriteRenderer[] glows;
+    [SerializeField]
+    public SpriteRenderer[] jars;
+
     public Sprite[] jarImages; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
 
     [SerializeField]
@@ -26,7 +27,12 @@ public class UI : MonoBehaviour {
     [SerializeField]
     private Color32 currentColor = new Color32(255, 255, 255, 0);
     [SerializeField]
-    private Color32 previousColor = new Color32(255, 255, 255, 0);
+    private Color32 previousColor0 = new Color32(255, 255, 255, 0);
+    [SerializeField]
+    private Color32 previousColor1 = new Color32(255, 255, 255, 0);
+    [SerializeField]
+    private Color32 previousColor2 = new Color32(255, 255, 255, 0);
+
 
     [SerializeField]
     float fireflyColorConvert = 0;
@@ -35,8 +41,6 @@ public class UI : MonoBehaviour {
     byte fireflyTransparency = 0;
 
     float lerpColorTime = 0;
-
-    Image fireflyUIImage;
 
     [SerializeField]
     int score = 0;
@@ -52,20 +56,17 @@ public class UI : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        fireflyUIImage = fireflyUI.gameObject.GetComponent<Image>();
         gc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-        crackedJarFireflies = GameObject.Find("CrackedJarFireflies").GetComponent<ParticleSystem>();
-        jar = GameObject.Find("Jar").GetComponent<Image>();
+        
     }
 
     // Update is called once per frame
     void Update () {
-        multiplierText.text = "x " + gc.GetFilledJars().ToString();
-        scoreText.text = "x " + gc.GetAmountOfBugs().ToString();
+        glows[0].color = Color32.Lerp(previousColor0, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
+        glows[1].color = Color32.Lerp(previousColor1, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
+        glows[2].color = Color32.Lerp(previousColor2, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
 
-        fireflyUIImage.color = Color32.Lerp(previousColor, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
-
-        if (startJarParticles && fireflyUIImage.color == currentColor)
+        if (startJarParticles && glows[0].color == currentColor && glows[1].color == currentColor && glows[2].color == currentColor)
         {
             FinishGame(gc.GetFilledJars());
         }
@@ -101,7 +102,19 @@ public class UI : MonoBehaviour {
 
     public void setJarImage(int val)
     {
-        jar.sprite = jarImages[val];
+        jars[0].gameObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
+        jars[1].gameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+        jars[2].gameObject.transform.localScale = new Vector3(0.09f, 0.09f, 0.09f);
+
+        for (int i = 0; i < jars.Length; i++)
+        {
+            jars[i].sprite = jarImages[val];
+        }
+    }
+
+    public Color GetBugInJarColor(int bugNumber)
+    {
+        return glows[bugNumber].color;
     }
 
     public void ResetGlow()
@@ -112,16 +125,21 @@ public class UI : MonoBehaviour {
 
         fireflyTransparency = (byte)fireflyColorConvert;
 
-        previousColor = fireflyUIImage.color;
+        previousColor0 = glows[0].color;
+        previousColor1 = glows[1].color;
+        previousColor2 = glows[2].color;
+
         currentColor = new Color32(255, 255, 255, fireflyTransparency);
 
         if (startJarParticles)
         {
-            crackedJarFireflies.Play();
+            crackedJarFireflies[0].Play();
+            crackedJarFireflies[1].Play();
+            crackedJarFireflies[2].Play();
         }
     }
 
-    public void AddBug() {
+    public void AddBug(int bugNumber) {
         lerpColorTime = 0;
         score += 10;
 
@@ -139,11 +157,23 @@ public class UI : MonoBehaviour {
 
         fireflyTransparency = (byte)fireflyColorConvert;
 
-        previousColor = fireflyUIImage.color;
+        if (bugNumber == 0)
+        {
+            previousColor0 = glows[0].color;
+        } 
+        else if (bugNumber == 1)
+        {
+            previousColor1 = glows[1].color;
+        } 
+        else if (bugNumber == 2)
+        {
+            previousColor2 = glows[2].color;
+        }
+        
         currentColor = new Color32(255, 255, 255, fireflyTransparency);
     }
 
-    public void RemoveBug()
+    public void RemoveBug(int bugNumber)
     {
         lerpColorTime = 0;
 
@@ -161,7 +191,18 @@ public class UI : MonoBehaviour {
 
         fireflyTransparency = (byte)fireflyColorConvert;
 
-        previousColor = fireflyUIImage.color;
+        if (bugNumber == 0)
+        {
+            previousColor0 = glows[0].color;
+        } else if (bugNumber == 1)
+        {
+            previousColor1 = glows[1].color;
+        } else if (bugNumber == 2)
+        {
+            previousColor2 = glows[2].color;
+        }
+
+
         currentColor = new Color32(255, 255, 255, fireflyTransparency);
     }
 

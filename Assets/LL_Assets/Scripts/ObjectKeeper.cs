@@ -16,6 +16,8 @@ public class ObjectKeeper : MonoBehaviour
     private AudioClip[] songList;
     [SerializeField]
     private AudioClip chosenSong;
+    [SerializeField]
+    private int chosenSongNum;
 
     [SerializeField]
     private Sprite[] BGList;
@@ -67,7 +69,7 @@ public class ObjectKeeper : MonoBehaviour
     {
         switch (SceneManager.GetActiveScene().name)
         {
-            case "Polly's Scene":
+            case "Main_Mobile":
                 {
                     if (setGame)
                     {
@@ -79,10 +81,11 @@ public class ObjectKeeper : MonoBehaviour
                         GameObject.Find("WhatTree").GetComponent<Image>().sprite = chosenBG;
 
                         //Debug.Log("Finding AudioPeer");
-                        GameObject.Find("AudioPeer").gameObject.GetComponent<AudioSource>().Stop();
-                        GameObject.Find("AudioPeer").gameObject.GetComponent<AudioSource>().clip = chosenSong;
-                        GameObject.Find("BG").gameObject.GetComponent<BackgroundScroller>().Reset(GameObject.Find("AudioPeer").gameObject.GetComponent<AudioSource>().clip.length);
-                        GameObject.Find("AudioPeer").gameObject.GetComponent<AudioSource>().Play();
+                        GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
+                        //GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().clip = chosenSong;
+                        StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(chosenSongNum));
+                        //GameObject.Find("BG").gameObject.GetComponent<BackgroundScroller>().Reset(GameObject.Find("AudioPeer").gameObject.GetComponent<AudioSource>().clip.length);
+                        //GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Play();
                         GameObject.Find("GameController").gameObject.GetComponent<GameController>().SetStartGame(true);
                         setGame = true;
                     }
@@ -112,6 +115,15 @@ public class ObjectKeeper : MonoBehaviour
                     }
                 }
                 break;
+            case "MainMenu_Mobile":
+                {
+                    setSongSelectItems = false;
+                    setBGMenuItems = false;
+                    setGame = false;
+                    songNameList = new GameObject[10];
+                    songLengthList = new GameObject[10];
+                }
+                break;
             default:
                 break;
         }
@@ -125,6 +137,7 @@ public class ObjectKeeper : MonoBehaviour
             if (EventSystem.current.currentSelectedGameObject.GetComponent<Text>().text == songList[i].name)
             {
                 chosenSong = songList[i];
+                chosenSongNum = i;
                 SceneManager.LoadScene("BGSelect");
             }
         }
@@ -134,7 +147,7 @@ public class ObjectKeeper : MonoBehaviour
     {
         chosenBG = EventSystem.current.currentSelectedGameObject.GetComponent<Image>().sprite;
 
-        SceneManager.LoadScene("Polly's Scene");
+        SceneManager.LoadScene("Main_Mobile");
     }
 
     public void SetUpScene(int whatScene)

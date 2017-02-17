@@ -37,7 +37,7 @@ public class AudioManager : MonoBehaviour {
 	void Awake ()
 	{
 		aSource = this.GetComponent<AudioSource>();
-		StartCoroutine(StartAudio(songIndex));
+		//StartCoroutine(StartAudio(songIndex));
 	}
 
 	void Update ()
@@ -45,7 +45,7 @@ public class AudioManager : MonoBehaviour {
 		beatCheck = GetBeat();
 	}
 
-	IEnumerator StartAudio (int index)
+	public IEnumerator StartAudio (int index)
 	{
 		//Set song index to selected index, set audio clip for audio source, set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
 		songIndex = index;//Random.Range (0, allAudioClips.Count);

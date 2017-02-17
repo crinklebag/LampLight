@@ -176,7 +176,7 @@ public class GameController : MonoBehaviour
         StartCoroutine("CheckToMakeNewDragonfly");
     }
 
-    public void CatchBug(string bugType)
+    public void CatchBug(string bugType, string jarName)
     {
         if (!stopDoingThis)
         {
@@ -187,10 +187,22 @@ public class GameController : MonoBehaviour
             {
                 filledJars++;
                 bugCounter = 0;
-                // uiController.ResetGlow();
+                uiController.ResetGlow();
             }
 
-            // uiController.AddBug();
+            if (jarName == "Jar1")
+            {
+                uiController.AddBug(0);
+            } 
+            else if (jarName == "Jar2")
+            {
+                uiController.AddBug(1);
+            } 
+            else if (jarName == "Jar3")
+            {
+                uiController.AddBug(2);
+            }
+
         }
 
         if (finishGame)
@@ -227,12 +239,25 @@ public class GameController : MonoBehaviour
         uiController.ResetGlow();
     }
 
-    public void ReleaseBug()
+    public void ReleaseBug(int bugNumber)
     {
         if (!stopDoingThis)
         {
             // Remove the Bug from the UI
-            // uiController.RemoveBug();
+            
+            if (bugNumber == 0)
+            {
+                uiController.RemoveBug(0);
+            } 
+            else if (bugNumber == 1)
+            {
+                uiController.RemoveBug(1);
+            } 
+            else if (bugNumber == 2)
+            {
+                uiController.RemoveBug(2);
+            }
+
 
             if (bugCounter > 0 && realAmountOfBugs > 0)
             {
@@ -272,7 +297,19 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        ReleaseBug();
+        if (uiController.GetBugInJarColor(0).a > 0)
+        {
+            ReleaseBug(0);
+        }
+        else if (uiController.GetBugInJarColor(1).a > 0)
+        {
+            ReleaseBug(1);
+        } 
+        else if (uiController.GetBugInJarColor(2).a > 0)
+        {
+            ReleaseBug(2);
+        }
+
 
         jarCurrentDamage++;
 

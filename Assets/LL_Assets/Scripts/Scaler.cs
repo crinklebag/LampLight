@@ -1,0 +1,71 @@
+﻿using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
+
+public class Scaler : MonoBehaviour
+{
+    public GameObject[] bounds;
+
+    Bounds b;
+    float width;
+    float height;
+
+    void Start()
+    {
+        bounds = new GameObject[6];
+
+        bounds[0] = GameObject.Find("Top");
+        bounds[1] = GameObject.Find("Bottom");
+        bounds[2] = GameObject.Find("Left");
+        bounds[3] = GameObject.Find("Right");
+        bounds[4] = GameObject.Find("Dragonfly Destroyer Left");
+        bounds[5] = GameObject.Find("Dragonfly Destroyer Right");
+
+        height = Camera.main.orthographicSize * 2.0f;
+
+        width = bounds[0].transform.localScale.y * Screen.width / 10.0f;
+
+        //Debug.Log("WxH: " + Screen.width + " x " + Screen.height);
+
+        bounds[0].gameObject.transform.localScale = new Vector3(width, bounds[0].gameObject.transform.localScale.y, 1);
+        bounds[1].gameObject.transform.localScale = new Vector3(width, bounds[1].gameObject.transform.localScale.y, 1);
+        bounds[2].gameObject.transform.localScale = new Vector3(height / bounds[2].GetComponent<SpriteRenderer>().bounds.size.y + 10.0f, bounds[2].gameObject.transform.localScale.y, 1);
+        bounds[3].gameObject.transform.localScale = new Vector3(height / bounds[3].GetComponent<SpriteRenderer>().bounds.size.y + 10.0f, bounds[3].gameObject.transform.localScale.y, 1);
+
+        bounds[4].gameObject.transform.localScale = new Vector3(width, bounds[4].gameObject.transform.localScale.y, 1);
+        bounds[5].gameObject.transform.localScale = new Vector3(width, bounds[5].gameObject.transform.localScale.y, 1);
+
+        float screenAspect = (float)Screen.width / (float)Screen.height;
+        float cameraHeight = Camera.main.orthographicSize * 2;
+        b = new Bounds(Camera.main.transform.position, new Vector3(cameraHeight * screenAspect, cameraHeight, 0));
+
+        bounds[0].gameObject.transform.position = new Vector3(bounds[0].gameObject.transform.position.x, b.max.y + 0.5f);
+        bounds[1].gameObject.transform.position = new Vector3(bounds[1].gameObject.transform.position.x, b.min.y - 0.5f);
+        bounds[2].gameObject.transform.position = new Vector3(b.min.x - 0.5f, bounds[2].gameObject.transform.position.y);
+        bounds[3].gameObject.transform.position = new Vector3(b.max.x + 0.5f, bounds[3].gameObject.transform.position.y);
+
+        bounds[4].gameObject.transform.position = new Vector3(b.min.x - 10.0f, bounds[2].gameObject.transform.position.y);
+        bounds[5].gameObject.transform.position = new Vector3(b.max.x + 10.0f, bounds[3].gameObject.transform.position.y);
+
+        Vector3 convertedPosition = Vector3.zero;
+
+        convertedPosition = new Vector3(b.max.x - 3.5f, b.min.y + 1.0f, 1);
+
+        GameObject.Find("Destination").gameObject.transform.position = convertedPosition;
+
+    }
+
+    void Update()
+    {
+     
+    }
+
+    public void ResizeObjectToBounds(SpriteRenderer thing2Resize)
+    {
+        height = Camera.main.orthographicSize * 2.0f;
+
+        width = height / Screen.height * Screen.width;
+
+        thing2Resize.gameObject.transform.localScale = new Vector3(width / thing2Resize.sprite.bounds.size.x, width / thing2Resize.bounds.size.x, 1);
+    }
+}
