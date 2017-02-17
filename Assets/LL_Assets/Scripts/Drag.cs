@@ -13,6 +13,11 @@ public class Drag : MonoBehaviour {
 	protected float angle;
 	protected Quaternion rot;
 
+    [SerializeField]
+    bool hasEndedGame = false;
+	[SerializeField]
+	bool waitForAWhile = false;
+
 	void Start()
 	{
 		rb = this.GetComponent<Rigidbody2D>();
@@ -20,30 +25,61 @@ public class Drag : MonoBehaviour {
 
 	void Update ()
 	{
-
 		if (Input.touchCount > 0) {
-			
-			Vector3 touchPosition = new Vector3 (Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0.0f);
-			Vector3 objPosition = Camera.main.ScreenToWorldPoint (touchPosition);
-			//transform.position = objPosition;
-			//this.GetComponent<Rigidbody2D> ().transform.position = transform.position;
 
-			//transform.LookAt(objPosition);
-			//transform.rotation = Quaternion.Euler(0,0,this.transform.rotation.z);
+            if (!waitForAWhile)
+            {
+                Vector3 touchPosition = new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0.0f);
+                Vector3 objPosition = Camera.main.ScreenToWorldPoint(touchPosition);
+                //transform.position = objPosition;
+                //this.GetComponent<Rigidbody2D> ().transform.position = transform.position;
 
-			normTarget = (objPosition - this.transform.position).normalized;
+                //transform.LookAt(objPosition);
+                //transform.rotation = Quaternion.Euler(0,0,this.transform.rotation.z);
 
-			angle = Mathf.Atan2(normTarget.y, normTarget.x)*Mathf.Rad2Deg;
+				//Debug.Log (Vector3.Distance (objPosition, this.transform.position));
 
-			rot = new Quaternion();
-			rot.eulerAngles = new Vector3(0,0,angle-90);
+				if (Vector3.Distance(objPosition, this.transform.position) < 10.1f) {
+					return;
+				}
 
-			this.transform.rotation = Quaternion.Slerp(this.transform.localRotation, rot, Time.deltaTime * rotSpeed);
+				speed = Mathf.Lerp (speed, Mathf.Clamp((Vector3.Distance (objPosition, this.transform.position) - 5.0f), 5.0f, 50.0f), 25.0f * Time.deltaTime);
 
-			rb.MovePosition(this.transform.localPosition + this.transform.up * Time.deltaTime * speed);
+                normTarget = (objPosition - this.transform.position).normalized;
 
+                angle = Mathf.Atan2(normTarget.y, normTarget.x) * Mathf.Rad2Deg;
 
+                rot = new Quaternion();
+                rot.eulerAngles = new Vector3(0, 0, angle - 90);
+
+                this.transform.rotation = Quaternion.Slerp(this.transform.localRotation, rot, Time.deltaTime * rotSpeed);
+
+                rb.MovePosition(this.transform.localPosition + this.transform.up * Time.deltaTime * speed);
+            }
+
+			if (hasEndedGame)
+            {
+                Debug.Log("Touched at end");
+                GameObject.FindGameObjectWithTag("UIController").GetComponent<UI>().SetHasTouchedAtEnd(true);
+            }
 		}
 
 	}
+
+    public void SetEndGame(bool val)
+    {
+		waitForAWhile = val;
+
+		if (waitForAWhile == true)
+        {
+			StartCoroutine ("Wait4ScoreCount");
+		}
+    }
+
+	IEnumerator Wait4ScoreCount()
+	{
+		yield return new WaitForSecondsRealtime(5.0f);
+		hasEndedGame = true;
+	}
+	
 }

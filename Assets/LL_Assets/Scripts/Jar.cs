@@ -5,6 +5,9 @@ public class Jar : MonoBehaviour {
 
     [SerializeField] float boostForce;
     [SerializeField] float rotationSpeed = 5;
+    [SerializeField] GameObject jarImage;
+
+    public Sprite[] jarImages; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
 
     bool boosting;
 
@@ -36,5 +39,27 @@ public class Jar : MonoBehaviour {
         if (this.GetComponent<Rigidbody2D>().velocity.y > 0.01f)
             return true;
         else return false;
+    }
+
+    public void ChangeSprite(int val) {
+        jarImage.GetComponent<SpriteRenderer>().sprite = jarImages[val];
+        jarImage.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        jarImage.transform.localRotation = Quaternion.identity;
+    }
+
+    public IEnumerator FlashJar()
+    {
+        jarImage.GetComponent<SpriteRenderer>().color = Color.clear;
+        yield return new WaitForSecondsRealtime(0.3f);
+        jarImage.GetComponent<SpriteRenderer>().color = Color.white;
+        yield return new WaitForSecondsRealtime(0.3f);
+        jarImage.GetComponent<SpriteRenderer>().color = Color.clear;
+        yield return new WaitForSecondsRealtime(0.3f);
+        jarImage.GetComponent<SpriteRenderer>().color = Color.white;
+        yield return new WaitForSecondsRealtime(0.3f);
+        jarImage.GetComponent<SpriteRenderer>().color = Color.clear;
+        yield return new WaitForSecondsRealtime(0.3f);
+        jarImage.GetComponent<SpriteRenderer>().color = Color.white;
+        yield return new WaitForSecondsRealtime(0.3f);
     }
 }

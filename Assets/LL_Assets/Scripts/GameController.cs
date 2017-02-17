@@ -5,8 +5,11 @@ using System.Collections;
 public class GameController : MonoBehaviour
 {
 
-    Jar player;
+    //Jar player;
     UI uiController;
+
+    GameObject player;
+    GameObject JarTopCollider;
 
     [SerializeField]
     GameObject fireflyPrefab;
@@ -16,6 +19,11 @@ public class GameController : MonoBehaviour
     private GameObject[] fireflies;
 
     [SerializeField]
+    GameObject dragonflyPrefab;
+    [SerializeField]
+    private GameObject[] dragonflies;
+
+    [SerializeField]
     float[] bounds;
 
     [SerializeField]
@@ -23,17 +31,39 @@ public class GameController : MonoBehaviour
     [SerializeField]
     bool stopDoingThis = false;
 
-    int bugGoal = 10;
+    [SerializeField]
     int bugCounter;
+
+    [SerializeField]
+    int realAmountOfBugs;
+
+    [SerializeField]
+    int filledJars;
+
+    int bugGoal = 10;
+
     int maxBugs = 10;
+    int maxDragonflies = 2;
+
+    int jarDamageLimit = 3;
+
+    [SerializeField]
+    int jarCurrentDamage = 0;
+
+    [SerializeField]
+    bool hitAlready = false;
 
     public static int[] bandFrequencies;
+
+    [SerializeField]
+    bool startGame = false;
 
     // Use this for initialization
     void Start()
     {
         bounds = new float[4];
         fireflies = new GameObject[10];
+        dragonflies = new GameObject[2];
         bandFrequencies = new int[10];
 
         bounds[0] = GameObject.Find("Top").gameObject.transform.position.y;
@@ -42,16 +72,22 @@ public class GameController : MonoBehaviour
         bounds[3] = GameObject.Find("Right").gameObject.transform.position.x;
 
         uiController = GameObject.FindGameObjectWithTag("UIController").GetComponent<UI>();
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Jar>();
-        InitializeBugs();
+        //player = GameObject.FindGameObjectWithTag("Player").GetComponent<Jar>();
+        player = GameObject.FindGameObjectWithTag("Player");
+        JarTopCollider = GameObject.FindGameObjectWithTag("JarTop");
+
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (startGame)
+        {
+            InitializeBugs();
+            startGame = false;
+        }
     }
-
 
     void InstantiateBug()
     {
@@ -65,12 +101,51 @@ public class GameController : MonoBehaviour
 
                 newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[i];
                 fireflies[i] = newBug;
-                Debug.LogWarning("Firefly " + i + " with band frequency " + bandFrequencies[i]);
+                //Debug.LogWarning("Firefly " + i + " with band frequency " + bandFrequencies[i]);
                 return;
             }
         }
     }
 
+    void InstantiateDragonfly()
+    {
+        /*int decideIfMakeNewDragonfly = Random.Range(0, 1);
+
+        if (decideIfMakeNewDragonfly == 0)
+        {
+            return;
+        }*/
+
+        for (int i = 0; i < dragonflies.Length; i++)
+        {
+            if (dragonflies[i] == null && i == 0)
+            {
+                // Instantiate a new bug at a random position
+                Vector2 randPos = new Vector2(bounds[2] - 4.0f, Random.Range(bounds[0], bounds[1]));
+                GameObject newBug = Instantiate(dragonflyPrefab, randPos, Quaternion.identity) as GameObject;
+
+                //Debug.Log("Starting Bug: " + randPos);
+
+                newBug.GetComponent<Dragonfly>().SetSpawnSide(false);
+
+                dragonflies[i] = newBug;
+
+                return;
+            }
+            else if (dragonflies[i] == null && i == 1)
+            {
+                // Instantiate a new bug at a random position
+                Vector2 randPos = new Vector2(bounds[3] + 4.0f, Random.Range(bounds[0], bounds[1]));
+                GameObject newBug = Instantiate(dragonflyPrefab, randPos, Quaternion.identity) as GameObject;
+
+                newBug.GetComponent<Dragonfly>().SetSpawnSide(true);
+
+                dragonflies[i] = newBug;
+
+                return;
+            }
+        }
+    }
     void InitializeBugs()
     {
         for (int i = 0; i < maxBugs; i++)
@@ -97,15 +172,37 @@ public class GameController : MonoBehaviour
             //Debug.Log("Firefly " + i + " with band frequency " + bandFrequencies[i]);
         }
 
-        StartCoroutine("CheckToMakeNewBug");
+        StartCoroutine("CheckToMakeNewFirefly");
+        StartCoroutine("CheckToMakeNewDragonfly");
     }
 
-    public void CatchBug(string bugType)
+    public void CatchBug(string bugType, string jarName)
     {
         if (!stopDoingThis)
         {
             bugCounter++;
-            uiController.AddBug();
+            realAmountOfBugs++;
+
+            if (bugCounter == 10)
+            {
+                filledJars++;
+                bugCounter = 0;
+                uiController.ResetGlow();
+            }
+
+            if (jarName == "Jar1")
+            {
+                uiController.AddBug(0);
+            } 
+            else if (jarName == "Jar2")
+            {
+                uiController.AddBug(1);
+            } 
+            else if (jarName == "Jar3")
+            {
+                uiController.AddBug(2);
+            }
+
         }
 
         if (finishGame)
@@ -113,49 +210,164 @@ public class GameController : MonoBehaviour
             if (bugCounter >= bugGoal)
             {
                 stopDoingThis = true;
-                StopAllCoroutines();
-                Destroy(player);
-                Destroy(GameObject.Find("Top Collider").gameObject);
-                uiController.FinishGame(bugCounter);
+                FinishGameTime();
                 finishGame = false;
             }
         }
     }
 
-    public void ReleaseBug()
+    public void FinishGameTime()
+    {
+        stopDoingThis = true;
+		player.GetComponent<Drag>().SetEndGame (true);
+        StopAllCoroutines();
+        Destroy(player.GetComponent<Jar>());
+        Destroy(player.GetComponent<BoxCollider2D>());
+        Destroy(JarTopCollider);
+        uiController.FinishGame(filledJars);
+    }
+
+    public void FinishGameDie()
+    {
+        stopDoingThis = true;
+        player.GetComponent<Drag>().SetEndGame(true);
+        StopAllCoroutines();
+        Destroy(player.GetComponent<Jar>());
+        Destroy(player.GetComponent<BoxCollider2D>());
+        Destroy(JarTopCollider);
+        uiController.setStartJarParticles(true);
+        uiController.ResetGlow();
+    }
+
+    public void ReleaseBug(int bugNumber)
     {
         if (!stopDoingThis)
         {
             // Remove the Bug from the UI
-            uiController.RemoveBug();
+            
+            if (bugNumber == 0)
+            {
+                uiController.RemoveBug(0);
+            } 
+            else if (bugNumber == 1)
+            {
+                uiController.RemoveBug(1);
+            } 
+            else if (bugNumber == 2)
+            {
+                uiController.RemoveBug(2);
+            }
 
-            if (bugCounter > 0)
+
+            if (bugCounter > 0 && realAmountOfBugs > 0)
             {
                 InstantiateBug();
                 // decrease the counter
                 bugCounter--;
+                realAmountOfBugs--;
             }
         }
     }
+
+    public int GetFilledJars()
+    {
+        return filledJars;
+    }
+
+    public void SetStartGame(bool val)
+    {
+        startGame = val;
+    }
+
 
     public int GetBugCount()
     {
         return bugCounter;
     }
 
-    IEnumerator CheckToMakeNewBug()
+    public int GetAmountOfBugs()
+    {
+        return realAmountOfBugs;
+    }
+
+    public void CrackJar()
+    {
+        if (hitAlready)
+        {
+            return;
+        }
+
+        if (uiController.GetBugInJarColor(0).a > 0)
+        {
+            ReleaseBug(0);
+        }
+        else if (uiController.GetBugInJarColor(1).a > 0)
+        {
+            ReleaseBug(1);
+        } 
+        else if (uiController.GetBugInJarColor(2).a > 0)
+        {
+            ReleaseBug(2);
+        }
+
+
+        jarCurrentDamage++;
+
+        if (jarCurrentDamage < jarDamageLimit)
+        {
+            StartCoroutine("PlayerDragonflyCooldown");
+        }
+
+        if (jarCurrentDamage <= jarDamageLimit)
+        {
+            uiController.setJarImage(jarCurrentDamage);
+            player.GetComponent<Jar>().ChangeSprite(jarCurrentDamage);
+        }
+
+        if (jarCurrentDamage == jarDamageLimit)
+        {
+            FinishGameDie();
+        }
+    }
+
+    IEnumerator CheckToMakeNewFirefly()
     {
         if (!stopDoingThis)
         {
-            int seconds = Random.Range(1, 10);
+            int seconds = Random.Range(1, 4);
 
             InstantiateBug();
 
-            Debug.Log("Went to CheckToMakeNewBug, seconds: " + seconds);
+            //Debug.Log("Went to CheckToMakeNewBug, seconds: " + seconds);
 
             yield return new WaitForSecondsRealtime(seconds);
 
-            StartCoroutine("CheckToMakeNewBug");
+            StartCoroutine("CheckToMakeNewFirefly");
         }
+    }
+
+    IEnumerator CheckToMakeNewDragonfly()
+    {
+        if (!stopDoingThis)
+        {
+            int seconds = Random.Range(5, 10);
+
+            yield return new WaitForSecondsRealtime(seconds);
+
+            InstantiateDragonfly();
+
+            StartCoroutine("CheckToMakeNewDragonfly");
+        }
+    }
+
+    IEnumerator PlayerDragonflyCooldown()
+    {
+        hitAlready = true;
+
+        StartCoroutine(player.GetComponent<Jar>().FlashJar());
+
+        yield return new WaitForSecondsRealtime(2.5f);
+
+        hitAlready = false;
     }
 }

@@ -4,14 +4,19 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class UI : MonoBehaviour {
-
-    public Text multiplierText;
-    public Text scoreText;
-
     public Text scoreTextFG;
     public Text totalScoreFG;
     public Image FGOverlay;
     public GameObject exitButtonFG;
+
+    public ParticleSystem[] crackedJarFireflies;
+
+    [SerializeField]
+    public SpriteRenderer[] glows;
+    [SerializeField]
+    public SpriteRenderer[] jars;
+
+    public Sprite[] jarImages; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
 
     [SerializeField]
     GameController gc;
@@ -22,43 +27,125 @@ public class UI : MonoBehaviour {
     [SerializeField]
     private Color32 currentColor = new Color32(255, 255, 255, 0);
     [SerializeField]
-    private Color32 previousColor = new Color32(255, 255, 255, 0);
+    private Color32 previousColor0 = new Color32(255, 255, 255, 0);
+    [SerializeField]
+    private Color32 previousColor1 = new Color32(255, 255, 255, 0);
+    [SerializeField]
+    private Color32 previousColor2 = new Color32(255, 255, 255, 0);
+
 
     [SerializeField]
-    int fireflyColorConvert = 0;
+    float fireflyColorConvert = 0;
 
     [SerializeField]
     byte fireflyTransparency = 0;
 
     float lerpColorTime = 0;
 
-    Image fireflyUIImage;
-
+    [SerializeField]
     int score = 0;
+    [SerializeField]
     int totalScore = 0;
+    [SerializeField]
     int tempScoreCounter = 0;
+    [SerializeField]
+    bool startJarParticles = false;
+
+    [SerializeField]
+    bool hasTouchedAtEnd = false;
 
     // Use this for initialization
     void Start () {
-        fireflyUIImage = fireflyUI.gameObject.GetComponent<Image>();
         gc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+        
     }
 
     // Update is called once per frame
     void Update () {
-        multiplierText.text = "x " + gc.GetBugCount().ToString();
-        scoreText.text = score.ToString();
+        glows[0].color = Color32.Lerp(previousColor0, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
+        glows[1].color = Color32.Lerp(previousColor1, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
+        glows[2].color = Color32.Lerp(previousColor2, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
 
-        fireflyUIImage.color = Color32.Lerp(previousColor, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
+        if (startJarParticles && glows[0].color == currentColor && glows[1].color == currentColor && glows[2].color == currentColor)
+        {
+            FinishGame(gc.GetFilledJars());
+        }
+
+        //Debug.Log(crackedJarFireflies.isPlaying);
+
+        /*if (Input.GetKeyDown(KeyCode.J))
+        {
+            FinishGame(gc.GetFilledJars());
+        }*/
+
+        /*if (Input.GetKeyDown(KeyCode.K))
+        {
+            AddBug();
+        }*/
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            //ResetGlow();
+
+            if (!hasTouchedAtEnd)
+            {
+                Debug.Log("Touched at end using key");
+                hasTouchedAtEnd = true;
+            }
+        }
     }
 
-    public void AddBug() {
+    public void setStartJarParticles(bool val)
+    {
+        startJarParticles = val;
+    }
+
+    public void setJarImage(int val)
+    {
+        jars[0].gameObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
+        jars[1].gameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+        jars[2].gameObject.transform.localScale = new Vector3(0.09f, 0.09f, 0.09f);
+
+        for (int i = 0; i < jars.Length; i++)
+        {
+            jars[i].sprite = jarImages[val];
+        }
+    }
+
+    public Color GetBugInJarColor(int bugNumber)
+    {
+        return glows[bugNumber].color;
+    }
+
+    public void ResetGlow()
+    {
+        lerpColorTime = 0;
+
+        fireflyColorConvert = 0;
+
+        fireflyTransparency = (byte)fireflyColorConvert;
+
+        previousColor0 = glows[0].color;
+        previousColor1 = glows[1].color;
+        previousColor2 = glows[2].color;
+
+        currentColor = new Color32(255, 255, 255, fireflyTransparency);
+
+        if (startJarParticles)
+        {
+            crackedJarFireflies[0].Play();
+            crackedJarFireflies[1].Play();
+            crackedJarFireflies[2].Play();
+        }
+    }
+
+    public void AddBug(int bugNumber) {
         lerpColorTime = 0;
         score += 10;
 
         if (fireflyColorConvert >= 0 && fireflyColorConvert < 255)
         {
-            fireflyColorConvert += 10;
+            fireflyColorConvert += 25.5f;
         }
 
         //Mathf.Clamp(fireflyColorConvert, 0, 255);
@@ -70,15 +157,29 @@ public class UI : MonoBehaviour {
 
         fireflyTransparency = (byte)fireflyColorConvert;
 
-        previousColor = fireflyUIImage.color;
+        if (bugNumber == 0)
+        {
+            previousColor0 = glows[0].color;
+        } 
+        else if (bugNumber == 1)
+        {
+            previousColor1 = glows[1].color;
+        } 
+        else if (bugNumber == 2)
+        {
+            previousColor2 = glows[2].color;
+        }
+        
         currentColor = new Color32(255, 255, 255, fireflyTransparency);
     }
 
-    public void RemoveBug()
+    public void RemoveBug(int bugNumber)
     {
+        lerpColorTime = 0;
+
         if (fireflyColorConvert > 0)
         {
-            fireflyColorConvert -= 10;
+            fireflyColorConvert -= 25.5f;
         }
 
         //Mathf.Clamp(fireflyColorConvert, 0, 255);
@@ -90,7 +191,18 @@ public class UI : MonoBehaviour {
 
         fireflyTransparency = (byte)fireflyColorConvert;
 
-        previousColor = fireflyUIImage.color;
+        if (bugNumber == 0)
+        {
+            previousColor0 = glows[0].color;
+        } else if (bugNumber == 1)
+        {
+            previousColor1 = glows[1].color;
+        } else if (bugNumber == 2)
+        {
+            previousColor2 = glows[2].color;
+        }
+
+
         currentColor = new Color32(255, 255, 255, fireflyTransparency);
     }
 
@@ -101,9 +213,22 @@ public class UI : MonoBehaviour {
 
         FGOverlay.gameObject.SetActive(true);
 
-        totalScore = score * multiplier;
+        if (multiplier > 0)
+        {
+            totalScore = score * multiplier;
+        }
+        else
+        {
+            totalScore = score;
+        }
+        
 
         StartCoroutine("CountUpScore");
+    }
+
+    public void SetHasTouchedAtEnd(bool val)
+    {
+        hasTouchedAtEnd = val;
     }
 
     IEnumerator CountUpScore()
@@ -112,18 +237,19 @@ public class UI : MonoBehaviour {
         //yield return new WaitForFixedUpdate();
         //yield return new WaitForEndOfFrame();
 
-        tempScoreCounter++;
-
         totalScoreFG.text = tempScoreCounter.ToString();
 
         if (tempScoreCounter < totalScore)
         {
-            StartCoroutine("CountUpScore");
+            tempScoreCounter++;
         }
 
-        if (tempScoreCounter == totalScore)
+        if (tempScoreCounter == totalScore || hasTouchedAtEnd)
         {
+            tempScoreCounter = totalScore;
             exitButtonFG.SetActive(true);
         }
+
+        StartCoroutine("CountUpScore");
     }
 }
