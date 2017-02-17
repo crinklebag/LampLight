@@ -64,7 +64,7 @@ public class BackgroundScroller : MonoBehaviour
         bounds[4] = GameObject.Find("Dragonfly Destroyer Left");
         bounds[5] = GameObject.Find("Dragonfly Destroyer Right");
 
-        audioPeer = GameObject.Find("AudioPeer");
+        audioPeer = GameObject.Find("AudioManager");
 
         width = -transform.localScale.y * Screen.width / Screen.height;
 

@@ -98,7 +98,7 @@ public class FireFly : MonoBehaviour {
 		yield return new WaitForSeconds(0.1f);
 
     	int band = glow.GetComponent<Flicker>()._band;
-    	float bandFreq = AudioTxtReader._currAudioSamples[band];
+    	float bandFreq = AudioManager._currAudioSamples[band];
 
     	if(bandFreq >= freqMoveThresh)
     	{

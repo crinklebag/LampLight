@@ -55,7 +55,7 @@ public class AudioManager : MonoBehaviour {
 		timeBetweenBeats = 60.0f / bpm[songIndex];
 
 		// Needed for making BG scroll to length of song
-		GameObject.Find ("BG").GetComponent<BackgroundScroller> ().Reset (clipLength);
+		//GameObject.Find ("BG").GetComponent<BackgroundScroller> ().Reset (clipLength);
 
 		//Wait until txt file is loaded, play audio, invoke readAudioData and beatCount
 		yield return StartCoroutine(LoadTxtFile(songIndex));
