@@ -39,7 +39,7 @@ public class BackgroundScroller : MonoBehaviour
         bounds[2] = GameObject.Find("Left");
         bounds[3] = GameObject.Find("Right");
 
-        audioPeer = GameObject.Find("AudioPeer");
+        audioPeer = GameObject.Find("AudioManager");
 
         float width = -transform.localScale.y * Screen.width / Screen.height;
 
