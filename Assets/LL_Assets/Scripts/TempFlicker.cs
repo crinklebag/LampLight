@@ -20,7 +20,7 @@ public class TempFlicker : MonoBehaviour {
     IEnumerator FlickaTheHorse() {
         yield return new WaitForSeconds(0.1f);
 
-        float randIntensity = Random.Range(0.1f, 0.3f);
+        float randIntensity = Random.Range(0, this.GetComponent<Light>().intensity);
 
         this.GetComponent<Light>().intensity = randIntensity;
 
