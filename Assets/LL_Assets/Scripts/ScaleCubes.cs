@@ -20,17 +20,17 @@ public class ScaleCubes : MonoBehaviour {
 	{
 		if (_useBuffer) 
 		{
-			this.transform.localScale = new Vector3(this.transform.localScale.x, (AudioTxtReader._currAudioSamples[_band]  * _scaleMultiplier) + _startScale, this.transform.localScale.z);
+			this.transform.localScale = new Vector3(this.transform.localScale.x, (AudioManager._currAudioSamples[_band]  * _scaleMultiplier) + _startScale, this.transform.localScale.z);
 
-			Color _colour = new Color(AudioTxtReader._currAudioSamples[_band], AudioTxtReader._currAudioSamples[_band], AudioTxtReader._currAudioSamples[_band]);
+			Color _colour = new Color(AudioManager._currAudioSamples[_band], AudioManager._currAudioSamples[_band], AudioManager._currAudioSamples[_band]);
 			_material.SetColor("_EmissionColor", _colour);
 
 		} 
 		if(!_useBuffer)
 		{
-			this.transform.localScale = new Vector3(this.transform.localScale.x, (AudioTxtReader._currAudioSamples[_band]  * _scaleMultiplier) + _startScale, this.transform.localScale.z);
+			this.transform.localScale = new Vector3(this.transform.localScale.x, (AudioManager._currAudioSamples[_band]  * _scaleMultiplier) + _startScale, this.transform.localScale.z);
 
-			Color _colour = new Color(AudioTxtReader._currAudioSamples[_band], AudioTxtReader._currAudioSamples[_band], AudioTxtReader._currAudioSamples[_band]);
+			Color _colour = new Color(AudioManager._currAudioSamples[_band], AudioManager._currAudioSamples[_band], AudioManager._currAudioSamples[_band]);
 			_material.SetColor("_EmissionColor", _colour);
 		}
 	}

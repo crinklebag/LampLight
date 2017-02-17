@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class setFrameRate : MonoBehaviour {
 
-	float targetFPS = 30.0f;
+	public int targetFPS = 60;
 	float secondsThisFrame = 0.0f;
 
 	float deltaTime = 0.0f;
@@ -12,7 +12,7 @@ public class setFrameRate : MonoBehaviour {
 	void Awake ()
 	{
 		QualitySettings.vSyncCount = 0;
-		Application.targetFrameRate = 30;
+		Application.targetFrameRate = targetFPS;
 	}
 
 

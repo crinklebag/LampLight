@@ -18,9 +18,16 @@ public class AudioTxtReader : MonoBehaviour {
 	public static List<float> _allAudioSamples  = new List<float>();
 	public static float[] _currAudioSamples = new float[8];
 
-	void Update ()
+	private static float currentTime = 0.0f;
+	private static float writeIntervalCounter = 0.0f;		//Time interval in ms at which audio data is written (start 1 second in?)
+	private static float writeIntervalInc = 0.2f;
+
+
+	void FixedUpdate ()
 	{
 		if (aPeer.isPlaying) {
+			currentTime = (float)AudioSettings.dspTime;
+			Debug.Log(currentTime);
 			passAudioData ();
 
 			/*for (int i = 0; i < _currAudioSamples.Length; i++) {
@@ -32,13 +39,21 @@ public class AudioTxtReader : MonoBehaviour {
 
 	void passAudioData ()
 	{	
-		//Pass the audio sample into the current audio sample, to be read from
-		for (int i = 0; i < 8; i++) 
+		if (currentTime >= writeIntervalCounter) 
 		{
-			_currAudioSamples[i] = _allAudioSamples[(sampleCounter + i)];
+			//Debug.Log("interval: " + writeIntervalCounter);
+
+			for (int i = 0; i < 8; i++) 
+			{
+				_currAudioSamples[i] = _allAudioSamples[(sampleCounter + i)];
+			}
+
+			sampleCounter += 8;
+			writeIntervalCounter += writeIntervalInc;
 		}
 
-		sampleCounter += 8;
+		//Pass the audio sample into the current audio sample, to be read from
+
 	}
 
 	//Public method to call when changing songs
@@ -55,10 +70,10 @@ public class AudioTxtReader : MonoBehaviour {
 
 		try 
 		{
-			TextAsset audioData = Resources.Load(fName + ".txt") as TextAsset;
+			TextAsset audioData = Resources.Load(fName) as TextAsset;
 
 			string line;
-			path  = Application.dataPath + "/LL_Assets/Resources/AudioText/"  + fName + ".txt";
+			path  = Application.dataPath + "/LL_Assets/Resources/"  + fName + ".txt";
 			StreamReader reader = new StreamReader(path);
 
 			using(reader)
@@ -92,5 +107,10 @@ public class AudioTxtReader : MonoBehaviour {
 			Debug.LogError(excep.Message);
 			return false;
 		}
+	}
+
+	public static void setDspCounter ()
+	{
+		writeIntervalCounter = (float)AudioSettings.dspTime;
 	}
 }
