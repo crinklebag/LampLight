@@ -187,10 +187,10 @@ public class GameController : MonoBehaviour
             {
                 filledJars++;
                 bugCounter = 0;
-                uiController.ResetGlow();
+                // uiController.ResetGlow();
             }
 
-            uiController.AddBug();
+            // uiController.AddBug();
         }
 
         if (finishGame)
@@ -232,7 +232,7 @@ public class GameController : MonoBehaviour
         if (!stopDoingThis)
         {
             // Remove the Bug from the UI
-            uiController.RemoveBug();
+            // uiController.RemoveBug();
 
             if (bugCounter > 0 && realAmountOfBugs > 0)
             {
