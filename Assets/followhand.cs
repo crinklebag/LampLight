@@ -41,10 +41,11 @@ public class followhand : BodySourceView {
 			}
 			if (body.IsTracked) 
 			{
+				
 				if (body.Joints [TrackedJoint].Position.Z < distance) {
 					var pos = body.Joints [TrackedJoint].Position;
 
-					Debug.Log (body.Joints [TrackedJoint].Position.Z);
+					//Debug.Log (body.Joints [TrackedJoint].Position.Z);
 					temp = new Vector3 (pos.X, pos.Y);
 
 					//var rot = body.Joints [TrackedJoint].Position;
