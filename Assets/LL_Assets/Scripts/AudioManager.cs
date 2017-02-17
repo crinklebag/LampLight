@@ -1,54 +1,134 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using System;
+using System.Text;
 
+[RequireComponent(typeof (AudioSource))]
 public class AudioManager : MonoBehaviour {
 
-	private List<AudioClip> allAudioClips;
+	/*Audio Manager*/
+	public List<AudioClip> allAudioClips;//Songs to be included
+	public float[] bpm;
 	public int songIndex = 0;
 
-	[SerializeField] GameObject aLoader;
-	[SerializeField] AudioSource aSource;//Audio Peer
+	public static bool beatCheck = false;//bool to check for beat
+	private int beatCounter = 0;
+	private int prevBeatCount = 0;
+	private float timeBetweenBeats = 0.0f;
 
+	private AudioSource aSource;
 
-	bool hasStarted = false;
-	bool isPaused = false;
-	float clipLength = 0.0f;
+	private bool isPaused = false;
+	private float clipLength = 0.0f;
 
-	void Start ()
+	/*AudioTxtReader*/
+	public TextAsset[] audioData;//Text file containing audio band data
+	private static List<float> _allAudioSamples  = new List<float>();//extracted data from text asset
+	public static float[] _currAudioSamples = new float[8];//current data to read from
+	private float[] _prevAudioSamples = new float[8]; 
+	private float newVal = 0.0f;
+
+	[SerializeField] private float _startDelay = 3.0f;
+	[SerializeField] private float readIntervalTick = 0.02f;//Interval to read audio data, must be the same as interval written
+	private int sampleCounter = 0;//keep track of sample to pass to current samples
+
+	void Awake ()
 	{
-		aSource.Pause();
+		aSource = this.GetComponent<AudioSource>();
+		StartCoroutine(StartAudio(songIndex));
 	}
 
 	void Update ()
 	{
-		bool isReady = aLoader.GetComponent<AudioLoader> ().audioReady;
-
-		//If the audio loader has finished loading all audio files and the startAudio function hasnt already run, start the audio
-		if (!hasStarted && isReady) {
-			hasStarted = true;
-			allAudioClips = aLoader.GetComponent<AudioLoader> ().allAudioClips;
-			startAudio ();
-		}
-		//Allow user input for play, pause, next song, previous song
-		if(hasStarted)
-			getUserInput();
+		beatCheck = GetBeat();
 	}
 
-	void startAudio ()
+	IEnumerator StartAudio (int index)
 	{
-		//Set song index to random song, set audio clip for audio source, set clip length for countdown, play audio
-		songIndex = Random.Range(0, allAudioClips.Count);
+		//Set song index to selected index, set audio clip for audio source, set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
+		songIndex = index;//Random.Range (0, allAudioClips.Count);
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
+		beatCounter = 0;
+		timeBetweenBeats = 60.0f / bpm[songIndex];
 
-        // Needed for making BG scroll to length of song
-        GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
-        aSource.Play ();
+		// Needed for making BG scroll to length of song
+		GameObject.Find ("BG").GetComponent<BackgroundScroller> ().Reset (clipLength);
 
-		StartCoroutine(AutoNextSong());
+		//Wait until txt file is loaded, play audio, invoke readAudioData and beatCount
+		yield return StartCoroutine(LoadTxtFile(songIndex));
+		aSource.PlayScheduled(AudioSettings.dspTime + _startDelay);
+		InvokeRepeating("ReadAudioData", _startDelay, readIntervalTick);
+		InvokeRepeating("BeatCount", _startDelay, timeBetweenBeats);
+
+
+		yield return null;
 	}
 
+	//Reads Audio data from txt file, splits txt file into lines (each line is the 8 bars current value per frame)
+	//Splits each line into values which are passed to the all audio samples list
+	IEnumerator LoadTxtFile (int fileIndex)
+	{
+		//Reset line counter, clear arrays
+		sampleCounter = 0;
+		_allAudioSamples.Clear ();
+		System.Array.Clear (_currAudioSamples, 0, _currAudioSamples.Length);
+		_prevAudioSamples = new float[8] {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
+
+		string[] lines = audioData [fileIndex].text.Split ("\n" [0]);//split by line breaks
+
+		//Traverse lines
+		for (int i = 0; i < lines.Length; i++) {
+			if (lines [i] != null) {
+				//Split lines into their values and store in lineVals
+				string[] lineVals = lines [i].Split (',');
+
+				//Traverse lineVals, convert strings into floats, add to all Audio Samples list
+				for (int j = 0; j < lineVals.Length; j++) 
+				{
+					if (!float.TryParse (lineVals[j], out newVal)) 
+					{
+						newVal = _prevAudioSamples[j];
+					} 
+
+					_prevAudioSamples[j] = newVal;
+					_allAudioSamples.Add(newVal);
+				}
+			}
+		}
+		yield return null;
+	}
+
+	//Reads audio data at a set interval
+	void ReadAudioData ()
+	{
+		//Traverse line, add the correct line's data by keeping count of total values
+		for (int i = 0; i < 8; i++)
+		{
+			_currAudioSamples[i] = _allAudioSamples[(sampleCounter + i)];
+		}
+		//Increase counter for next pass
+		sampleCounter += 8;
+	}
+
+	//BeatCounter is increased at set interval of the bpm
+	public bool GetBeat ()
+	{
+		if (beatCounter > prevBeatCount) {
+			prevBeatCount = beatCounter;
+			return true;
+		}
+		return false;
+	}
+
+	void BeatCount ()
+	{
+		beatCounter += 1;
+	}
+
+	/*
 	//Un-Pause
 	public void PlayAudio ()
 	{
@@ -66,8 +146,8 @@ public class AudioManager : MonoBehaviour {
 			isPaused = true;
 			aSource.Pause ();
 		}
-	}
-
+	}*/
+	/*
 	public IEnumerator NextSong ()
 	{
 		Debug.Log("Next Song");
@@ -90,7 +170,8 @@ public class AudioManager : MonoBehaviour {
         GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
         aSource.Play ();
 	}
-
+	*/
+	/*
 	public IEnumerator PreviousSong()
 	{
 		Debug.Log("Previous Song");
@@ -113,7 +194,8 @@ public class AudioManager : MonoBehaviour {
         GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
         aSource.Play ();
 	}
-
+	*/
+	/*
 	IEnumerator AutoNextSong ()
 	{
 		//While the song has not ended & if audio is playing, decrease clipLength, when clipLength <= 0.0 the next song is started
@@ -129,7 +211,8 @@ public class AudioManager : MonoBehaviour {
 
 		StartCoroutine(AutoNextSong());
 	}
-
+	*/
+	/*
 	void getUserInput ()
 	{
 		//Play
@@ -148,10 +231,12 @@ public class AudioManager : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
 			StartCoroutine(PreviousSong());
 		}
-	}
 
+	}*/
+	/*
 	public float getCurretClipLength ()
 	{
 		return aSource.clip.length;
 	}
+	*/
 }

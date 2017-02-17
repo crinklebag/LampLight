@@ -12,7 +12,7 @@ public class GetBeatTest : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
-		if (AudioPeer.GetBeat ()) {
+		if (AudioManager.beatCheck) {
 			move ();
 		}
 	}
