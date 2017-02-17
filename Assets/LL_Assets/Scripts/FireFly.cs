@@ -32,12 +32,14 @@ public class FireFly : MonoBehaviour {
 	private Quaternion rot;
 
     [SerializeField] float freqMoveThresh;
-   
+
+    private float timeTillNewPosition;
 
     // Use this for initialization
     void Start () {
         gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-        StartCoroutine("ChoosePath");
+        //StartCoroutine("ChoosePath");
+		StartCoroutine("RandomPosition");
 		StartCoroutine(ChangeState());
 
         destination = GameObject.Find("Destination");
@@ -65,7 +67,7 @@ public class FireFly : MonoBehaviour {
         }*/
         
         if (other.gameObject.CompareTag("JarTop") && isOn) {
-            Debug.Log("Hit Jar Top Trigger Enter");
+            //Debug.Log("Hit Jar Top Trigger Enter");
             // gameController.CatchBug("Firefly");
             caught = true;
             // Turn off bug and glow
@@ -83,7 +85,7 @@ public class FireFly : MonoBehaviour {
     void OnTriggerStay2D(Collider2D other) {
         if (other.gameObject.CompareTag("Dragonfly") && isOn)
         {
-            Debug.Log("Hit Dragonfly");
+            //Debug.Log("Hit Dragonfly");
             //Destroy(other.gameObject);
             Destroy(this.gameObject);
             //gameController.CatchBug("Firefly");
@@ -107,6 +109,20 @@ public class FireFly : MonoBehaviour {
     	}
         StartCoroutine(ChoosePath());
     }
+
+	IEnumerator RandomPosition()
+	{
+        timeTillNewPosition = Random.Range(0.1f, 3.5f);
+
+        yield return new WaitForSecondsRealtime (timeTillNewPosition);
+
+		float randY = Random.Range(minMoveY, maxMoveY);
+		float randX = Random.Range(minMoveX, maxMoveX);
+
+		newPos = new Vector2(randX, randY);
+
+		StartCoroutine(RandomPosition());
+	}
 
     //Move to and face the target position
 	void moveBug()

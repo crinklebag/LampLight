@@ -39,13 +39,33 @@ public class Dragonfly : MonoBehaviour {
     [SerializeField]
     bool boundsGoingOut = false;
 
+    [SerializeField]
+    float[] jumpPositions = { 4.42f, 2.545f, 0.5f, -1.51f, -3.53f };
+
+    [SerializeField]
+    int jumpPosCounter = 0;
+
     void Start ()
 	{
         force = 3300.0f;
 
+        /*jumpPositions = new float[5];
+        jumpPositions[0] = 4.42f;
+        jumpPositions[1] = 2.545f;
+        jumpPositions[2] = 0.5f;
+        jumpPositions[3] = -1.51f;
+        jumpPositions[4] = -3.53f;*/
+
         musicClef = GameObject.Instantiate(musicClefPrefab);
         musicClef.GetComponent<SpriteRenderer>().sortingLayerName = "Bug";
         GameObject.Find("BG").GetComponent<BackgroundScroller>().ResizeObjectToBounds(musicClef.GetComponent<SpriteRenderer>());
+
+        jumpPositions = new float[musicClef.GetComponent<MusicClef>().GetLinesLength()];
+        jumpPositions[0] = musicClef.GetComponent<MusicClef>().GetYPos(0);
+        jumpPositions[1] = musicClef.GetComponent<MusicClef>().GetYPos(1);
+        jumpPositions[2] = musicClef.GetComponent<MusicClef>().GetYPos(2);
+        jumpPositions[3] = musicClef.GetComponent<MusicClef>().GetYPos(3);
+        jumpPositions[4] = musicClef.GetComponent<MusicClef>().GetYPos(4);
 
         gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 
@@ -66,8 +86,8 @@ public class Dragonfly : MonoBehaviour {
 
         //Debug.Log("After: " + sprite.gameObject.transform.rotation);
 
-        // highPoint = GameObject.Find("Top").gameObject.transform.position.y - 3.5f;
-        // lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 3.5f;
+        highPoint = GameObject.Find("Top").gameObject.transform.position.y - 2.5f;
+        lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 2.0f;
 
         //Add Force to move across screen
         StartCoroutine(MoveHorizontal()); 
@@ -78,7 +98,7 @@ public class Dragonfly : MonoBehaviour {
 		CheckDirection();//check if we need to switch vertical direction
 
 		if (AudioPeer.GetBeat ()) { //Move vertically on beat
-            Debug.Log("Getting Beat");
+            //Debug.Log("Getting Beat");
 			MoveVertical();
 
             if (boundsComingIn == true && boundsGoingOut == false)
@@ -141,22 +161,35 @@ public class Dragonfly : MonoBehaviour {
         }
 
         if (goingUp) {
-            Debug.Log("goingUp");
+            //Debug.Log("goingUp");
             //rb.MovePosition(this.transform.localPosition + new Vector3(0,jumpDistance,0));
-            float newY = this.transform.position.y + jumpDistance;
-            double roundedY = System.Math.Round(newY, 2);
+            //float newY = this.transform.position.y + jumpDistance;
+            //double roundedY = System.Math.Round(newY, 2);
 
-            Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
-			this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
-		} else {
-            Debug.Log("goingDown");
+            //Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
+            //this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
+
+            jumpPosCounter--;
+            jumpPosCounter = Mathf.Clamp(jumpPosCounter, 0, 4);
+
+            Vector3 newPos = new Vector3(this.transform.localPosition.x, jumpPositions[jumpPosCounter], this.transform.position.z);
+            this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
+        }
+        else {
+            //Debug.Log("goingDown");
             //rb.MovePosition(this.transform.localPosition - new Vector3(0,jumpDistance,0));
-            float newY = this.transform.position.y - jumpDistance;
-            double roundedY = System.Math.Round(newY, 2);
+            //float newY = this.transform.position.y - jumpDistance;
+            //double roundedY = System.Math.Round(newY, 2);
 
-            Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
-			this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
-		}
+            //Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
+            //this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
+
+            jumpPosCounter++;
+            jumpPosCounter = Mathf.Clamp(jumpPosCounter, 0, 4);
+
+            Vector3 newPos = new Vector3(this.transform.localPosition.x, jumpPositions[jumpPosCounter], this.transform.position.z);
+            this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
+        }
 	}
 
 	//Add horizontal force in proper direction
@@ -174,13 +207,15 @@ public class Dragonfly : MonoBehaviour {
 	//Check if this position.y against high and low points to determine if we need to switch
 	void CheckDirection ()
 	{
-		if (this.transform.position.y == highPoint) {
-            Debug.Log("Hit High");
+		if (this.transform.position.y >= jumpPositions[0]) {
+            //Debug.Log("Hit High");
 			goingUp = false;
-		} else if (this.transform.position.y == lowPoint) {
-            Debug.Log("Hit Low");
+            jumpPosCounter = 0;
+		} else if (this.transform.position.y <= jumpPositions[4]) {
+            //Debug.Log("Hit Low");
 			goingUp = true;
-		}
+            jumpPosCounter = 4;
+        }
 	}
 
 	void GetInput()

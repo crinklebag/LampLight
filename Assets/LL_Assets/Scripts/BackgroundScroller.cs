@@ -50,6 +50,9 @@ public class BackgroundScroller : MonoBehaviour
     float width;
     float height;
 
+    [SerializeField]
+    float timeMult = 0;
+
     void Start()
     {
         bounds = new GameObject[6];
@@ -157,7 +160,9 @@ public class BackgroundScroller : MonoBehaviour
             }
             else if (finishedTreeCoroutine)
             {
-                nightTree.color = Color32.Lerp(Color.white, transparentColor, (-y * treeYValCoroutine) + (treeYVal * -y) - ((startTime4Tree / 4) * 5));
+                timeMult = (-y * treeYValCoroutine) + (treeYVal * -y) - ((startTime4Tree / 4) * ((-y / startTime4Tree) - 2.0f));
+
+                nightTree.color = Color32.Lerp(Color.white, transparentColor, timeMult);
                 //Debug.Break();
                 //Debug.Log("IN ELSE 2");
                 //Debug.Log(temp2 + (temp2 * temp));
@@ -167,7 +172,7 @@ public class BackgroundScroller : MonoBehaviour
             treeColorBar = nightTree.color;
         }
 
-        if (y <= -0.99f && startScroll)
+        if (y <= -0.999f && startScroll)
         {
             GameObject.Find("GameController").GetComponent<GameController>().FinishGameTime();
             startScroll = false;

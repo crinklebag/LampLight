@@ -9,8 +9,8 @@ using UnityEngine.EventSystems;
 
 public class ObjectKeeper : MonoBehaviour
 {
-    public Text[] songNameList;
-    public Text[] songLengthList;
+    public GameObject[] songNameList;
+    public GameObject[] songLengthList;
 
     [SerializeField]
     private AudioClip[] songList;
@@ -26,6 +26,8 @@ public class ObjectKeeper : MonoBehaviour
     bool setGame = false;
     [SerializeField]
     bool setBGMenuItems = false;
+    [SerializeField]
+    bool setSongSelectItems = false;
 
     [SerializeField]
     GameObject[] me;
@@ -40,12 +42,14 @@ public class ObjectKeeper : MonoBehaviour
 
         if (me.Length < 2)
         {
+            this.name = "ObjectKeeper ORIGINAL";
             return;
         }
 
         for (int i = 0; i < me.Length; i++)
         {
-            if (this.gameObject.GetInstanceID() > me[i].GetInstanceID())
+            //if (this.gameObject.GetInstanceID() > me[i].GetInstanceID())
+            if (me[i].gameObject.name == "ObjectKeeper")
             {
                 Destroy(me[i].gameObject);
             }
@@ -55,7 +59,7 @@ public class ObjectKeeper : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        SetUpScene(1);
+        
     }
 
     // Update is called once per frame
@@ -86,10 +90,25 @@ public class ObjectKeeper : MonoBehaviour
                 break;
             case "BGSelect":
                 {
+                    setSongSelectItems = false;
+                    setGame = false;
+
                     if (setBGMenuItems == false)
                     {
                         SetUpScene(2);
                         setBGMenuItems = true;
+                    }
+                }
+                break;
+            case "SongSelect":
+                {
+                    setBGMenuItems = false;
+                    setGame = false;
+
+                    if (setSongSelectItems == false)
+                    {
+                        SetUpScene(1);
+                        setSongSelectItems = true;
                     }
                 }
                 break;
@@ -124,22 +143,25 @@ public class ObjectKeeper : MonoBehaviour
         {
             case 1: // SongSelect
                 {
-                    songNameList = new Text[6];
-                    songLengthList = new Text[6];
+                    songNameList = new GameObject[6];
+                    songLengthList = new GameObject[6];
 
                     for (int i = 0; i < songNameList.Length; i++)
                     {
-                        songNameList[i] = GameObject.Find("Song Name " + i.ToString()).GetComponent<Text>();
-                        songLengthList[i] = GameObject.Find("Song Length " + i.ToString()).GetComponent<Text>();
+                        songNameList[i] = GameObject.Find("Song Name " + i.ToString());
+                        songLengthList[i] = GameObject.Find("Song Length " + i.ToString());
+                        songNameList[i].gameObject.GetComponent<Button>().onClick.AddListener(delegate { SelectThisSong(); });
                     }
+                    
+
 
                     for (int i = 0; i < songNameList.Length; i++)
                     {
-                        songNameList[i].text = songList[i].name;
+                        songNameList[i].GetComponent<Text>().text = songList[i].name;
 
                         TimeSpan ts = TimeSpan.FromSeconds(songList[i].length);
 
-                        songLengthList[i].text = string.Format("{0:D2}:{1:D2}", ts.Minutes, ts.Seconds);
+                        songLengthList[i].GetComponent<Text>().text = string.Format("{0:D2}:{1:D2}", ts.Minutes, ts.Seconds);
                     }
                 }
                 break;
