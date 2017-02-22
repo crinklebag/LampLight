@@ -4,6 +4,8 @@ using System.Collections;
 
 public class FireFly : MonoBehaviour {
 
+    public GameObject fireflySparklePrefab;
+
     GameController gameController;
     [SerializeField] GameObject[] jars;
     //[SerializeField] Light bugLight;
@@ -128,6 +130,9 @@ public class FireFly : MonoBehaviour {
         }*/
         
         if (other.gameObject.CompareTag("JarTop") && isOn) {
+
+            GameObject fireflySparkle = GameObject.Instantiate(fireflySparklePrefab);
+
             //Debug.Log("Hit Jar Top Trigger Enter");
             // gameController.CatchBug("Firefly");
             caught = true;
@@ -139,7 +144,7 @@ public class FireFly : MonoBehaviour {
             // turn the collider into a trigger
             this.GetComponent<CircleCollider2D>().enabled = false;
             // Play Sound
-            this.GetComponent<AudioSource>().Play();
+            //this.GetComponent<AudioSource>().Play();
             // Calculate the journey length and get the start pos
             SetDestination();
             startMarker = this.transform.position;

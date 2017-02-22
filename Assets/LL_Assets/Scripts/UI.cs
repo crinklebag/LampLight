@@ -100,6 +100,7 @@ public class UI : MonoBehaviour {
         startJarParticles = val;
     }
 
+    // get rid of the scaling when u have the final artwork for the cracked jars (with the strings holding it up)
     public void setJarImage(int val)
     {
         jars[0].gameObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
@@ -109,6 +110,7 @@ public class UI : MonoBehaviour {
         for (int i = 0; i < jars.Length; i++)
         {
             jars[i].sprite = jarImages[val];
+            glows[i].transform.localScale = new Vector3(4, 4, 4);
         }
     }
 
