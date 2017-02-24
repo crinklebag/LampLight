@@ -10,12 +10,16 @@ public class AudioManager : MonoBehaviour {
 
 	/*Audio Manager*/
 	public List<AudioClip> allAudioClips;//Songs to be included
-	public float[] bpm;
-	public int songIndex = 0;
+	public float[] bpm;//bpm of the songs
+	public int songIndex = 0;//index of song to play
 
 	public static bool beatCheck = false;//bool to check for beat
-	private int beatCounter = 0;
+	public static bool beatCheckHalf = false;//"" "" for half beat
+	public static bool beatCheckQuarter = false;//"" "" for quarter beat
+	private int beatCounter = 0;//
 	private int prevBeatCount = 0;
+	private int prevHalfBeatCount = 0;
+	private int prevQuarterBeatCount = 0;
 	private float timeBetweenBeats = 0.0f;
 
 	private AudioSource aSource;
@@ -27,28 +31,38 @@ public class AudioManager : MonoBehaviour {
 	public TextAsset[] audioData;//Text file containing audio band data
 	private static List<float> _allAudioSamples  = new List<float>();//extracted data from text asset
 	public static float[] _currAudioSamples = new float[8];//current data to read from
-	private float[] _prevAudioSamples = new float[8]; 
-	private float newVal = 0.0f;
+	private float[] _prevAudioSamples = new float[8];//if data parse fails use the last known sample, also used to prevent rapid flickering at audio start
+	private float newVal = 0.0f;//hold the new sample value
 
-	[SerializeField] private float _startDelay = 3.0f;
+	[SerializeField] private float _startDelay = 3.0f;//delay to start playing audio and reading data
 	[SerializeField] private float readIntervalTick = 0.02f;//Interval to read audio data, must be the same as interval written
 	private int sampleCounter = 0;//keep track of sample to pass to current samples
 
 	void Awake ()
 	{
 		aSource = this.GetComponent<AudioSource>();
-		//StartCoroutine(StartAudio(songIndex));
 	}
 
 	void Update ()
 	{
-		beatCheck = GetBeat();
+		beatCheck = GetBeat ();
+		beatCheckHalf = GetHalfBeat ();
+		beatCheckQuarter = GetQuarterBeat ();
+
+		//Stop reading data once the song is over, the audio won't be playing and pause bool will still be false
+		if (!aSource.isPlaying && !isPaused) 
+		{
+			stopReadingData();
+		}
+
+		if(Input.GetKeyDown(KeyCode.Space))
+			PlayPauseAudio();
 	}
 
 	public IEnumerator StartAudio (int index)
 	{
 		//Set song index to selected index, set audio clip for audio source, set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
-		songIndex = index;//Random.Range (0, allAudioClips.Count);
+		songIndex = index;
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
 		beatCounter = 0;
@@ -63,7 +77,6 @@ public class AudioManager : MonoBehaviour {
 		InvokeRepeating("ReadAudioData", _startDelay, readIntervalTick);
 		InvokeRepeating("BeatCount", _startDelay, timeBetweenBeats);
 
-
 		yield return null;
 	}
 
@@ -71,7 +84,7 @@ public class AudioManager : MonoBehaviour {
 	//Splits each line into values which are passed to the all audio samples list
 	IEnumerator LoadTxtFile (int fileIndex)
 	{
-		//Reset line counter, clear arrays
+		//Reset line counter, clear arrays, set starting max value to prevent rapid flickering on start
 		sampleCounter = 0;
 		_allAudioSamples.Clear ();
 		System.Array.Clear (_currAudioSamples, 0, _currAudioSamples.Length);
@@ -88,11 +101,13 @@ public class AudioManager : MonoBehaviour {
 				//Traverse lineVals, convert strings into floats, add to all Audio Samples list
 				for (int j = 0; j < lineVals.Length; j++) 
 				{
+					//if parse fails use previous known sample value
 					if (!float.TryParse (lineVals[j], out newVal)) 
 					{
 						newVal = _prevAudioSamples[j];
 					} 
 
+					//Keep track of last value and add newVal to sample array for reading
 					_prevAudioSamples[j] = newVal;
 					_allAudioSamples.Add(newVal);
 				}
@@ -101,16 +116,19 @@ public class AudioManager : MonoBehaviour {
 		yield return null;
 	}
 
-	//Reads audio data at a set interval
+	//Reads audio data at a set interval, continuously invoked but only reads when we are unPaused
 	void ReadAudioData ()
 	{
-		//Traverse line, add the correct line's data by keeping count of total values
-		for (int i = 0; i < 8; i++)
+		if(!isPaused)
 		{
-			_currAudioSamples[i] = _allAudioSamples[(sampleCounter + i)];
+			//Traverse line, add the correct line's data by keeping count of total values
+			for (int i = 0; i < 8; i++)
+			{
+				_currAudioSamples[i] = _allAudioSamples[(sampleCounter + i)];
+			}
+			//Increase counter for next pass
+			sampleCounter += 8;
 		}
-		//Increase counter for next pass
-		sampleCounter += 8;
 	}
 
 	//BeatCounter is increased at set interval of the bpm
@@ -123,30 +141,54 @@ public class AudioManager : MonoBehaviour {
 		return false;
 	}
 
-	void BeatCount ()
+	public bool GetHalfBeat ()
 	{
-		beatCounter += 1;
+		if(beatCounter > prevHalfBeatCount)
+		{
+			prevHalfBeatCount = beatCounter + 1;
+			return true;
+		}
+		return false;
 	}
 
-	/*
-	//Un-Pause
-	public void PlayAudio ()
+	public bool GetQuarterBeat()
 	{
-		if (!aSource.isPlaying) {
-			Debug.Log ("Un Pause");
+		if(beatCounter > prevQuarterBeatCount)
+		{
+			prevQuarterBeatCount = beatCounter + 3;
+			return true;
+		}
+		return false;
+	}
+
+	void BeatCount ()
+	{
+		if(!isPaused)
+			beatCounter += 1;
+	}
+
+	void stopReadingData ()
+	{
+		CancelInvoke("ReadAudioData");
+		CancelInvoke("BeatCount");
+	}
+
+	//switch paused/unpaused bool for reading data and bpm counter, pause/unpause audio
+	public void PlayPauseAudio ()
+	{
+		if (isPaused) {
+			Debug.Log ("Un Pause Audio");
 			isPaused = false;
 			aSource.UnPause ();
 		}
+		else
+		{
+			Debug.Log("Pause Audio");
+			isPaused = true;
+			aSource.Pause();
+		}
 	}
 
-	public void PauseAudio ()
-	{
-		if (aSource.isPlaying) {
-			Debug.Log ("Pause");
-			isPaused = true;
-			aSource.Pause ();
-		}
-	}*/
 	/*
 	public IEnumerator NextSong ()
 	{
