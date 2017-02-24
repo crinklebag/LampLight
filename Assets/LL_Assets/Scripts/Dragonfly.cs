@@ -95,9 +95,9 @@ public class Dragonfly : MonoBehaviour {
 
 	void Update ()
 	{
-		CheckDirection();//check if we need to switch vertical direction
+		CheckDirection();//check if we need to switch vertical directiond
 
-		if (AudioManager.beatCheck) { //Move vertically on beat
+		if (AudioManager.beatCheckHalf) { //Move vertically on beat
 			MoveVertical();
 
             if (boundsComingIn == true && boundsGoingOut == false)
