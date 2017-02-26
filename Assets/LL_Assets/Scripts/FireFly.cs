@@ -41,7 +41,7 @@ public class FireFly : MonoBehaviour {
     Vector3 startMarker = Vector3.zero;
     float startTime = 0;
     float journeyLength = 0;
-    float maxLightIntensity = 8;
+    float maxLightIntensity = 0.6f;
 
     bool setDest = false;
 
@@ -56,10 +56,12 @@ public class FireFly : MonoBehaviour {
 
         destination = GameObject.Find("Destination");
 
-        jars = new GameObject[3];
+        jars = new GameObject[5];
         jars[0] = GameObject.Find("Jar1");
         jars[1] = GameObject.Find("Jar2");
         jars[2] = GameObject.Find("Jar3");
+        jars[3] = GameObject.Find("Jar4");
+        jars[4] = GameObject.Find("Jar5");
 
         image.SetActive(false);
 	}
@@ -67,35 +69,33 @@ public class FireFly : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        
-
         if (caught)
         {
-           // if (this.transform.position.x < destination.transform.position.x - 0.1f)
-           //  {
-                 this.transform.position = Vector3.MoveTowards(this.transform.position, destination.transform.position, 10 * Time.deltaTime);
+            // if (this.transform.position.x < destination.transform.position.x - 0.1f)
+            //  {
+            this.transform.position = Vector3.MoveTowards(this.transform.position, destination.transform.position, 10 * Time.deltaTime);
 
-                 if ((this.transform.position.x < destination.transform.position.x - 0.01f || this.transform.position.x > destination.transform.position.x + 0.01f) &&
-                     (this.transform.position.y < destination.transform.position.y - 0.01f || this.transform.position.y > destination.transform.position.y + 0.01f))
-                 {
-                     Debug.Log("Travelling");
-                     float distCovered = (Time.time - startTime) * speed;
-                     float fracJourney = distCovered / journeyLength;
-                     this.transform.position = Vector3.MoveTowards(this.transform.position, destination.transform.position, fracJourney);
-                 } 
-                 else
-                 {
-                     Debug.Log("Light intensity: " + destination.GetComponentInChildren<Light>().intensity);
-                     Debug.Log("Max Light intensity: " + maxLightIntensity);
-                     if (destination.GetComponentInChildren<Light>().intensity < maxLightIntensity)
-                     {
-                         Debug.Log("Lighting");
-                         float newLightIntensity = destination.GetComponentInChildren<Light>().intensity + 0.05f;
-                         destination.GetComponentInChildren<Light>().intensity = newLightIntensity;
-                     }
-                     gameController.CatchBug("Firefly", destination.name);
-                     Destroy(this.gameObject);
-                 }
+            if ((this.transform.position.x < destination.transform.position.x - 0.01f || this.transform.position.x > destination.transform.position.x + 0.01f) &&
+                (this.transform.position.y < destination.transform.position.y - 0.01f || this.transform.position.y > destination.transform.position.y + 0.01f))
+            {
+                //Debug.Log("Travelling");
+                float distCovered = (Time.time - startTime) * speed;
+                float fracJourney = distCovered / journeyLength;
+                this.transform.position = Vector3.MoveTowards(this.transform.position, destination.transform.position, fracJourney);
+            } 
+            else
+            {
+                //Debug.Log("Light intensity: " + destination.GetComponentInChildren<Light>().intensity);
+                //Debug.Log("Max Light intensity: " + maxLightIntensity);
+                if (destination.GetComponentInChildren<Light>().intensity < maxLightIntensity)
+                {
+                    //Debug.Log("Lighting");
+                    float newLightIntensity = destination.GetComponentInChildren<Light>().intensity + 0.05f;
+                    destination.GetComponentInChildren<Light>().intensity = newLightIntensity;
+                }
+                gameController.CatchBug("Firefly", randJar);
+                Destroy(this.gameObject);
+            }
            //  }
 
             /*newPos = destination.transform.position;
@@ -156,7 +156,8 @@ public class FireFly : MonoBehaviour {
     void SetDestination()
     {
         setDest = true;
-        randJar = Random.Range(0, jars.Length - 1);
+        randJar = gameController.WhichJar();
+        //Debug.Log(randJar);
         destination = jars[randJar];
     }
 

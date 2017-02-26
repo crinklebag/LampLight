@@ -253,7 +253,7 @@ public class Dragonfly : MonoBehaviour {
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            Debug.Log("Hit player!!");
+            //Debug.Log("Hit player!!");
 
             gameController.CrackJar();
         }
