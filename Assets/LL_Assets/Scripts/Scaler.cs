@@ -69,8 +69,11 @@ public class Scaler : MonoBehaviour
         bounds[4].gameObject.transform.position = new Vector3(b.min.x - 10.0f, bounds[2].gameObject.transform.position.y);
         bounds[5].gameObject.transform.position = new Vector3(b.max.x + 10.0f, bounds[3].gameObject.transform.position.y);
 
-        bounds[6].gameObject.transform.localPosition = new Vector3(bounds[6].gameObject.transform.position.x, Mathf.Abs(height / (nightLayers.transform.localScale.y * 1.6f)));
-        bounds[7].gameObject.transform.localPosition = new Vector3(bounds[7].gameObject.transform.position.x, Mathf.Abs(height / (nightLayers.transform.localScale.y * 1.7f)) * -1);
+        //float spriteYTop = GameObject.Find("Frame 3-01").GetComponent<SpriteRenderer>().bounds.max.y * 1.43f;
+        //float spriteYBottom = GameObject.Find("Frame 3-01").GetComponent<SpriteRenderer>().bounds.min.y * 1.35f;
+
+        //bounds[6].gameObject.transform.localPosition = new Vector3(bounds[6].gameObject.transform.position.x, spriteYTop);
+        //bounds[7].gameObject.transform.localPosition = new Vector3(bounds[7].gameObject.transform.position.x, spriteYBottom);
 
         Vector3 convertedPosition = Vector3.zero;
 

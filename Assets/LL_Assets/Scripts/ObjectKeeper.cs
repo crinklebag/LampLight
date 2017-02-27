@@ -9,9 +9,6 @@ using UnityEngine.EventSystems;
 
 public class ObjectKeeper : MonoBehaviour
 {
-    public GameObject[] songNameList;
-    public GameObject[] songLengthList;
-
     [SerializeField]
     private AudioClip[] songList;
     [SerializeField]
@@ -50,13 +47,15 @@ public class ObjectKeeper : MonoBehaviour
             this.name = "ObjectKeeper ORIGINAL";
             return;
         }
-
-        for (int i = 0; i < me.Length; i++)
+        else
         {
-            //if (this.gameObject.GetInstanceID() > me[i].GetInstanceID())
-            if (me[i].gameObject.name == "ObjectKeeper")
+            for (int i = 0; i < me.Length; i++)
             {
-                Destroy(me[i].gameObject);
+                //if (this.gameObject.GetInstanceID() > me[i].GetInstanceID())
+                if (me[i].gameObject.name == "ObjectKeeper")
+                {
+                    Destroy(me[i].gameObject);
+                }
             }
         }
     }
@@ -85,8 +84,6 @@ public class ObjectKeeper : MonoBehaviour
             setSongSelectItems = false;
             setBGMenuItems = false;
             setGame = false;
-            songNameList = new GameObject[10];
-            songLengthList = new GameObject[10];
         }
         else if (SceneManager.GetActiveScene().name == sceneNames[1])
         {
@@ -119,16 +116,7 @@ public class ObjectKeeper : MonoBehaviour
 
             if (!setGame)
             {
-                GameObject.Find("WhatTree").GetComponent<Image>().sprite = chosenBG;
-
-                //Debug.Log("Finding AudioPeer");
-                GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
-                //GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().clip = chosenSong;
-                StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(chosenSongNum));
-                GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
-                //GameObject.Find("BG").gameObject.GetComponent<BackgroundScroller>().Reset(GameObject.Find("AudioPeer").gameObject.GetComponent<AudioSource>().clip.length);
-                //GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Play();
-                GameObject.Find("GameController").gameObject.GetComponent<GameController>().SetStartGame(true);
+                StartCoroutine("Delay");
                 setGame = true;
             }
         }
@@ -152,6 +140,7 @@ public class ObjectKeeper : MonoBehaviour
         chosenBG = EventSystem.current.currentSelectedGameObject.GetComponent<Image>().sprite;
 
         SceneManager.LoadScene(sceneNames[3]);
+        //StartCoroutine("Delay");
     }
 
     public void SetUpScene(int whatScene)
@@ -160,25 +149,14 @@ public class ObjectKeeper : MonoBehaviour
         {
             case 1: // SongSelect
                 {
-                    songNameList = new GameObject[songList.Length];
-                    songLengthList = new GameObject[songList.Length];
-
-                    for (int i = 0; i < songNameList.Length; i++)
+                    for (int i = 0; i < songList.Length; i++)
                     {
-                        songNameList[i] = GameObject.Find("Song Name " + i.ToString());
-                        songLengthList[i] = GameObject.Find("Song Length " + i.ToString());
-                        songNameList[i].gameObject.GetComponent<Button>().onClick.AddListener(delegate { SelectThisSong(); });
-                    }
-                    
-
-
-                    for (int i = 0; i < songNameList.Length; i++)
-                    {
-                        songNameList[i].GetComponent<Text>().text = songList[i].name;
+                        GameObject.Find("Song Name " + i.ToString()).GetComponent<Button>().onClick.AddListener(delegate { SelectThisSong(); });
+                        GameObject.Find("Song Name " + i.ToString()).GetComponent<Text>().text = songList[i].name;
 
                         TimeSpan ts = TimeSpan.FromSeconds(songList[i].length);
 
-                        songLengthList[i].GetComponent<Text>().text = string.Format("{0:D2}:{1:D2}", ts.Minutes, ts.Seconds);
+                        GameObject.Find("Song Length " + i.ToString()).GetComponent<Text>().text = string.Format("{0:D2}:{1:D2}", ts.Minutes, ts.Seconds);
                     }
                 }
                 break;
@@ -194,5 +172,16 @@ public class ObjectKeeper : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    IEnumerator Delay()
+    {
+        yield return new WaitForSecondsRealtime(3.0f);
+
+        GameObject.Find("WhatTree").GetComponent<Image>().sprite = chosenBG;
+        GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
+        StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(chosenSongNum));
+        GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
+        GameObject.Find("GameController").gameObject.GetComponent<GameController>().SetStartGame(true);
     }
 }
