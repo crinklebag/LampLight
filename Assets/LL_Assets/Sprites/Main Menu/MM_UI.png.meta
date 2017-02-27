@@ -1,11 +1,14 @@
 fileFormatVersion: 2
-guid: 053d3477b677f5a42b7d864050a9dbfe
-timeCreated: 1488078214
+guid: 9c972813bb139824a84c0fe4123f9dce
+timeCreated: 1488086263
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: MM_UI-01_0
-    21300002: MM_UI-01_1
+    21300000: MM_UI_0
+    21300002: MM_UI_1
+    21300004: MM_UI_2
+    21300006: MM_UI_3
+    21300008: MM_UI_4
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -68,15 +71,15 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Android
+  - buildTarget: iPhone
     maxTextureSize: 2048
-    textureFormat: 47
+    textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 1
-  - buildTarget: iPhone
+    overridden: 0
+  - buildTarget: Android
     maxTextureSize: 2048
     textureFormat: -1
     textureCompression: 1
@@ -88,26 +91,65 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MM_UI-01_0
+      name: MM_UI_0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 702
-        width: 1717
-        height: 646
+        x: 216
+        y: 292
+        width: 75
+        height: 74
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: MM_UI-01_1
+      name: MM_UI_1
       rect:
         serializedVersion: 2
-        x: 28
-        y: 29
-        width: 1695
-        height: 569
+        x: 105
+        y: 296
+        width: 75
+        height: 74
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: MM_UI_2
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 296
+        width: 75
+        height: 74
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: MM_UI_4
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 227
+        width: 183
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: MM_UI_3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 149
+        width: 183
+        height: 13
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

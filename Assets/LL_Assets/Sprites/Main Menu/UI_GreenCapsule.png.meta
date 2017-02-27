@@ -1,11 +1,13 @@
 fileFormatVersion: 2
-guid: 053d3477b677f5a42b7d864050a9dbfe
-timeCreated: 1488078214
+guid: a8720b216c08c2b4886fcf978e508299
+timeCreated: 1488082464
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: MM_UI-01_0
-    21300002: MM_UI-01_1
+    21300000: UI_GreenCapsule_0
+    21300002: UI_GreenCapsule_1
+    21300004: UI_GreenCapsule_2
+    21300006: UI_GreenCapsule_3
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -68,15 +70,15 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Android
+  - buildTarget: iPhone
     maxTextureSize: 2048
-    textureFormat: 47
+    textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 1
-  - buildTarget: iPhone
+    overridden: 0
+  - buildTarget: Android
     maxTextureSize: 2048
     textureFormat: -1
     textureCompression: 1
@@ -88,28 +90,54 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MM_UI-01_0
+      name: UI_GreenCapsule_0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 702
-        width: 1717
-        height: 646
+        x: 17
+        y: 386
+        width: 472
+        height: 98
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: MM_UI-01_1
+      name: UI_GreenCapsule_1
       rect:
         serializedVersion: 2
-        x: 28
-        y: 29
-        width: 1695
-        height: 569
+        x: 70
+        y: 262
+        width: 351
+        height: 89
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: UI_GreenCapsule_2
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 139
+        width: 255
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: UI_GreenCapsule_3
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 30
+        width: 144
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
