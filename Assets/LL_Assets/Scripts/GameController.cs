@@ -11,6 +11,8 @@ public class GameController : MonoBehaviour
     GameObject player;
     GameObject JarTopCollider;
 
+    public Sprite[] bg;
+
     [SerializeField]
     GameObject fireflyPrefab;
     [SerializeField]
@@ -81,14 +83,11 @@ public class GameController : MonoBehaviour
 
         if (Application.isEditor && startGameInEditor && GameObject.Find("ObjectKeeper ORIGINAL") == null)
         {
-            //Debug.Log("Finding AudioPeer");
-                GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
-                //GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().clip = chosenSong;
-                StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(3));
-                GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
-                //GameObject.Find("BG").gameObject.GetComponent<BackgroundScroller>().Reset(GameObject.Find("AudioPeer").gameObject.GetComponent<AudioSource>().clip.length);
-                //GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Play();
-                GameObject.Find("GameController").gameObject.GetComponent<GameController>().SetStartGame(true);
+            GameObject.Find("WhatTree").GetComponent<Image>().sprite = bg[PlayerPrefs.GetInt("bgNumber")];
+            GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
+            StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(PlayerPrefs.GetInt("sceneNumber")));
+            GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
+            SetStartGame(true);
         }
     }
 

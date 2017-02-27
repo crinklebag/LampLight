@@ -61,7 +61,7 @@ public class UI : MonoBehaviour {
 
         for (int i = 0; i < jars.Length; i++)
         {
-            jars[i].gameObject.transform.position = new Vector3(jars[i].gameObject.transform.position.x, jars[i].gameObject.transform.position.y + 2.5f, jars[i].gameObject.transform.position.z);
+            jars[i].gameObject.transform.position = new Vector3(jars[i].gameObject.transform.position.x, jars[i].gameObject.transform.position.y + 3.0f, jars[i].gameObject.transform.position.z);
 
             previousColor[i] = glows[i].color;
             currentColor[i] = Color.clear;
@@ -144,7 +144,7 @@ public class UI : MonoBehaviour {
         if (val < jars.Length)
         {
             jarsYLerpTime = 0;
-            jarsY[val] = jars[val].gameObject.transform.position.y - 2.5f;
+            jarsY[val] = jars[val].gameObject.transform.position.y - 3.0f;
             jarsYSetAlready[val] = true;
         }
     }
