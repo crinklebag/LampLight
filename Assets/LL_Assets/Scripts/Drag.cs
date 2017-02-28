@@ -18,9 +18,14 @@ public class Drag : MonoBehaviour {
 	[SerializeField]
 	bool waitForAWhile = false;
 
+	private GameObject netSprites;
+
 	void Start()
 	{
 		rb = this.GetComponent<Rigidbody2D>();
+		netSprites = GameObject.Find("Net Sprites");
+
+		GetComponentInChildren<SkinnedMeshRenderer>().sortingLayerName = "Bug";
 	}
 
 	void Update ()
@@ -37,9 +42,9 @@ public class Drag : MonoBehaviour {
                 //transform.LookAt(objPosition);
                 //transform.rotation = Quaternion.Euler(0,0,this.transform.rotation.z);
 
-				//Debug.Log (Vector3.Distance (objPosition, this.transform.position));
+				Debug.Log (Vector3.Distance (objPosition, this.transform.position));
 
-				if (Vector3.Distance(objPosition, this.transform.position) < 10.1f) {
+				if (Vector3.Distance(objPosition, this.transform.position) < 10.2f) {
 					return;
 				}
 
@@ -82,4 +87,20 @@ public class Drag : MonoBehaviour {
 		hasEndedGame = true;
 	}
 	
+	public IEnumerator FlashJar()
+    {
+        netSprites.SetActive(false);
+        yield return new WaitForSecondsRealtime(0.3f);
+        netSprites.SetActive(true);
+        yield return new WaitForSecondsRealtime(0.3f);
+        netSprites.SetActive(false);
+        yield return new WaitForSecondsRealtime(0.3f);
+        netSprites.SetActive(true);
+        yield return new WaitForSecondsRealtime(0.3f);
+        netSprites.SetActive(false);
+        yield return new WaitForSecondsRealtime(0.3f);
+        netSprites.SetActive(true);
+        yield return new WaitForSecondsRealtime(0.3f);
+    }
+
 }

@@ -11,6 +11,8 @@ public class GameController : MonoBehaviour
     GameObject player;
     GameObject JarTopCollider;
 
+    public Sprite[] bg;
+
     [SerializeField]
     GameObject fireflyPrefab;
     [SerializeField]
@@ -58,6 +60,9 @@ public class GameController : MonoBehaviour
     [SerializeField]
     bool startGame = false;
 
+    [SerializeField]
+    bool startGameInEditor = false;
+
     // Use this for initialization
     void Start()
     {
@@ -76,7 +81,14 @@ public class GameController : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         JarTopCollider = GameObject.FindGameObjectWithTag("JarTop");
 
-        
+        if (Application.isEditor && startGameInEditor && GameObject.Find("ObjectKeeper ORIGINAL") == null)
+        {
+            GameObject.Find("WhatTree").GetComponent<Image>().sprite = bg[PlayerPrefs.GetInt("bgNumber")];
+            GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
+            StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(PlayerPrefs.GetInt("sceneNumber")));
+            GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
+            SetStartGame(true);
+        }
     }
 
     // Update is called once per frame
@@ -176,7 +188,7 @@ public class GameController : MonoBehaviour
         StartCoroutine("CheckToMakeNewDragonfly");
     }
 
-    public void CatchBug(string bugType, string jarName)
+    public void CatchBug(string bugType, int jar)
     {
         if (!stopDoingThis)
         {
@@ -187,21 +199,10 @@ public class GameController : MonoBehaviour
             {
                 filledJars++;
                 bugCounter = 0;
-                uiController.ResetGlow();
+                uiController.SetJarYPos(filledJars);
             }
 
-            if (jarName == "Jar1")
-            {
-                uiController.AddBug(0);
-            } 
-            else if (jarName == "Jar2")
-            {
-                uiController.AddBug(1);
-            } 
-            else if (jarName == "Jar3")
-            {
-                uiController.AddBug(2);
-            }
+            uiController.AddBug(jar);
 
         }
 
@@ -244,20 +245,7 @@ public class GameController : MonoBehaviour
         if (!stopDoingThis)
         {
             // Remove the Bug from the UI
-            
-            if (bugNumber == 0)
-            {
-                uiController.RemoveBug(0);
-            } 
-            else if (bugNumber == 1)
-            {
-                uiController.RemoveBug(1);
-            } 
-            else if (bugNumber == 2)
-            {
-                uiController.RemoveBug(2);
-            }
-
+            uiController.RemoveBug(bugNumber);
 
             if (bugCounter > 0 && realAmountOfBugs > 0)
             {
@@ -297,19 +285,20 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        if (uiController.GetBugInJarColor(0).a > 0)
+        if (filledJars >= 5)
         {
-            ReleaseBug(0);
+            if (uiController.GetBugInJarColor(4).a > 0)
+            {
+                ReleaseBug(4);
+            }
         }
-        else if (uiController.GetBugInJarColor(1).a > 0)
+        else
         {
-            ReleaseBug(1);
-        } 
-        else if (uiController.GetBugInJarColor(2).a > 0)
-        {
-            ReleaseBug(2);
+            if (uiController.GetBugInJarColor(filledJars).a > 0)
+            {
+                ReleaseBug(filledJars);
+            }
         }
-
 
         jarCurrentDamage++;
 
@@ -321,7 +310,7 @@ public class GameController : MonoBehaviour
         if (jarCurrentDamage <= jarDamageLimit)
         {
             uiController.setJarImage(jarCurrentDamage);
-            player.GetComponent<Jar>().ChangeSprite(jarCurrentDamage);
+            //player.GetComponent<Jar>().ChangeSprite(jarCurrentDamage);
         }
 
         if (jarCurrentDamage == jarDamageLimit)
@@ -364,10 +353,38 @@ public class GameController : MonoBehaviour
     {
         hitAlready = true;
 
-        StartCoroutine(player.GetComponent<Jar>().FlashJar());
+        StartCoroutine(player.GetComponent<Drag>().FlashJar());
 
         yield return new WaitForSecondsRealtime(2.5f);
 
         hitAlready = false;
+    }
+
+    public int WhichJar()
+    {
+        if (filledJars < 1)
+        {
+            return 0;
+        }
+        else if (filledJars < 2)
+        {
+            return 1;
+        }
+        else if (filledJars < 3)
+        {
+            return 2;
+        }
+        else if (filledJars < 4)
+        {
+            return 3;
+        }
+        else if (filledJars < 5)
+        {
+            return 4;
+        }
+        else
+        {
+            return Random.Range(0,4);
+        }
     }
 }

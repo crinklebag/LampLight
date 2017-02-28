@@ -64,7 +64,7 @@ public class Dragonfly : MonoBehaviour {
 
         musicClef = GameObject.Instantiate(musicClefPrefab);
         musicClef.GetComponent<SpriteRenderer>().sortingLayerName = "Bug";
-        GameObject.Find("BG").GetComponent<Scaler>().ResizeObjectToBounds(musicClef.GetComponent<SpriteRenderer>());
+        GameObject.FindGameObjectWithTag("Scaler").GetComponent<Scaler>().ResizeObjectToBounds(musicClef.GetComponent<SpriteRenderer>());
 
         jumpPositions = new float[musicClef.GetComponent<MusicClef>().GetLinesLength()];
         jumpPositions[0] = musicClef.GetComponent<MusicClef>().GetYPos(0);
@@ -263,7 +263,7 @@ public class Dragonfly : MonoBehaviour {
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            Debug.Log("Hit player!!");
+            //Debug.Log("Hit player!!");
 
             gameController.CrackJar();
         }

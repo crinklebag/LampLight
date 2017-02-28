@@ -9,9 +9,6 @@ using UnityEngine.EventSystems;
 
 public class ObjectKeeper : MonoBehaviour
 {
-    public GameObject[] songNameList;
-    public GameObject[] songLengthList;
-
     [SerializeField]
     private AudioClip[] songList;
     [SerializeField]
@@ -34,6 +31,9 @@ public class ObjectKeeper : MonoBehaviour
     [SerializeField]
     GameObject[] me;
 
+    [SerializeField]
+    private string[] sceneNames;
+
     void Awake()
     {
         DontDestroyOnLoad(transform.gameObject);
@@ -47,13 +47,15 @@ public class ObjectKeeper : MonoBehaviour
             this.name = "ObjectKeeper ORIGINAL";
             return;
         }
-
-        for (int i = 0; i < me.Length; i++)
+        else
         {
-            //if (this.gameObject.GetInstanceID() > me[i].GetInstanceID())
-            if (me[i].gameObject.name == "ObjectKeeper")
+            for (int i = 0; i < me.Length; i++)
             {
-                Destroy(me[i].gameObject);
+                //if (this.gameObject.GetInstanceID() > me[i].GetInstanceID())
+                if (me[i].gameObject.name == "ObjectKeeper")
+                {
+                    Destroy(me[i].gameObject);
+                }
             }
         }
     }
@@ -61,73 +63,63 @@ public class ObjectKeeper : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        
+        sceneNames = new string[4];
+        sceneNames[0] = "MainMenu_Mobile";
+        sceneNames[1] = "SongSelect";
+        sceneNames[2] = "BGSelect";
+        sceneNames[3] = "Main_Mobile";
+
+        if (Application.platform == RuntimePlatform.XboxOne /*|| Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor*/)
+        {
+            sceneNames[0] = "MainMenu_Kinect";
+            sceneNames[3] = "Main_Kinect";
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        switch (SceneManager.GetActiveScene().name)
+        if (SceneManager.GetActiveScene().name == sceneNames[0])
         {
-            case "Main_Mobile":
-                {
-                    if (setGame)
-                    {
-                        return;
-                    }
-
-                    if (!setGame)
-                    {
-                        GameObject.Find("WhatTree").GetComponent<Image>().sprite = chosenBG;
-
-                        //Debug.Log("Finding AudioPeer");
-                        GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
-                        //GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().clip = chosenSong;
-                        StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(chosenSongNum));
-                        //GameObject.Find("BG").gameObject.GetComponent<BackgroundScroller>().Reset(GameObject.Find("AudioPeer").gameObject.GetComponent<AudioSource>().clip.length);
-                        //GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Play();
-                        GameObject.Find("GameController").gameObject.GetComponent<GameController>().SetStartGame(true);
-                        setGame = true;
-                    }
-                }
-                break;
-            case "BGSelect":
-                {
-                    setSongSelectItems = false;
-                    setGame = false;
-
-                    if (setBGMenuItems == false)
-                    {
-                        SetUpScene(2);
-                        setBGMenuItems = true;
-                    }
-                }
-                break;
-            case "SongSelect":
-                {
-                    setBGMenuItems = false;
-                    setGame = false;
-
-                    if (setSongSelectItems == false)
-                    {
-                        SetUpScene(1);
-                        setSongSelectItems = true;
-                    }
-                }
-                break;
-            case "MainMenu_Mobile":
-                {
-                    setSongSelectItems = false;
-                    setBGMenuItems = false;
-                    setGame = false;
-                    songNameList = new GameObject[10];
-                    songLengthList = new GameObject[10];
-                }
-                break;
-            default:
-                break;
+            setSongSelectItems = false;
+            setBGMenuItems = false;
+            setGame = false;
         }
+        else if (SceneManager.GetActiveScene().name == sceneNames[1])
+        {
+            setBGMenuItems = false;
+            setGame = false;
 
+            if (setSongSelectItems == false)
+            {
+                SetUpScene(1);
+                setSongSelectItems = true;
+            }
+        }
+        else if (SceneManager.GetActiveScene().name == sceneNames[2])
+        {
+            setSongSelectItems = false;
+            setGame = false;
+
+            if (setBGMenuItems == false)
+            {
+                SetUpScene(2);
+                setBGMenuItems = true;
+            }
+        }
+        else if (SceneManager.GetActiveScene().name == sceneNames[3])
+        {
+            if (setGame)
+            {
+                return;
+            }
+
+            if (!setGame)
+            {
+                StartCoroutine("Delay");
+                setGame = true;
+            }
+        }
     }
 
     public void SelectThisSong()
@@ -138,7 +130,7 @@ public class ObjectKeeper : MonoBehaviour
             {
                 chosenSong = songList[i];
                 chosenSongNum = i;
-                SceneManager.LoadScene("BGSelect");
+                SceneManager.LoadScene(sceneNames[2]);
             }
         }
     }
@@ -147,7 +139,8 @@ public class ObjectKeeper : MonoBehaviour
     {
         chosenBG = EventSystem.current.currentSelectedGameObject.GetComponent<Image>().sprite;
 
-        SceneManager.LoadScene("Main_Mobile");
+        SceneManager.LoadScene(sceneNames[3]);
+        //StartCoroutine("Delay");
     }
 
     public void SetUpScene(int whatScene)
@@ -156,25 +149,14 @@ public class ObjectKeeper : MonoBehaviour
         {
             case 1: // SongSelect
                 {
-                    songNameList = new GameObject[6];
-                    songLengthList = new GameObject[6];
-
-                    for (int i = 0; i < songNameList.Length; i++)
+                    for (int i = 0; i < songList.Length; i++)
                     {
-                        songNameList[i] = GameObject.Find("Song Name " + i.ToString());
-                        songLengthList[i] = GameObject.Find("Song Length " + i.ToString());
-                        songNameList[i].gameObject.GetComponent<Button>().onClick.AddListener(delegate { SelectThisSong(); });
-                    }
-                    
-
-
-                    for (int i = 0; i < songNameList.Length; i++)
-                    {
-                        songNameList[i].GetComponent<Text>().text = songList[i].name;
+                        GameObject.Find("Song Name " + i.ToString()).GetComponent<Button>().onClick.AddListener(delegate { SelectThisSong(); });
+                        GameObject.Find("Song Name " + i.ToString()).GetComponent<Text>().text = songList[i].name;
 
                         TimeSpan ts = TimeSpan.FromSeconds(songList[i].length);
 
-                        songLengthList[i].GetComponent<Text>().text = string.Format("{0:D2}:{1:D2}", ts.Minutes, ts.Seconds);
+                        GameObject.Find("Song Length " + i.ToString()).GetComponent<Text>().text = string.Format("{0:D2}:{1:D2}", ts.Minutes, ts.Seconds);
                     }
                 }
                 break;
@@ -190,5 +172,16 @@ public class ObjectKeeper : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    IEnumerator Delay()
+    {
+        yield return new WaitForSecondsRealtime(3.0f);
+
+        GameObject.Find("WhatTree").GetComponent<Image>().sprite = chosenBG;
+        GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
+        StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(chosenSongNum));
+        GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
+        GameObject.Find("GameController").gameObject.GetComponent<GameController>().SetStartGame(true);
     }
 }

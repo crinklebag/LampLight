@@ -4,6 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class UI : MonoBehaviour {
+
+    public Text scoreText;
+    public Text multiplierText;
+    public Image uiJarMultiplier;
+    public Image fireflyJarMultiplier;
+
     public Text scoreTextFG;
     public Text totalScoreFG;
     public Image FGOverlay;
@@ -11,62 +17,97 @@ public class UI : MonoBehaviour {
 
     public ParticleSystem[] crackedJarFireflies;
 
-    [SerializeField]
-    public SpriteRenderer[] glows;
-    [SerializeField]
-    public SpriteRenderer[] jars;
+    [SerializeField] public SpriteRenderer[] glows;
+    [SerializeField] public SpriteRenderer[] jars;
 
     public Sprite[] jarImages; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
+    public Sprite[] jarImagesMultiplier; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
 
-    [SerializeField]
-    GameController gc;
+    public GameObject[] brokenHalfJars;
 
-    [SerializeField]
-    GameObject fireflyUI;
+    [SerializeField] GameController gc;
 
-    [SerializeField]
-    private Color32 currentColor = new Color32(255, 255, 255, 0);
-    [SerializeField]
-    private Color32 previousColor0 = new Color32(255, 255, 255, 0);
-    [SerializeField]
-    private Color32 previousColor1 = new Color32(255, 255, 255, 0);
-    [SerializeField]
-    private Color32 previousColor2 = new Color32(255, 255, 255, 0);
+    [SerializeField] GameObject fireflyUI;
 
+    [SerializeField] private Color32 currentColorMultiplier;
 
-    [SerializeField]
-    float fireflyColorConvert = 0;
+    [SerializeField] private Color32[] currentColor;
+    [SerializeField] private Color32[] previousColor;
 
-    [SerializeField]
-    byte fireflyTransparency = 0;
+    [SerializeField] float[] fireflyColorConvert;
+    [SerializeField] float[] jarsY;
+    [SerializeField] float lerpColorTime = 0;
+    [SerializeField] float fireflyColorConvertUI;
+    float jarsYLerpTime = 0;
 
-    float lerpColorTime = 0;
+    [SerializeField] int score = 0;
+    [SerializeField] int totalScore = 0;
+    [SerializeField] int tempScoreCounter = 0;
 
-    [SerializeField]
-    int score = 0;
-    [SerializeField]
-    int totalScore = 0;
-    [SerializeField]
-    int tempScoreCounter = 0;
-    [SerializeField]
-    bool startJarParticles = false;
+    [SerializeField] bool startJarParticles = false;
+    [SerializeField] bool hasTouchedAtEnd = false;
+    [SerializeField] bool[] jarsYSetAlready;
 
-    [SerializeField]
-    bool hasTouchedAtEnd = false;
+    [SerializeField] bool[] jarsPulseAlready;
+
+    void Awake()
+    {
+        previousColor = new Color32[jars.Length];
+        currentColor = new Color32[jars.Length];
+        jarsY = new float[jars.Length];
+        fireflyColorConvert = new float[jars.Length];
+        jarsYSetAlready = new bool[jars.Length];
+        jarsPulseAlready = new bool[jars.Length];
+
+        for (int i = 0; i < jars.Length; i++)
+        {
+            jars[i].gameObject.transform.position = new Vector3(jars[i].gameObject.transform.position.x, jars[i].gameObject.transform.position.y + 3.0f, jars[i].gameObject.transform.position.z);
+
+            previousColor[i] = glows[i].color;
+            currentColor[i] = Color.clear;
+            jarsY[i] = jars[i].gameObject.transform.position.y;
+            jarsYSetAlready[i] = false;
+            jarsPulseAlready[i] = false;
+        }
+
+        currentColorMultiplier = Color.clear;
+    }
 
     // Use this for initialization
     void Start () {
         gc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-        
+
+        SetJarYPos(0);
     }
 
     // Update is called once per frame
     void Update () {
-        glows[0].color = Color32.Lerp(previousColor0, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
-        glows[1].color = Color32.Lerp(previousColor1, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
-        glows[2].color = Color32.Lerp(previousColor2, currentColor, (lerpColorTime += Time.deltaTime) / 1f);
 
-        if (startJarParticles && glows[0].color == currentColor && glows[1].color == currentColor && glows[2].color == currentColor)
+        lerpColorTime = (lerpColorTime += Time.deltaTime) / 1f;
+
+        fireflyJarMultiplier.color = Color32.Lerp(fireflyJarMultiplier.color, currentColorMultiplier, lerpColorTime);
+
+        if (fireflyJarMultiplier.color == Color.white)
+        {
+            lerpColorTime = 0;
+            fireflyColorConvertUI = 0;
+            currentColorMultiplier = Color.clear;
+        }
+
+        for (int i = 0; i < glows.Length; i++)
+        {
+            glows[i].color = Color32.Lerp(previousColor[i], currentColor[i], lerpColorTime);
+
+            jars[i].gameObject.transform.position = new Vector3(jars[i].gameObject.transform.position.x, Mathf.Lerp(jars[i].gameObject.transform.position.y, jarsY[i], jarsYLerpTime += (Time.deltaTime * 0.01f)), jars[i].gameObject.transform.position.z);
+
+            if (jarsYSetAlready[i] && !jarsPulseAlready[i] && jars[i].gameObject.transform.position.y <= jarsY[i] + 0.1f)
+            {
+                jars[i].gameObject.GetComponent<JarPulse>().SetPulse(true);
+                jarsPulseAlready[i] = true;
+            }
+        }
+
+        if (startJarParticles && glows[0].color == currentColor[0] && glows[1].color == currentColor[1] && glows[2].color == currentColor[2] && glows[3].color == currentColor[3] && glows[4].color == currentColor[4])
         {
             FinishGame(gc.GetFilledJars());
         }
@@ -93,6 +134,19 @@ public class UI : MonoBehaviour {
                 hasTouchedAtEnd = true;
             }
         }
+
+        scoreText.text = "x " + gc.GetAmountOfBugs().ToString();
+        multiplierText.text = "x " + gc.GetFilledJars();
+    }
+
+    public void SetJarYPos(int val)
+    {
+        if (val < jars.Length)
+        {
+            jarsYLerpTime = 0;
+            jarsY[val] = jars[val].gameObject.transform.position.y - 3.0f;
+            jarsYSetAlready[val] = true;
+        }
     }
 
     public void setStartJarParticles(bool val)
@@ -100,15 +154,21 @@ public class UI : MonoBehaviour {
         startJarParticles = val;
     }
 
+    // get rid of the scaling when u have the final artwork for the cracked jars (with the strings holding it up)
     public void setJarImage(int val)
     {
-        jars[0].gameObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
+        /*jars[0].gameObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
         jars[1].gameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
         jars[2].gameObject.transform.localScale = new Vector3(0.09f, 0.09f, 0.09f);
+        jars[3].gameObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
+        jars[4].gameObject.transform.localScale = new Vector3(0.09f, 0.09f, 0.09f);*/
+
+        uiJarMultiplier.sprite = jarImagesMultiplier[val];
 
         for (int i = 0; i < jars.Length; i++)
         {
             jars[i].sprite = jarImages[val];
+            //glows[i].transform.localScale = new Vector3(4, 4, 4);
         }
     }
 
@@ -120,90 +180,91 @@ public class UI : MonoBehaviour {
     public void ResetGlow()
     {
         lerpColorTime = 0;
+        currentColorMultiplier = Color.clear;
+        crackedJarFireflies[5].Play();
 
-        fireflyColorConvert = 0;
-
-        fireflyTransparency = (byte)fireflyColorConvert;
-
-        previousColor0 = glows[0].color;
-        previousColor1 = glows[1].color;
-        previousColor2 = glows[2].color;
-
-        currentColor = new Color32(255, 255, 255, fireflyTransparency);
-
-        if (startJarParticles)
+        for (int i = 0; i < previousColor.Length; i++)
         {
-            crackedJarFireflies[0].Play();
-            crackedJarFireflies[1].Play();
-            crackedJarFireflies[2].Play();
+            if (jarsYSetAlready[i] == true)
+            {
+                fireflyColorConvert[i] = 0;
+                previousColor[i] = glows[i].color;
+                currentColor[i] = new Color32(255,255,255, (byte)fireflyColorConvert[i]);
+
+                brokenHalfJars[i].SetActive(true);
+                brokenHalfJars[i].GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-30, 30), Random.Range(-30, -10)));
+
+                crackedJarFireflies[i].Play();
+            }
         }
     }
-
+    
     public void AddBug(int bugNumber) {
         lerpColorTime = 0;
         score += 10;
 
-        if (fireflyColorConvert >= 0 && fireflyColorConvert < 255)
+        if (fireflyColorConvert[bugNumber] >= 0 && fireflyColorConvert[bugNumber] < 255)
         {
-            fireflyColorConvert += 25.5f;
+            fireflyColorConvert[bugNumber] += 25.5f;
         }
 
         //Mathf.Clamp(fireflyColorConvert, 0, 255);
 
-        if (fireflyColorConvert > 255)
+        if (fireflyColorConvert[bugNumber] > 255)
         {
-            fireflyColorConvert = 255;
+            fireflyColorConvert[bugNumber] = 255;
         }
 
-        fireflyTransparency = (byte)fireflyColorConvert;
-
-        if (bugNumber == 0)
+        if (fireflyColorConvertUI >= 0 && fireflyColorConvertUI < 255)
         {
-            previousColor0 = glows[0].color;
-        } 
-        else if (bugNumber == 1)
-        {
-            previousColor1 = glows[1].color;
-        } 
-        else if (bugNumber == 2)
-        {
-            previousColor2 = glows[2].color;
+            fireflyColorConvertUI += 25.5f;
         }
+
+        if (fireflyColorConvertUI > 255)
+        {
+            fireflyColorConvertUI = 255;
+        }
+
+        previousColor[bugNumber] = glows[bugNumber].color;
         
-        currentColor = new Color32(255, 255, 255, fireflyTransparency);
+        currentColor[bugNumber] = new Color32(255, 255, 255,(byte)fireflyColorConvert[bugNumber]);
+
+        currentColorMultiplier = new Color32(255, 255, 255, (byte)fireflyColorConvertUI);
+
+        jars[bugNumber].GetComponent<JarPulse>().SetPulse(true);
     }
 
     public void RemoveBug(int bugNumber)
     {
         lerpColorTime = 0;
 
-        if (fireflyColorConvert > 0)
+        if (fireflyColorConvert[bugNumber] > 0)
         {
-            fireflyColorConvert -= 25.5f;
+            fireflyColorConvert[bugNumber] -= 25.5f;
         }
 
         //Mathf.Clamp(fireflyColorConvert, 0, 255);
 
-        if (fireflyColorConvert < 0)
+        if (fireflyColorConvert[bugNumber] < 0)
         {
-            fireflyColorConvert = 0;
+            fireflyColorConvert[bugNumber] = 0;
         }
 
-        fireflyTransparency = (byte)fireflyColorConvert;
-
-        if (bugNumber == 0)
+        if (fireflyColorConvertUI > 0)
         {
-            previousColor0 = glows[0].color;
-        } else if (bugNumber == 1)
-        {
-            previousColor1 = glows[1].color;
-        } else if (bugNumber == 2)
-        {
-            previousColor2 = glows[2].color;
+            fireflyColorConvertUI -= 25.5f;
         }
 
+        if (fireflyColorConvertUI < 0)
+        {
+            fireflyColorConvertUI = 0;
+        }
 
-        currentColor = new Color32(255, 255, 255, fireflyTransparency);
+        previousColor[bugNumber] = glows[bugNumber].color;
+        
+        currentColor[bugNumber] = new Color32(255, 255, 255, (byte)fireflyColorConvert[bugNumber]);
+
+        currentColorMultiplier = new Color32(255, 255, 255, (byte)fireflyColorConvertUI);
     }
 
     public void FinishGame(int multiplier)
