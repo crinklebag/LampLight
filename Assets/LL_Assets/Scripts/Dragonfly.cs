@@ -9,6 +9,12 @@ public class Dragonfly : MonoBehaviour {
     public GameObject musicClef;
     public GameObject musicClefPrefab;
 
+    private Transform hoverTransform;//child transform to hover up and down
+    [SerializeField]
+    private float hoverSpeed = 10.0f;
+    [SerializeField]
+    private float hoverRange = 2.5f;
+
     GameController gameController;
 
     [SerializeField] float force;
@@ -71,6 +77,8 @@ public class Dragonfly : MonoBehaviour {
 
         rb = GetComponent<Rigidbody2D> ();
 
+		hoverTransform = this.transform.GetChild(0).GetComponent<Transform>();//get the hover child's transform
+
         //Debug.Log("Before: " + sprite.gameObject.transform.rotation);
 
         if (goingLeft)
@@ -96,6 +104,8 @@ public class Dragonfly : MonoBehaviour {
 	void Update ()
 	{
 		CheckDirection();//check if we need to switch vertical directiond
+
+		Hover();//Continuously hover the hover child
 
 		if (AudioManager.beatCheckHalf) { //Move vertically on beat
 			MoveVertical();
@@ -258,4 +268,9 @@ public class Dragonfly : MonoBehaviour {
             gameController.CrackJar();
         }
     }
+
+    void Hover ()
+	{
+		hoverTransform.localPosition = new Vector3(hoverTransform.localPosition.x, Mathf.Sin(Time.timeSinceLevelLoad * hoverSpeed) * hoverRange, hoverTransform.localPosition.z);
+	}
 }
