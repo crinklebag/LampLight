@@ -94,7 +94,7 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
                 brighterBarsColors[2] = Color.clear;
                 break;
             case MenuState.SongSelect:
-                newPos = new Vector3(-(Screen.width * 2.38f), 0, 0);
+                newPos = new Vector3(-3840, 0, 0);
                 //lastState = MenuState.Intro;
                 //currentState = MenuState.BGSelect;
                 brighterBarsColors[0] = Color.white;
@@ -102,7 +102,7 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
                 brighterBarsColors[2] = Color.clear;
                 break;
             case MenuState.BGSelect:
-                newPos = new Vector3(-(Screen.width * 1.19f), 0, 0);
+                newPos = new Vector3(-1920, 0, 0);
                 //lastState = MenuState.BGSelect;
                 //currentState = MenuState.SongSelect;
                 brighterBarsColors[0] = Color.white;
