@@ -16,16 +16,21 @@ public class AudioManager : MonoBehaviour {
 	public static bool beatCheck = false;//bool to check for beat
 	public static bool beatCheckHalf = false;//"" "" for half beat
 	public static bool beatCheckQuarter = false;//"" "" for quarter beat
-	private int beatCounter = 0;//
+	public static bool beatCheckEighth = false;//"" "" for eighth beat
+	private int beatCounter = 0;//Counter for beats
 	private int prevBeatCount = 0;
 	private int prevHalfBeatCount = 0;
 	private int prevQuarterBeatCount = 0;
+	private int prevEighthBeatCount = 0;
 	private float timeBetweenBeats = 0.0f;
 
 	private AudioSource aSource;
-
+	private bool audioFade = false;//True while audio is fading in or out, to ensure coroutine isnt called twice
 	private bool isPaused = false;
 	private float clipLength = 0.0f;
+	[SerializeField] private float audioFadeTime = 5.0f;
+	[SerializeField] private float sampleFadeTime = 5.0f;
+
 
 	/*AudioTxtReader*/
 	public TextAsset[] audioData;//Text file containing audio band data
@@ -41,6 +46,7 @@ public class AudioManager : MonoBehaviour {
 	void Awake ()
 	{
 		aSource = this.GetComponent<AudioSource>();
+		audioFade = false;
 	}
 
 	void Update ()
@@ -48,6 +54,7 @@ public class AudioManager : MonoBehaviour {
 		beatCheck = GetBeat ();
 		beatCheckHalf = GetHalfBeat ();
 		beatCheckQuarter = GetQuarterBeat ();
+		beatCheckEighth = GetEighthBeat();
 
 		//Stop reading data once the song is over, the audio won't be playing and pause bool will still be false
 		if (!aSource.isPlaying && !isPaused) 
@@ -56,7 +63,12 @@ public class AudioManager : MonoBehaviour {
 		}
 
 		if(Input.GetKeyDown(KeyCode.Space))
-			PlayPauseAudio();
+			StartCoroutine(PlayPauseAudio());
+	}
+
+	public void startAudioCoroutine(int index)
+	{
+		StartCoroutine(StartAudio(index));
 	}
 
 	public IEnumerator StartAudio (int index)
@@ -132,7 +144,7 @@ public class AudioManager : MonoBehaviour {
 	}
 
 	//BeatCounter is increased at set interval of the bpm
-	public bool GetBeat ()
+	bool GetBeat ()
 	{
 		if (beatCounter > prevBeatCount) {
 			prevBeatCount = beatCounter;
@@ -140,8 +152,7 @@ public class AudioManager : MonoBehaviour {
 		}
 		return false;
 	}
-
-	public bool GetHalfBeat ()
+	bool GetHalfBeat ()
 	{
 		if(beatCounter > prevHalfBeatCount)
 		{
@@ -150,8 +161,7 @@ public class AudioManager : MonoBehaviour {
 		}
 		return false;
 	}
-
-	public bool GetQuarterBeat()
+	bool GetQuarterBeat()
 	{
 		if(beatCounter > prevQuarterBeatCount)
 		{
@@ -160,33 +170,92 @@ public class AudioManager : MonoBehaviour {
 		}
 		return false;
 	}
-
+	bool GetEighthBeat()
+	{
+		if(beatCounter >  prevEighthBeatCount)
+		{
+			prevEighthBeatCount = beatCounter + 7;
+			return true;
+		}
+		return false;
+	}
 	void BeatCount ()
 	{
 		if(!isPaused)
 			beatCounter += 1;
 	}
 
+	//Cancel invokes when audio clip isnt playing, and the song hasnt been paused (end of audio)
 	void stopReadingData ()
 	{
 		CancelInvoke("ReadAudioData");
 		CancelInvoke("BeatCount");
 	}
 
-	//switch paused/unpaused bool for reading data and bpm counter, pause/unpause audio
-	public void PlayPauseAudio ()
+	//switch paused/unpaused bool for reading data and bpm counter, pause/unpause audio clip
+	public IEnumerator PlayPauseAudio ()
 	{
-		if (isPaused) {
-			Debug.Log ("Un Pause Audio");
-			isPaused = false;
-			aSource.UnPause ();
-		}
-		else
+		if (!audioFade) 
 		{
-			Debug.Log("Pause Audio");
-			isPaused = true;
-			aSource.Pause();
+			audioFade = true;
+
+			if (isPaused) //Play Audio
+			{
+				//Debug.Log ("Un Pause Audio");
+				isPaused = false;
+				aSource.UnPause ();
+				yield return StartCoroutine(FadeAudio(true));
+				audioFade = false;
+			}
+			else //Pause Audio
+			{
+				//Debug.Log("Pause Audio");
+				yield return StartCoroutine(FadeAudio(false));
+				isPaused = true;
+				aSource.Pause();
+				audioFade = false;
+			}
 		}
+		yield return null;
+	}
+
+	IEnumerator FadeAudio (bool fadeUp)
+	{
+		if (fadeUp) 
+		{
+			while (aSource.volume < 0.9f)
+			{
+				aSource.volume = Mathf.Lerp (aSource.volume, 1.0f, Time.deltaTime * audioFadeTime);
+				yield return null;
+			}
+			aSource.volume = 1.0f;
+		} 
+		else 
+		{
+			StartCoroutine(LerpSampleValueDown());
+			while (aSource.volume > 0.1f) 
+			{
+				aSource.volume = Mathf.Lerp (aSource.volume, 0.0f, Time.deltaTime * audioFadeTime);
+				yield return null;
+			}
+			aSource.volume = 0.0f;
+		}
+		yield return null;
+	}
+
+	IEnumerator LerpSampleValueDown ()
+	{
+		//traverse current samples
+		for (int i = 0; i < 8; i++) 
+		{
+			//Lerp curr audio sample down to 0.0f
+			while(_currAudioSamples[i] > 0.01f)
+			{
+				_currAudioSamples[i] = Mathf.Lerp(_currAudioSamples[i], 0.0f, Time.deltaTime * sampleFadeTime);
+				yield return null;
+			}
+		}
+		yield return null;
 	}
 
 	/*
@@ -232,9 +301,9 @@ public class AudioManager : MonoBehaviour {
 		aSource.clip = allAudioClips [songIndex];
 		clipLength = aSource.clip.length;
 
-        // Needed for making BG scroll to length of song
-        GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
-        aSource.Play ();
+		// Needed for making BG scroll to length of song
+		GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
+		aSource.Play ();
 	}
 	*/
 	/*
@@ -252,33 +321,6 @@ public class AudioManager : MonoBehaviour {
 		StartCoroutine(NextSong());
 
 		StartCoroutine(AutoNextSong());
-	}
-	*/
-	/*
-	void getUserInput ()
-	{
-		//Play
-		if (Input.GetKeyDown (KeyCode.UpArrow)) {
-			PlayAudio ();
-		}
-		//Pause
-		if (Input.GetKeyDown (KeyCode.DownArrow)) {
-			PauseAudio();
-		}
-		//Forwards Seek
-		if (Input.GetKeyDown (KeyCode.RightArrow)) {
-			StartCoroutine(NextSong());
-		}
-		//Backwards Seek
-		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			StartCoroutine(PreviousSong());
-		}
-
-	}*/
-	/*
-	public float getCurretClipLength ()
-	{
-		return aSource.clip.length;
 	}
 	*/
 }

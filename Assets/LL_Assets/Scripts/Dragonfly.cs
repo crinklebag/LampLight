@@ -5,190 +5,200 @@ using System;
 
 public class Dragonfly : MonoBehaviour {
 
-    public GameObject sprite;
-    public GameObject musicClef;
-    public GameObject musicClefPrefab;
+	public GameObject sprite;
+	public GameObject musicClef;
+	public GameObject musicClefPrefab;
 
-    GameController gameController;
+	private Transform hoverTransform;//child transform to hover up and down
+	[SerializeField]
+	private float hoverSpeed = 10.0f;
+	[SerializeField]
+	private float hoverRange = 2.5f;
 
-    [SerializeField] float force;
+	GameController gameController;
+
+	[SerializeField] float force;
 	[SerializeField] float jumpDistance;
 	[SerializeField] float jumpSpeed;
 	[SerializeField] float lowPoint;
 	[SerializeField] float highPoint;
 
-    [SerializeField]
-    private Color32 opaqueColor = new Color32(255, 255, 255, 10);
-    [SerializeField]
-    private Color32 transparentColor = new Color32(255, 255, 255, 0);
-    [SerializeField]
-    private Color32 currentColor = new Color32(255, 255, 255, 0);
+	[SerializeField]
+	private Color32 opaqueColor = new Color32(255, 255, 255, 10);
+	[SerializeField]
+	private Color32 transparentColor = new Color32(255, 255, 255, 0);
+	[SerializeField]
+	private Color32 currentColor = new Color32(255, 255, 255, 0);
 
-    [SerializeField]
-    private bool goingUp = false;
-    [SerializeField]
-    private bool goingLeft = false;
+	[SerializeField]
+	private bool goingUp = false;
+	[SerializeField]
+	private bool goingLeft = false;
 
 	private Rigidbody2D rb;
 
-    [SerializeField]
-    float lerpColorTime = 0;
+	[SerializeField]
+	float lerpColorTime = 0;
 
-    [SerializeField]
-    bool boundsComingIn = false;
-    [SerializeField]
-    bool boundsGoingOut = false;
+	[SerializeField]
+	bool boundsComingIn = false;
+	[SerializeField]
+	bool boundsGoingOut = false;
 
-    [SerializeField]
-    float[] jumpPositions = { 4.42f, 2.545f, 0.5f, -1.51f, -3.53f };
+	[SerializeField]
+	float[] jumpPositions = { 4.42f, 2.545f, 0.5f, -1.51f, -3.53f };
 
-    [SerializeField]
-    int jumpPosCounter = 0;
+	[SerializeField]
+	int jumpPosCounter = 0;
 
-    void Start ()
+	void Start ()
 	{
-        force = 3300.0f;
+		force = 3300.0f;
 
-        /*jumpPositions = new float[5];
+		/*jumpPositions = new float[5];
         jumpPositions[0] = 4.42f;
         jumpPositions[1] = 2.545f;
         jumpPositions[2] = 0.5f;
         jumpPositions[3] = -1.51f;
         jumpPositions[4] = -3.53f;*/
 
-        musicClef = GameObject.Instantiate(musicClefPrefab);
-        musicClef.GetComponent<SpriteRenderer>().sortingLayerName = "Bug";
-        GameObject.FindGameObjectWithTag("Scaler").GetComponent<Scaler>().ResizeObjectToBounds(musicClef.GetComponent<SpriteRenderer>());
+		musicClef = GameObject.Instantiate(musicClefPrefab);
+		musicClef.GetComponent<SpriteRenderer>().sortingLayerName = "Bug";
+		GameObject.FindGameObjectWithTag("Scaler").GetComponent<Scaler>().ResizeObjectToBounds(musicClef.GetComponent<SpriteRenderer>());
 
-        jumpPositions = new float[musicClef.GetComponent<MusicClef>().GetLinesLength()];
-        jumpPositions[0] = musicClef.GetComponent<MusicClef>().GetYPos(0);
-        jumpPositions[1] = musicClef.GetComponent<MusicClef>().GetYPos(1);
-        jumpPositions[2] = musicClef.GetComponent<MusicClef>().GetYPos(2);
-        jumpPositions[3] = musicClef.GetComponent<MusicClef>().GetYPos(3);
-        jumpPositions[4] = musicClef.GetComponent<MusicClef>().GetYPos(4);
+		jumpPositions = new float[musicClef.GetComponent<MusicClef>().GetLinesLength()];
+		jumpPositions[0] = musicClef.GetComponent<MusicClef>().GetYPos(0);
+		jumpPositions[1] = musicClef.GetComponent<MusicClef>().GetYPos(1);
+		jumpPositions[2] = musicClef.GetComponent<MusicClef>().GetYPos(2);
+		jumpPositions[3] = musicClef.GetComponent<MusicClef>().GetYPos(3);
+		jumpPositions[4] = musicClef.GetComponent<MusicClef>().GetYPos(4);
 
-        gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+		gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 
-        rb = GetComponent<Rigidbody2D> ();
+		rb = GetComponent<Rigidbody2D> ();
 
-        //Debug.Log("Before: " + sprite.gameObject.transform.rotation);
+		hoverTransform = this.transform.GetChild(0).GetComponent<Transform>();//get the hover child's transform
 
-        if (goingLeft)
-        {
-            sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, 1.0f, sprite.gameObject.transform.rotation.w);
-            GetComponent<BoxCollider2D>().offset = new Vector2(-0.6f, 0);
-        }
-        else
-        {
-            sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, -1.0f, sprite.gameObject.transform.rotation.w);
-            GetComponent<BoxCollider2D>().offset = new Vector2(0.6f, 0);
-        }
+		//Debug.Log("Before: " + sprite.gameObject.transform.rotation);
 
-        //Debug.Log("After: " + sprite.gameObject.transform.rotation);
+		if (goingLeft)
+		{
+			sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, 1.0f, sprite.gameObject.transform.rotation.w);
+			GetComponent<BoxCollider2D>().offset = new Vector2(-0.6f, 0);
+		}
+		else
+		{
+			sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, -1.0f, sprite.gameObject.transform.rotation.w);
+			GetComponent<BoxCollider2D>().offset = new Vector2(0.6f, 0);
+		}
 
-        highPoint = GameObject.Find("Top").gameObject.transform.position.y - 2.5f;
-        lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 2.0f;
+		//Debug.Log("After: " + sprite.gameObject.transform.rotation);
 
-        //Add Force to move across screen
-        StartCoroutine(MoveHorizontal()); 
+		highPoint = GameObject.Find("Top").gameObject.transform.position.y - 2.5f;
+		lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 2.0f;
+
+		//Add Force to move across screen
+		StartCoroutine(MoveHorizontal()); 
 	}
 
 	void Update ()
 	{
 		CheckDirection();//check if we need to switch vertical directiond
 
+		Hover();//Continuously hover the hover child
+
 		if (AudioManager.beatCheckHalf) { //Move vertically on beat
 			MoveVertical();
 
-            if (boundsComingIn == true && boundsGoingOut == false)
-            {
-                if (musicClef.GetComponent<SpriteRenderer>().color != transparentColor)
-                {
-                    currentColor = musicClef.GetComponent<SpriteRenderer>().color;
+			if (boundsComingIn == true && boundsGoingOut == false)
+			{
+				if (musicClef.GetComponent<SpriteRenderer>().color != transparentColor)
+				{
+					currentColor = musicClef.GetComponent<SpriteRenderer>().color;
 
-                    musicClef.GetComponent<SpriteRenderer>().color = Color32.Lerp(currentColor, opaqueColor, (lerpColorTime += Time.deltaTime * 5.0f) / 1f);
-                }
-                else
-                {
-                    musicClef.GetComponent<SpriteRenderer>().color = Color32.Lerp(transparentColor, opaqueColor, (lerpColorTime += Time.deltaTime * 5.0f) / 1f);
-                }
-            }
+					musicClef.GetComponent<SpriteRenderer>().color = Color32.Lerp(currentColor, opaqueColor, (lerpColorTime += Time.deltaTime * 5.0f) / 1f);
+				}
+				else
+				{
+					musicClef.GetComponent<SpriteRenderer>().color = Color32.Lerp(transparentColor, opaqueColor, (lerpColorTime += Time.deltaTime * 5.0f) / 1f);
+				}
+			}
 		}
-        else
-        {
-            if (boundsComingIn == true && boundsGoingOut == false)
-            {
-                musicClef.GetComponent<SpriteRenderer>().color = Color32.Lerp(opaqueColor, transparentColor, (lerpColorTime += Time.deltaTime * 2.0f) / 1f);
-            }
-            else if (boundsComingIn == true && boundsGoingOut == true)
-            {
-                musicClef.GetComponent<SpriteRenderer>().color = transparentColor;
-            }
-        }
+		else
+		{
+			if (boundsComingIn == true && boundsGoingOut == false)
+			{
+				musicClef.GetComponent<SpriteRenderer>().color = Color32.Lerp(opaqueColor, transparentColor, (lerpColorTime += Time.deltaTime * 2.0f) / 1f);
+			}
+			else if (boundsComingIn == true && boundsGoingOut == true)
+			{
+				musicClef.GetComponent<SpriteRenderer>().color = transparentColor;
+			}
+		}
 	}
 
 	//Add/Subtract the jump distance and this position based off direction
 	void MoveVertical ()
 	{
-        lerpColorTime = 0;
+		lerpColorTime = 0;
 
-        if (!goingLeft)
-        {
-            if (transform.position.x > GameObject.Find("Left").gameObject.transform.position.x + 0.5f)
-            {
-                boundsComingIn = true;
-                boundsGoingOut = false;
-            }
+		if (!goingLeft)
+		{
+			if (transform.position.x > GameObject.Find("Left").gameObject.transform.position.x + 0.5f)
+			{
+				boundsComingIn = true;
+				boundsGoingOut = false;
+			}
 
-            if (transform.position.x > GameObject.Find("Right").gameObject.transform.position.x - 0.5f)
-            {
-                boundsGoingOut = true;
-            }
-        }
-        else
-        {
-            if (transform.position.x < GameObject.Find("Left").gameObject.transform.position.x + 1.0f)
-            {
-                boundsGoingOut = true;
-            }
+			if (transform.position.x > GameObject.Find("Right").gameObject.transform.position.x - 0.5f)
+			{
+				boundsGoingOut = true;
+			}
+		}
+		else
+		{
+			if (transform.position.x < GameObject.Find("Left").gameObject.transform.position.x + 1.0f)
+			{
+				boundsGoingOut = true;
+			}
 
-            if (transform.position.x < GameObject.Find("Right").gameObject.transform.position.x + 0.5f && transform.position.x > 0)
-            {
-                boundsComingIn = true;
-                boundsGoingOut = false;
-            }
-        }
+			if (transform.position.x < GameObject.Find("Right").gameObject.transform.position.x + 0.5f && transform.position.x > 0)
+			{
+				boundsComingIn = true;
+				boundsGoingOut = false;
+			}
+		}
 
-        if (goingUp) {
-            //Debug.Log("goingUp");
-            //rb.MovePosition(this.transform.localPosition + new Vector3(0,jumpDistance,0));
-            //float newY = this.transform.position.y + jumpDistance;
-            //double roundedY = System.Math.Round(newY, 2);
+		if (goingUp) {
+			//Debug.Log("goingUp");
+			//rb.MovePosition(this.transform.localPosition + new Vector3(0,jumpDistance,0));
+			//float newY = this.transform.position.y + jumpDistance;
+			//double roundedY = System.Math.Round(newY, 2);
 
-            //Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
-            //this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
+			//Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
+			//this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
 
-            jumpPosCounter--;
-            jumpPosCounter = Mathf.Clamp(jumpPosCounter, 0, 4);
+			jumpPosCounter--;
+			jumpPosCounter = Mathf.Clamp(jumpPosCounter, 0, 4);
 
-            Vector3 newPos = new Vector3(this.transform.localPosition.x, jumpPositions[jumpPosCounter], this.transform.position.z);
-            this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
-        }
-        else {
-            //Debug.Log("goingDown");
-            //rb.MovePosition(this.transform.localPosition - new Vector3(0,jumpDistance,0));
-            //float newY = this.transform.position.y - jumpDistance;
-            //double roundedY = System.Math.Round(newY, 2);
+			Vector3 newPos = new Vector3(this.transform.localPosition.x, jumpPositions[jumpPosCounter], this.transform.position.z);
+			this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
+		}
+		else {
+			//Debug.Log("goingDown");
+			//rb.MovePosition(this.transform.localPosition - new Vector3(0,jumpDistance,0));
+			//float newY = this.transform.position.y - jumpDistance;
+			//double roundedY = System.Math.Round(newY, 2);
 
-            //Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
-            //this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
+			//Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
+			//this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
 
-            jumpPosCounter++;
-            jumpPosCounter = Mathf.Clamp(jumpPosCounter, 0, 4);
+			jumpPosCounter++;
+			jumpPosCounter = Mathf.Clamp(jumpPosCounter, 0, 4);
 
-            Vector3 newPos = new Vector3(this.transform.localPosition.x, jumpPositions[jumpPosCounter], this.transform.position.z);
-            this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
-        }
+			Vector3 newPos = new Vector3(this.transform.localPosition.x, jumpPositions[jumpPosCounter], this.transform.position.z);
+			this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
+		}
 	}
 
 	//Add horizontal force in proper direction
@@ -207,14 +217,14 @@ public class Dragonfly : MonoBehaviour {
 	void CheckDirection ()
 	{
 		if (this.transform.position.y >= jumpPositions[0]) {
-            //Debug.Log("Hit High");
+			//Debug.Log("Hit High");
 			goingUp = false;
-            jumpPosCounter = 0;
+			jumpPosCounter = 0;
 		} else if (this.transform.position.y <= jumpPositions[4]) {
-            //Debug.Log("Hit Low");
+			//Debug.Log("Hit Low");
 			goingUp = true;
-            jumpPosCounter = 4;
-        }
+			jumpPosCounter = 4;
+		}
 	}
 
 	void GetInput()
@@ -235,27 +245,32 @@ public class Dragonfly : MonoBehaviour {
 		}
 	}
 
-    public void SetSpawnSide(bool lr)
-    {
-        goingLeft = lr;
-    }
+	public void SetSpawnSide(bool lr)
+	{
+		goingLeft = lr;
+	}
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("DragonflyDestroyer"))
-        {
-            Destroy(musicClef.gameObject);
-            Destroy(this.gameObject);
-        }
-    }
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.gameObject.CompareTag("DragonflyDestroyer"))
+		{
+			Destroy(musicClef.gameObject);
+			Destroy(this.gameObject);
+		}
+	}
 
-    void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            //Debug.Log("Hit player!!");
+	void OnTriggerStay2D(Collider2D other)
+	{
+		if (other.gameObject.CompareTag("Player"))
+		{
+			//Debug.Log("Hit player!!");
 
-            gameController.CrackJar();
-        }
-    }
+			gameController.CrackJar();
+		}
+	}
+
+	void Hover ()
+	{
+		hoverTransform.localPosition = new Vector3(hoverTransform.localPosition.x, Mathf.Sin(Time.timeSinceLevelLoad * hoverSpeed) * hoverRange, hoverTransform.localPosition.z);
+	}
 }

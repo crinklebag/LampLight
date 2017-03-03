@@ -79,14 +79,20 @@ public class GameController : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         JarTopCollider = GameObject.FindGameObjectWithTag("JarTop");
 
-        if (Application.isEditor && startGameInEditor && GameObject.Find("ObjectKeeper ORIGINAL") == null)
+        /*if (Application.isEditor && startGameInEditor && GameObject.Find("ObjectKeeper ORIGINAL") == null)
         {
             GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
             StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(PlayerPrefs.GetInt("sceneNumber")));
             //StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(1));
             GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
             SetStartGame(true);
-        }
+        }*/
+
+		GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
+		StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(PlayerPrefs.GetInt("sceneNumber")));
+		//StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(1));
+		GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
+		SetStartGame(true);
     }
 
     // Update is called once per frame
