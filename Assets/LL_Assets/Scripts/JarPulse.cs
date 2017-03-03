@@ -145,7 +145,7 @@ public class JarPulse : MonoBehaviour {
 
 				copies[val].transform.localScale = new Vector3(copies[val].transform.localScale.x + additions, copies[val].transform.localScale.y  + additions, transform.localScale.z);
 
-				copies[val].transform.localPosition = new Vector3(copies[val].transform.localPosition.x, (transform.localPosition.y - 0.03f), copies[val].transform.localPosition.z);
+				copies[val].transform.localPosition = new Vector3(copies[val].transform.localPosition.x, maxScaleMult /*(transform.localPosition.y - 0.73f)*/, copies[val].transform.localPosition.z);
 
 				copies[val].GetComponent<SpriteRenderer>().color = Color32.Lerp(copies[val].GetComponent<SpriteRenderer>().color, Color.white, lerpTimeCopies[val]);
 

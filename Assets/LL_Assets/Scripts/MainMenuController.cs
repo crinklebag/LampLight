@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour, IDragHandler {
 
+    public Image[] topBar;
     public Image[] brighterBars;
     private Color32[] brighterBarsColors;
     private float lerpColorTime = 0;
@@ -20,6 +21,7 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
     Vector3 menuVelocity = Vector3.zero;
 
     bool moveUI = false;
+    bool showTopBar = false;
     bool startGame = false;
     float destXPos;
     float smoothTime = 0.5f;
@@ -59,9 +61,11 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
 
         ProcessInputs();*/
 
+        lerpColorTime += Time.deltaTime;
+
         for (int i = 0; i < brighterBars.Length; i++)
         {
-            brighterBars[i].color = Color32.Lerp(brighterBars[i].color, brighterBarsColors[i], lerpColorTime += Time.deltaTime);
+            brighterBars[i].color = Color32.Lerp(brighterBars[i].color, brighterBarsColors[i], lerpColorTime / 15.5f);
         }
 
         if (startGame)
@@ -74,6 +78,21 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
                 LoadScene();
                 //Debug.Log("LoadScene");
                 startGame = false;
+            }
+        }
+
+        if (showTopBar)
+        {
+            foreach (Image thing in topBar)
+            {
+                thing.color = Color32.Lerp(thing.color, Color.white, lerpColorTime / 15.5f);
+            }
+        } 
+        else
+        {
+            foreach (Image thing in topBar)
+            {
+                thing.color = Color32.Lerp(thing.color, Color.clear, lerpColorTime / 15.5f);
             }
         }
     }
@@ -92,6 +111,7 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
                 brighterBarsColors[0] = Color.clear;
                 brighterBarsColors[1] = Color.clear;
                 brighterBarsColors[2] = Color.clear;
+                showTopBar = false;
                 break;
             case MenuState.SongSelect:
                 newPos = new Vector3(-3840, 0, 0);
@@ -100,6 +120,7 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
                 brighterBarsColors[0] = Color.white;
                 brighterBarsColors[1] = Color.white;
                 brighterBarsColors[2] = Color.clear;
+                showTopBar = true;
                 break;
             case MenuState.BGSelect:
                 newPos = new Vector3(-1920, 0, 0);
@@ -108,6 +129,7 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
                 brighterBarsColors[0] = Color.white;
                 brighterBarsColors[1] = Color.clear;
                 brighterBarsColors[2] = Color.clear;
+                showTopBar = true;
                 break;
         }
 

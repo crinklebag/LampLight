@@ -6,9 +6,9 @@ using System.Collections.Generic;
 public class UI : MonoBehaviour {
 
     public Text scoreText;
-    public Text multiplierText;
-    public Image uiJarMultiplier;
-    public Image fireflyJarMultiplier;
+    //public Text multiplierText;
+    //public Image uiJarMultiplier;
+    //public Image fireflyJarMultiplier;
 
     public Text scoreTextFG;
     public Text totalScoreFG;
@@ -21,15 +21,15 @@ public class UI : MonoBehaviour {
     [SerializeField] public SpriteRenderer[] jars;
 
     public Sprite[] jarImages; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
-    public Sprite[] jarImagesMultiplier; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
+    //public Sprite[] jarImagesMultiplier; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
 
     public GameObject[] brokenHalfJars;
 
     [SerializeField] GameController gc;
 
-    [SerializeField] GameObject fireflyUI;
+    //[SerializeField] GameObject fireflyUI;
 
-    [SerializeField] private Color32 currentColorMultiplier;
+    //[SerializeField] private Color32 currentColorMultiplier;
 
     [SerializeField] private Color32[] currentColor;
     [SerializeField] private Color32[] previousColor;
@@ -70,7 +70,7 @@ public class UI : MonoBehaviour {
             jarsPulseAlready[i] = false;
         }
 
-        currentColorMultiplier = Color.clear;
+        //currentColorMultiplier = Color.clear;
     }
 
     // Use this for initialization
@@ -85,14 +85,14 @@ public class UI : MonoBehaviour {
 
         lerpColorTime = (lerpColorTime += Time.deltaTime) / 1f;
 
-        fireflyJarMultiplier.color = Color32.Lerp(fireflyJarMultiplier.color, currentColorMultiplier, lerpColorTime);
+        //fireflyJarMultiplier.color = Color32.Lerp(fireflyJarMultiplier.color, currentColorMultiplier, lerpColorTime);
 
-        if (fireflyJarMultiplier.color == Color.white)
+        /*if (fireflyJarMultiplier.color == Color.white)
         {
             lerpColorTime = 0;
             fireflyColorConvertUI = 0;
             currentColorMultiplier = Color.clear;
-        }
+        }*/
 
         for (int i = 0; i < glows.Length; i++)
         {
@@ -117,11 +117,11 @@ public class UI : MonoBehaviour {
         /*if (Input.GetKeyDown(KeyCode.J))
         {
             FinishGame(gc.GetFilledJars());
-        }*/
+        }
 
-        /*if (Input.GetKeyDown(KeyCode.K))
+        if (Input.GetKeyDown(KeyCode.K))
         {
-            AddBug();
+            AddBug(1);
         }*/
 
         if (Input.GetKeyDown(KeyCode.L))
@@ -135,8 +135,8 @@ public class UI : MonoBehaviour {
             }
         }
 
-        scoreText.text = "x " + gc.GetAmountOfBugs().ToString();
-        multiplierText.text = "x " + gc.GetFilledJars();
+        scoreText.text = gc.GetAmountOfBugs().ToString();
+        //multiplierText.text = "x " + gc.GetFilledJars();
     }
 
     public void SetJarYPos(int val)
@@ -163,7 +163,7 @@ public class UI : MonoBehaviour {
         jars[3].gameObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
         jars[4].gameObject.transform.localScale = new Vector3(0.09f, 0.09f, 0.09f);*/
 
-        uiJarMultiplier.sprite = jarImagesMultiplier[val];
+        //uiJarMultiplier.sprite = jarImagesMultiplier[val];
 
         for (int i = 0; i < jars.Length; i++)
         {
@@ -180,8 +180,7 @@ public class UI : MonoBehaviour {
     public void ResetGlow()
     {
         lerpColorTime = 0;
-        currentColorMultiplier = Color.clear;
-        crackedJarFireflies[5].Play();
+        //currentColorMultiplier = Color.clear;
 
         for (int i = 0; i < previousColor.Length; i++)
         {
@@ -229,7 +228,7 @@ public class UI : MonoBehaviour {
         
         currentColor[bugNumber] = new Color32(255, 255, 255,(byte)fireflyColorConvert[bugNumber]);
 
-        currentColorMultiplier = new Color32(255, 255, 255, (byte)fireflyColorConvertUI);
+        //currentColorMultiplier = new Color32(255, 255, 255, (byte)fireflyColorConvertUI);
 
         jars[bugNumber].GetComponent<JarPulse>().SetPulse(true);
     }
@@ -264,7 +263,7 @@ public class UI : MonoBehaviour {
         
         currentColor[bugNumber] = new Color32(255, 255, 255, (byte)fireflyColorConvert[bugNumber]);
 
-        currentColorMultiplier = new Color32(255, 255, 255, (byte)fireflyColorConvertUI);
+        //currentColorMultiplier = new Color32(255, 255, 255, (byte)fireflyColorConvertUI);
     }
 
     public void FinishGame(int multiplier)
