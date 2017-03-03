@@ -82,8 +82,8 @@ public class GameController : MonoBehaviour
         if (Application.isEditor && startGameInEditor && GameObject.Find("ObjectKeeper ORIGINAL") == null)
         {
             GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
-            //StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(PlayerPrefs.GetInt("sceneNumber")));
-            StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(1));
+            StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(PlayerPrefs.GetInt("sceneNumber")));
+            //StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(1));
             GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
             SetStartGame(true);
         }

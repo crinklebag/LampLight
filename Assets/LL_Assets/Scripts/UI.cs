@@ -1,9 +1,19 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
 public class UI : MonoBehaviour {
+
+    public enum IngameMenuStates
+    {
+        PLAY,
+        PAUSE,
+        EXIT
+    }
+
+    public IngameMenuStates theState;
 
     public Text scoreText;
     //public Text multiplierText;
@@ -15,6 +25,8 @@ public class UI : MonoBehaviour {
     public Image FGOverlay;
     public GameObject exitButtonFG;
 
+    public Image progressBar;
+
     public ParticleSystem[] crackedJarFireflies;
 
     [SerializeField] public SpriteRenderer[] glows;
@@ -24,6 +36,7 @@ public class UI : MonoBehaviour {
     //public Sprite[] jarImagesMultiplier; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
 
     public GameObject[] brokenHalfJars;
+    public GameObject am;
 
     [SerializeField] GameController gc;
 
@@ -69,6 +82,8 @@ public class UI : MonoBehaviour {
             jarsYSetAlready[i] = false;
             jarsPulseAlready[i] = false;
         }
+
+        theState = IngameMenuStates.PLAY;
 
         //currentColorMultiplier = Color.clear;
     }
@@ -124,6 +139,8 @@ public class UI : MonoBehaviour {
             AddBug(1);
         }*/
 
+        progressBar.fillAmount = am.GetComponent<AudioSource>().time / 1000.0f;
+
         if (Input.GetKeyDown(KeyCode.L))
         {
             //ResetGlow();
@@ -137,6 +154,28 @@ public class UI : MonoBehaviour {
 
         scoreText.text = gc.GetAmountOfBugs().ToString();
         //multiplierText.text = "x " + gc.GetFilledJars();
+
+        switch (theState)
+        {
+            case IngameMenuStates.PLAY:
+                {
+
+                }
+                break;
+            case IngameMenuStates.PAUSE:
+                {
+
+                }
+                break;
+            case IngameMenuStates.EXIT:
+                {
+
+                }
+                break;
+            default:
+                break;
+        }
+
     }
 
     public void SetJarYPos(int val)
@@ -311,5 +350,34 @@ public class UI : MonoBehaviour {
         }
 
         StartCoroutine("CountUpScore");
+    }
+
+    public void CallPause()
+    {
+        theState = IngameMenuStates.PAUSE;
+    }
+
+    public void ChangeState()
+    {
+        switch (EventSystem.current.currentSelectedGameObject.GetComponent<Text>().text)
+        {
+            case "RESUME":
+                {
+
+                }
+                break;
+            case "RESTART":
+                {
+
+                }
+                break;
+            case "EXIT GAME":
+                {
+
+                }
+                break;
+            default:
+                break;
+        }
     }
 }

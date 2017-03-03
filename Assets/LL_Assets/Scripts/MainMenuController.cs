@@ -65,7 +65,7 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
 
         for (int i = 0; i < brighterBars.Length; i++)
         {
-            brighterBars[i].color = Color32.Lerp(brighterBars[i].color, brighterBarsColors[i], lerpColorTime / 15.5f);
+            brighterBars[i].color = Color32.Lerp(brighterBars[i].color, brighterBarsColors[i], lerpColorTime);
         }
 
         if (startGame)
@@ -73,7 +73,7 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
             //Debug.Log("StartGame");
             //Debug.Log(brighterBars[2].color.a);
 
-            if (brighterBars[2].color.a >= 1.0f)
+            if (brighterBars[2].color.a >= 0.9f)
             {
                 LoadScene();
                 //Debug.Log("LoadScene");
@@ -85,14 +85,14 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
         {
             foreach (Image thing in topBar)
             {
-                thing.color = Color32.Lerp(thing.color, Color.white, lerpColorTime / 15.5f);
+                thing.color = Color32.Lerp(thing.color, Color.white, lerpColorTime);
             }
         } 
         else
         {
             foreach (Image thing in topBar)
             {
-                thing.color = Color32.Lerp(thing.color, Color.clear, lerpColorTime / 15.5f);
+                thing.color = Color32.Lerp(thing.color, Color.clear, lerpColorTime);
             }
         }
     }
@@ -275,7 +275,7 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
                             break;
                     }
 
-                    //Debug.Log(sceneToSave);
+                    Debug.Log(sceneToSave);
 
                     PlayerPrefs.SetInt("sceneNumber", sceneToSave);
                     PlayerPrefs.Save();
