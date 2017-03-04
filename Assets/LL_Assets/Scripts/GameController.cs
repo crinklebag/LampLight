@@ -125,12 +125,6 @@ public class GameController : MonoBehaviour
 
     void InstantiateDragonfly()
     {
-        /*int decideIfMakeNewDragonfly = Random.Range(0, 1);
-
-        if (decideIfMakeNewDragonfly == 0)
-        {
-            return;
-        }*/
 
         for (int i = 0; i < dragonflies.Length; i++)
         {

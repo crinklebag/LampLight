@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-public class MainMenuController : MonoBehaviour, IDragHandler {
+public class MainMenuController : MonoBehaviour {
 
     public Image[] topBar;
     public Image[] brighterBars;
@@ -16,6 +16,8 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
     [SerializeField] MenuState currentState;
     [SerializeField] MenuState lastState;
     [SerializeField] RectTransform menuHolder;
+
+    [SerializeField] GameObject[] bgOptions;
 
     Vector3 newPos = Vector3.zero;
     Vector3 menuVelocity = Vector3.zero;
@@ -31,7 +33,6 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
 
 	// Use this for initialization
 	void Start () {
-        // Debug.Log("Hi");
         currentState = MenuState.Intro;
         lastState = MenuState.Intro;
 
@@ -53,14 +54,6 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
     void Update() {
         MoveUI();
 
-        /*int fingerCount = 0;
-        foreach (Touch touch in Input.touches) {
-            if (touch.phase != TouchPhase.Ended && touch.phase != TouchPhase.Canceled)
-                fingerCount++;
-        }
-
-        ProcessInputs();*/
-
         lerpColorTime += Time.deltaTime;
 
         for (int i = 0; i < brighterBars.Length; i++)
@@ -70,13 +63,9 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
 
         if (startGame)
         {
-            //Debug.Log("StartGame");
-            //Debug.Log(brighterBars[2].color.a);
-
             if (brighterBars[2].color.a >= 0.9f)
             {
                 LoadScene();
-                //Debug.Log("LoadScene");
                 startGame = false;
             }
         }
@@ -97,7 +86,7 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
         }
     }
 
-    void UpdateMenuState(bool moveRight) {
+    public void UpdateMenuState(bool moveRight) {
         // Debug.Log("Hit Space");
 
         lerpColorTime = 0;
@@ -106,17 +95,14 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
         {
             case MenuState.Intro:
                 newPos = new Vector3(0, 0, 0);
-                //lastState = MenuState.Intro;
-                //currentState = MenuState.SongSelect;
                 brighterBarsColors[0] = Color.clear;
                 brighterBarsColors[1] = Color.clear;
                 brighterBarsColors[2] = Color.clear;
                 showTopBar = false;
                 break;
             case MenuState.SongSelect:
+                Debug.Log("Move Menu");
                 newPos = new Vector3(-3840, 0, 0);
-                //lastState = MenuState.Intro;
-                //currentState = MenuState.BGSelect;
                 brighterBarsColors[0] = Color.white;
                 brighterBarsColors[1] = Color.white;
                 brighterBarsColors[2] = Color.clear;
@@ -124,8 +110,6 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
                 break;
             case MenuState.BGSelect:
                 newPos = new Vector3(-1920, 0, 0);
-                //lastState = MenuState.BGSelect;
-                //currentState = MenuState.SongSelect;
                 brighterBarsColors[0] = Color.white;
                 brighterBarsColors[1] = Color.clear;
                 brighterBarsColors[2] = Color.clear;
@@ -140,58 +124,6 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
         menuHolder.localPosition = Vector3.SmoothDamp(menuHolder.localPosition, newPos, ref menuVelocity, smoothTime);
     }
 
-    void RotateCamera() {
-        bool moveRight = false;
-
-        switch (Input.GetTouch(0).phase) {
-            case TouchPhase.Began:
-                // Debug.Log("Touch started at" + Input.GetTouch(0).deltaPosition.x);
-                start = Input.GetTouch(0).deltaPosition.x;
-                break;
-            case TouchPhase.Moved:
-                // Get the change in direction input
-                float xDir = Input.GetTouch(0).deltaPosition.x;
-                //Debug.Log("deltaPosition: " + Input.GetTouch(0).deltaPosition)
-                // Disregard any unintentional, tiny discrepencies in a swipe
-                if (Mathf.Abs(xDir) < 50) {
-                    start = 0;
-                    end = 0;
-                }
-                break;
-            case TouchPhase.Ended:
-                // Debug.Log("Touch Ended at: " + Input.GetTouch(0).deltaPosition.x);
-                end = Input.GetTouch(0).deltaPosition.x;
-                break;
-            }
-
-        if (start > end) {
-            Debug.Log("Move Left");
-            moveRight = false;
-        } else if (start < end) {
-            Debug.Log("Move Right");
-            moveRight = true;
-        }
-
-        UpdateMenuState(moveRight);
-
-        start = 0;
-        end = 0;
-    }
-
-    void ProcessInputs() {
-        if (Input.touchCount == 1) {
-            RotateCamera();
-        }
-    }
-
-    public void OnDrag(PointerEventData baseData) {
-
-        // Convert base data to pointer data to get position changes
-        PointerEventData pointerData = baseData;
-
-        RotateCamera(/*pointerData.delta.x*/);
-    }
-
     public void ButtonClick(int val)
     {
         lastState = currentState;
@@ -199,95 +131,62 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
         switch (val)
         {
             case 0:
-                {
-                    currentState = MenuState.Intro;
-                    UpdateMenuState(true);
-                }
+                currentState = MenuState.Intro;
+                ResetBackgroundSelection();
+                UpdateMenuState(true);
                 break;
             case 1:
-                {
-                    currentState = MenuState.BGSelect;
-                    UpdateMenuState(true);
-                }
+                currentState = MenuState.BGSelect;
+                ResetBackgroundSelection();
+                UpdateMenuState(true);
                 break;
             case 2:
-                {
-                    int bgToSave = -1;
+                    currentState = MenuState.SongSelect;
+                    break;
+            case 3: 
+                lerpColorTime = 0;
+                brighterBarsColors[2] = Color.white;
 
-                    if (EventSystem.current.currentSelectedGameObject.name == "Music")
-                    {
-                        currentState = MenuState.SongSelect;
-                    }
+                int sceneToSave = -1;
 
-                    switch (EventSystem.current.currentSelectedGameObject.name)
-                    {
-                        case "Forest":
-                            {
-                                if (EventSystem.current.currentSelectedGameObject.GetComponent<Image>().color.a == 0)
-                                {
-                                    bgToSave = 2;
-                                    currentState = MenuState.SongSelect;
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
-                    //Debug.Log(bgToSave);
-
-                    PlayerPrefs.SetInt("bgNumber", bgToSave);
-                    PlayerPrefs.Save();
-
-                    UpdateMenuState(true);
+                switch (EventSystem.current.currentSelectedGameObject.name) {
+                    case "Seasons Change":
+                        sceneToSave = 0;
+                        break;
+                    case "Get Free":
+                        sceneToSave = 1;
+                        break;
+                    case "Dream Giver":
+                        sceneToSave = 2;
+                        break;
+                    case "Spirit Speaker":
+                        sceneToSave = 3;
+                        break;
+                    default:
+                        break;
                 }
-                break;
-            case 3:
-                {
-                    lerpColorTime = 0;
-                    brighterBarsColors[2] = Color.white;
 
-                    int sceneToSave = -1;
+                Debug.Log(sceneToSave);
 
-                    switch (EventSystem.current.currentSelectedGameObject.name)
-                    {
-                        case "Seasons Change":
-                            {
-                                sceneToSave = 0;
-                            }
-                            break;
-                        case "Get Free":
-                            {
-                                sceneToSave = 1;
-                            }
-                            break;
-                        case "Dream Giver":
-                            {
-                                sceneToSave = 2;
-                            }
-                            break;
-                        case "Spirit Speaker":
-                            {
-                                sceneToSave = 3;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+                PlayerPrefs.SetInt("sceneNumber", sceneToSave);
+                PlayerPrefs.Save();
 
-                    Debug.Log(sceneToSave);
-
-                    PlayerPrefs.SetInt("sceneNumber", sceneToSave);
-                    PlayerPrefs.Save();
-
-                    if (startGame == false)
-                    {
-                        startGame = true;
-                    }
+                if (startGame == false)  {
+                    startGame = true;
                 }
                 break;
             default:
                 break;
+        }
+    }
+
+    public void ResetBackgroundSelection() {
+        // Loop through the BG Options and reset the one that has been chosen 
+        foreach (GameObject bg in bgOptions) {
+            if (bg.GetComponent<StretchUIMask>().IsSelected()) {
+                // Debug.Log("Lookinf through bg");
+                bg.GetComponent<StretchUIMask>().DeselectLocation();
+            }
         }
     }
 
@@ -305,8 +204,24 @@ public class MainMenuController : MonoBehaviour, IDragHandler {
 
         if (PlayerPrefs.GetInt("bgNumber") != -1 && PlayerPrefs.GetInt("sceneNumber") != -1)
         {
-            //Debug.Log("Loading scene");
-            SceneManager.LoadScene("Main_Mobile");
+            // Debug.Log("Loading scene");
+            // SceneManager.LoadScene("Main_Mobile");
+
+            //Load selected scene
+            switch (PlayerPrefs.GetInt("bgNumber")) {
+                case 1:
+                    SceneManager.LoadScene("Main_Mobile");
+                    break;
+                case 2:
+                    SceneManager.LoadScene("Main_Mobile");
+                    break;
+                case 3:
+                    SceneManager.LoadScene("Main_Mobile_DeepForest");
+                    break;
+                case 4:
+                    SceneManager.LoadScene("Main_Mobile_DeepForest");
+                    break;
+            }
         } else
         {
             Debug.Log("You missed a selection!!");

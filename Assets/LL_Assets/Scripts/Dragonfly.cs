@@ -55,13 +55,6 @@ public class Dragonfly : MonoBehaviour {
 	{
 		force = 3300.0f;
 
-		/*jumpPositions = new float[5];
-        jumpPositions[0] = 4.42f;
-        jumpPositions[1] = 2.545f;
-        jumpPositions[2] = 0.5f;
-        jumpPositions[3] = -1.51f;
-        jumpPositions[4] = -3.53f;*/
-
 		musicClef = GameObject.Instantiate(musicClefPrefab);
 		musicClef.GetComponent<SpriteRenderer>().sortingLayerName = "Bug";
 		GameObject.FindGameObjectWithTag("Scaler").GetComponent<Scaler>().ResizeObjectToBounds(musicClef.GetComponent<SpriteRenderer>());
@@ -83,16 +76,15 @@ public class Dragonfly : MonoBehaviour {
 
 		if (goingLeft)
 		{
-			sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, 1.0f, sprite.gameObject.transform.rotation.w);
+			// sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, 1.0f, sprite.gameObject.transform.rotation.w);
 			GetComponent<BoxCollider2D>().offset = new Vector2(-0.6f, 0);
 		}
 		else
 		{
-			sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, -1.0f, sprite.gameObject.transform.rotation.w);
-			GetComponent<BoxCollider2D>().offset = new Vector2(0.6f, 0);
+            // sprite.gameObject.transform.rotation = new Quaternion(sprite.gameObject.transform.rotation.x, sprite.gameObject.transform.rotation.y, -1.0f, sprite.gameObject.transform.rotation.w);
+            sprite.gameObject.transform.localScale = new Vector3(-0.4f, 0.4f, 0.4f);
+           GetComponent<BoxCollider2D>().offset = new Vector2(0.6f, 0);
 		}
-
-		//Debug.Log("After: " + sprite.gameObject.transform.rotation);
 
 		highPoint = GameObject.Find("Top").gameObject.transform.position.y - 2.5f;
 		lowPoint = GameObject.Find("Bottom").gameObject.transform.position.y + 2.0f;
@@ -170,13 +162,6 @@ public class Dragonfly : MonoBehaviour {
 		}
 
 		if (goingUp) {
-			//Debug.Log("goingUp");
-			//rb.MovePosition(this.transform.localPosition + new Vector3(0,jumpDistance,0));
-			//float newY = this.transform.position.y + jumpDistance;
-			//double roundedY = System.Math.Round(newY, 2);
-
-			//Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
-			//this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
 
 			jumpPosCounter--;
 			jumpPosCounter = Mathf.Clamp(jumpPosCounter, 0, 4);
@@ -185,13 +170,6 @@ public class Dragonfly : MonoBehaviour {
 			this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
 		}
 		else {
-			//Debug.Log("goingDown");
-			//rb.MovePosition(this.transform.localPosition - new Vector3(0,jumpDistance,0));
-			//float newY = this.transform.position.y - jumpDistance;
-			//double roundedY = System.Math.Round(newY, 2);
-
-			//Vector3 newPos = new Vector3(this.transform.localPosition.x, (float)roundedY, this.transform.position.z);
-			//this.transform.position = Vector3.Lerp(this.transform.position, newPos, jumpSpeed * Time.deltaTime);
 
 			jumpPosCounter++;
 			jumpPosCounter = Mathf.Clamp(jumpPosCounter, 0, 4);
