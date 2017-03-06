@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour
     GameObject fireflyLightPrefab;
     [SerializeField]
     private GameObject[] fireflies;
+    [SerializeField] GameObject pauseButton;
 
     [SerializeField]
     GameObject dragonflyPrefab;
@@ -224,6 +225,7 @@ public class GameController : MonoBehaviour
         Destroy(player.GetComponent<BoxCollider2D>());
         Destroy(JarTopCollider);
         uiController.FinishGame(filledJars);
+        pauseButton.SetActive(false);
     }
 
     public void FinishGameDie()
@@ -236,6 +238,7 @@ public class GameController : MonoBehaviour
         Destroy(JarTopCollider);
         uiController.setStartJarParticles(true);
         uiController.ResetGlow();
+        pauseButton.SetActive(false);
     }
 
     public void ReleaseBug(int bugNumber)
