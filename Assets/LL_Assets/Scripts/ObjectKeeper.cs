@@ -180,7 +180,7 @@ public class ObjectKeeper : MonoBehaviour
 
         GameObject.Find("WhatTree").GetComponent<Image>().sprite = chosenBG;
         GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
-        StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(chosenSongNum));
+        StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio());
         GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
         GameObject.Find("GameController").gameObject.GetComponent<GameController>().SetStartGame(true);
     }

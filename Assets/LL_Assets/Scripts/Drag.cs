@@ -31,36 +31,141 @@ public class Drag : MonoBehaviour {
 	void Update ()
 	{
 		if (Input.touchCount > 0) {
-
-            if (!waitForAWhile)
+            foreach (Touch t in Input.touches)
             {
-                Vector3 touchPosition = new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0.0f);
-                Vector3 objPosition = Camera.main.ScreenToWorldPoint(touchPosition);
-                //transform.position = objPosition;
-                //this.GetComponent<Rigidbody2D> ().transform.position = transform.position;
+                switch (t.phase)
+                {
+                    case TouchPhase.Ended:
+                        {
+                            if (!waitForAWhile)
+                            {
+                                rb.velocity = Vector3.zero;
 
-                //transform.LookAt(objPosition);
-                //transform.rotation = Quaternion.Euler(0,0,this.transform.rotation.z);
+                                rb.AddForce(new Vector3(1000 * -transform.rotation.z, 1000 * transform.rotation.z, 0));
+                                Debug.Log("Added force" + 1000 * -transform.rotation.z + "," + 1000 * transform.rotation.z);
+                            }
+                        }
+                        break;
+                    case TouchPhase.Began:
+                        {
+                            if (!waitForAWhile)
+                            {
+                                Vector3 touchPosition = new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0.0f);
+                                Vector3 objPosition = Camera.main.ScreenToWorldPoint(touchPosition);
+                                //transform.position = objPosition;
+                                //this.GetComponent<Rigidbody2D> ().transform.position = transform.position;
 
-				Debug.Log (Vector3.Distance (objPosition, this.transform.position));
+                                //transform.LookAt(objPosition);
+                                //transform.rotation = Quaternion.Euler(0,0,this.transform.rotation.z);
 
-				if (Vector3.Distance(objPosition, this.transform.position) < 10.2f) {
-					return;
-				}
+                                Debug.Log(Vector3.Distance(objPosition, this.transform.position));
 
-				speed = Mathf.Lerp (speed, Mathf.Clamp((Vector3.Distance (objPosition, this.transform.position) - 5.0f), 5.0f, 50.0f), 25.0f * Time.deltaTime);
+                                if (Vector3.Distance(objPosition, this.transform.position) > 10.5f)
+                                {
+                                    //return;
 
-                normTarget = (objPosition - this.transform.position).normalized;
+                                    speed = Mathf.Lerp(speed, Mathf.Clamp((Vector3.Distance(objPosition, this.transform.position) - 5.0f), 5.0f, 50.0f), 25.0f * Time.deltaTime);
 
-                angle = Mathf.Atan2(normTarget.y, normTarget.x) * Mathf.Rad2Deg;
+                                    normTarget = (objPosition - this.transform.position).normalized;
 
-                rot = new Quaternion();
-                rot.eulerAngles = new Vector3(0, 0, angle - 90);
+                                    angle = Mathf.Atan2(normTarget.y, normTarget.x) * Mathf.Rad2Deg;
 
-                this.transform.rotation = Quaternion.Slerp(this.transform.localRotation, rot, Time.deltaTime * rotSpeed);
+                                    rot = new Quaternion();
+                                    rot.eulerAngles = new Vector3(0, 0, angle - 90);
 
-                rb.MovePosition(this.transform.localPosition + this.transform.up * Time.deltaTime * speed);
+                                    this.transform.rotation = Quaternion.Slerp(this.transform.localRotation, rot, Time.deltaTime * rotSpeed);
+
+                                    rb.MovePosition(this.transform.localPosition + this.transform.up * Time.deltaTime * speed);
+                                }
+                                else
+                                {
+                                    return;
+                                }
+                            }
+                        }
+                        break;
+                    case TouchPhase.Moved:
+                        {
+                            if (!waitForAWhile)
+                            {
+                                Vector3 touchPosition = new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0.0f);
+                                Vector3 objPosition = Camera.main.ScreenToWorldPoint(touchPosition);
+                                //transform.position = objPosition;
+                                //this.GetComponent<Rigidbody2D> ().transform.position = transform.position;
+
+                                //transform.LookAt(objPosition);
+                                //transform.rotation = Quaternion.Euler(0,0,this.transform.rotation.z);
+
+                                Debug.Log(Vector3.Distance(objPosition, this.transform.position));
+
+                                if (Vector3.Distance(objPosition, this.transform.position) > 10.5f)
+                                {
+                                    //return;
+
+                                    speed = Mathf.Lerp(speed, Mathf.Clamp((Vector3.Distance(objPosition, this.transform.position) - 5.0f), 5.0f, 50.0f), 25.0f * Time.deltaTime);
+
+                                    normTarget = (objPosition - this.transform.position).normalized;
+
+                                    angle = Mathf.Atan2(normTarget.y, normTarget.x) * Mathf.Rad2Deg;
+
+                                    rot = new Quaternion();
+                                    rot.eulerAngles = new Vector3(0, 0, angle - 90);
+
+                                    this.transform.rotation = Quaternion.Slerp(this.transform.localRotation, rot, Time.deltaTime * rotSpeed);
+
+                                    rb.MovePosition(this.transform.localPosition + this.transform.up * Time.deltaTime * speed);
+                                }
+                                else
+                                {
+                                    return;
+                                }
+                            }
+                        }
+                        break;
+                    case TouchPhase.Stationary:
+                        {
+                            if (!waitForAWhile)
+                            {
+                                Vector3 touchPosition = new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0.0f);
+                                Vector3 objPosition = Camera.main.ScreenToWorldPoint(touchPosition);
+                                //transform.position = objPosition;
+                                //this.GetComponent<Rigidbody2D> ().transform.position = transform.position;
+
+                                //transform.LookAt(objPosition);
+                                //transform.rotation = Quaternion.Euler(0,0,this.transform.rotation.z);
+
+                                Debug.Log(Vector3.Distance(objPosition, this.transform.position));
+
+                                if (Vector3.Distance(objPosition, this.transform.position) > 10.5f)
+                                {
+                                    //return;
+
+                                    speed = Mathf.Lerp(speed, Mathf.Clamp((Vector3.Distance(objPosition, this.transform.position) - 5.0f), 5.0f, 50.0f), 25.0f * Time.deltaTime);
+
+                                    normTarget = (objPosition - this.transform.position).normalized;
+
+                                    angle = Mathf.Atan2(normTarget.y, normTarget.x) * Mathf.Rad2Deg;
+
+                                    rot = new Quaternion();
+                                    rot.eulerAngles = new Vector3(0, 0, angle - 90);
+
+                                    this.transform.rotation = Quaternion.Slerp(this.transform.localRotation, rot, Time.deltaTime * rotSpeed);
+
+                                    rb.MovePosition(this.transform.localPosition + this.transform.up * Time.deltaTime * speed);
+                                }
+                                else
+                                {
+                                    return;
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
+
+           
 
 			if (hasEndedGame)
             {

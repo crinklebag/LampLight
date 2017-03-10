@@ -61,6 +61,14 @@ public class StretchUIMask : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space)) {
             ChooseLocation();
         }
+
+        Debug.Log(mainMenuController.GetCurrentState());
+
+        if (mainMenuController.GetCurrentState() == 2) {
+            buttons.SetActive(true);
+        } else {
+            buttons.SetActive(false);
+        }
     }
 
     public void ChooseLocation() {
@@ -83,7 +91,6 @@ public class StretchUIMask : MonoBehaviour {
 
         // Re-Set the player Pref
         PlayerPrefs.SetInt("bgNumber", -1);
-        buttons.SetActive(true);
     }
 
     IEnumerator EnlargeObject() {

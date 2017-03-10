@@ -68,14 +68,15 @@ public class AudioManager : MonoBehaviour {
 
 	public void startAudioCoroutine(int index)
 	{
-		StartCoroutine(StartAudio(index));
+		//StartCoroutine(StartAudio(index));
 	}
 
-	public IEnumerator StartAudio (int index)
+	public IEnumerator StartAudio ()
 	{
-		//Set song index to selected index, set audio clip for audio source, set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
-		songIndex = index;
-		aSource.clip = allAudioClips [songIndex];
+        //Set song index to selected index, set audio clip for audio source, set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
+        //songIndex = index;
+        //aSource.clip = allAudioClips [songIndex];
+        aSource.clip = Resources.Load<AudioClip>("Audio/" + PlayerPrefs.GetString("sceneNumber"));
 		clipLength = aSource.clip.length;
 		beatCounter = 0;
 		timeBetweenBeats = 60.0f / bpm[songIndex];

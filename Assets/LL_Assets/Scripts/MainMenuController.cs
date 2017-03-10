@@ -9,6 +9,10 @@ public class MainMenuController : MonoBehaviour {
 
     public Image[] topBar;
     public Image[] brighterBars;
+    public Image[] navButtonsBG;
+    public Image[] navButtonsSong;
+    public Image[] navButtonsPlay;
+    [SerializeField]
     private Color32[] brighterBarsColors;
     private float lerpColorTime = 0;
 
@@ -24,6 +28,7 @@ public class MainMenuController : MonoBehaviour {
 
     bool moveUI = false;
     bool showTopBar = false;
+    bool showedGrey = false;
     bool startGame = false;
     float destXPos;
     float smoothTime = 0.5f;
@@ -54,11 +59,23 @@ public class MainMenuController : MonoBehaviour {
     void Update() {
         MoveUI();
 
-        lerpColorTime += Time.deltaTime;
+        lerpColorTime += (Time.deltaTime * 0.2f);
 
-        for (int i = 0; i < brighterBars.Length; i++)
+        /*for (int i = 0; i < brighterBars.Length; i++)
         {
             brighterBars[i].color = Color32.Lerp(brighterBars[i].color, brighterBarsColors[i], lerpColorTime);
+        }*/
+
+
+        for (int j = 0; j < navButtonsBG.Length; j++)
+        {
+            navButtonsBG[j].color = Color32.Lerp(navButtonsBG[j].color, brighterBarsColors[0], lerpColorTime);
+            navButtonsSong[j].color = Color32.Lerp(navButtonsSong[j].color, brighterBarsColors[1], lerpColorTime);
+        }
+
+        for (int k = 0; k < navButtonsPlay.Length; k++)
+        {
+            navButtonsPlay[k].color = Color32.Lerp(navButtonsPlay[k].color, brighterBarsColors[2], lerpColorTime);
         }
 
         if (startGame)
@@ -72,16 +89,36 @@ public class MainMenuController : MonoBehaviour {
 
         if (showTopBar)
         {
-            foreach (Image thing in topBar)
+            if (!showedGrey)
             {
-                thing.color = Color32.Lerp(thing.color, Color.white, lerpColorTime);
+                for (int j = 0; j < navButtonsBG.Length; j++)
+                {
+                    navButtonsBG[j].color = Color32.Lerp(navButtonsBG[j].color, Color.grey, lerpColorTime);
+                    navButtonsSong[j].color = Color32.Lerp(navButtonsSong[j].color, Color.grey, lerpColorTime);
+                }
+
+                for (int k = 0; k < navButtonsPlay.Length; k++)
+                {
+                    navButtonsPlay[k].color = Color32.Lerp(navButtonsPlay[k].color, Color.grey, lerpColorTime);
+                }
+            }
+
+            for (int i = 0; i < topBar.Length; i++)
+            {
+                topBar[i].color = Color32.Lerp(topBar[i].color, Color.white, lerpColorTime);
             }
         } 
         else
         {
-            foreach (Image thing in topBar)
+            for (int i = 0; i < topBar.Length; i++)
             {
-                thing.color = Color32.Lerp(thing.color, Color.clear, lerpColorTime);
+                topBar[i].color = Color32.Lerp(topBar[i].color, Color.clear, lerpColorTime);
+            }
+
+            for (int j = 0; j < navButtonsBG.Length; j++)
+            {
+                navButtonsBG[j].color = Color32.Lerp(navButtonsBG[j].color, Color.clear, lerpColorTime);
+                navButtonsSong[j].color = Color32.Lerp(navButtonsSong[j].color, Color.clear, lerpColorTime);
             }
         }
     }
@@ -99,6 +136,7 @@ public class MainMenuController : MonoBehaviour {
                 brighterBarsColors[1] = Color.clear;
                 brighterBarsColors[2] = Color.clear;
                 showTopBar = false;
+                showedGrey = false;
                 break;
             case MenuState.SongSelect:
                 Debug.Log("Move Menu");
@@ -107,6 +145,7 @@ public class MainMenuController : MonoBehaviour {
                 brighterBarsColors[1] = Color.white;
                 brighterBarsColors[2] = Color.clear;
                 showTopBar = true;
+                showedGrey = true;
                 break;
             case MenuState.BGSelect:
                 newPos = new Vector3(-1920, 0, 0);
@@ -114,6 +153,7 @@ public class MainMenuController : MonoBehaviour {
                 brighterBarsColors[1] = Color.clear;
                 brighterBarsColors[2] = Color.clear;
                 showTopBar = true;
+                showedGrey = true;
                 break;
         }
 
@@ -147,20 +187,20 @@ public class MainMenuController : MonoBehaviour {
                 lerpColorTime = 0;
                 brighterBarsColors[2] = Color.white;
 
-                int sceneToSave = -1;
+                string sceneToSave = "";
 
                 switch (EventSystem.current.currentSelectedGameObject.name) {
                     case "Seasons Change":
-                        sceneToSave = 0;
+                        sceneToSave = "Seasons Change";
                         break;
                     case "Get Free":
-                        sceneToSave = 1;
+                        sceneToSave = "Get Free";
                         break;
                     case "Dream Giver":
-                        sceneToSave = 2;
+                        sceneToSave = "Dream Giver";
                         break;
                     case "Spirit Speaker":
-                        sceneToSave = 3;
+                        sceneToSave = "Spirit Speaker";
                         break;
                     default:
                         break;
@@ -168,12 +208,8 @@ public class MainMenuController : MonoBehaviour {
 
                 Debug.Log(sceneToSave);
 
-                PlayerPrefs.SetInt("sceneNumber", sceneToSave);
+                PlayerPrefs.SetString("sceneNumber", sceneToSave);
                 PlayerPrefs.Save();
-
-                if (startGame == false)  {
-                    startGame = true;
-                }
                 break;
             default:
                 break;
@@ -190,7 +226,7 @@ public class MainMenuController : MonoBehaviour {
         }
     }
 
-    void LoadScene()
+    public void LoadScene()
     {
         //yield return new WaitUntil(() => brighterBars[2].color.a >= (brighterBarsColors[2].a - 1));
 
@@ -202,7 +238,7 @@ public class MainMenuController : MonoBehaviour {
 
         //SceneManager.LoadScene(sceneName);
 
-        if (PlayerPrefs.GetInt("bgNumber") != -1 && PlayerPrefs.GetInt("sceneNumber") != -1)
+        if (PlayerPrefs.GetInt("bgNumber") != -1 && PlayerPrefs.GetString("sceneNumber") != "")
         {
             // Debug.Log("Loading scene");
             // SceneManager.LoadScene("Main_Mobile");
@@ -211,15 +247,19 @@ public class MainMenuController : MonoBehaviour {
             switch (PlayerPrefs.GetInt("bgNumber")) {
                 case 1:
                     SceneManager.LoadScene("Main_Mobile");
+                    //GetComponent<LoadingScreen>().LoadScene("Main_Mobile");
                     break;
                 case 2:
                     SceneManager.LoadScene("Main_Mobile");
+                    //GetComponent<LoadingScreen>().LoadScene("Main_Mobile");
                     break;
                 case 3:
                     SceneManager.LoadScene("Main_Mobile_DeepForest");
+                    //GetComponent<LoadingScreen>().LoadScene("Main_Mobile_DeepForest");
                     break;
                 case 4:
                     SceneManager.LoadScene("Main_Mobile_DeepForest");
+                    //GetComponent<LoadingScreen>().LoadScene("Main_Mobile_DeepForest");
                     break;
             }
         } else
@@ -231,5 +271,9 @@ public class MainMenuController : MonoBehaviour {
 
             startGame = false;
         }
+    }
+
+    public int GetCurrentState() {
+        return (int)currentState;
     }
 }

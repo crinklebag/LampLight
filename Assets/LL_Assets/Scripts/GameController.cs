@@ -90,7 +90,7 @@ public class GameController : MonoBehaviour
         }*/
 
 		GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
-		StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(PlayerPrefs.GetInt("sceneNumber")));
+		StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio());
 		//StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(1));
 		GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
 		SetStartGame(true);
@@ -305,6 +305,8 @@ public class GameController : MonoBehaviour
 
         if (jarCurrentDamage < jarDamageLimit)
         {
+            Handheld.Vibrate();
+
             StartCoroutine("PlayerDragonflyCooldown");
         }
 
