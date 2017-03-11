@@ -48,7 +48,7 @@ public class StretchUIMask : MonoBehaviour {
         mainMenuController = GameObject.FindGameObjectWithTag("GameController").GetComponent<MainMenuController>();
 		startX = this.GetComponent<RectTransform>().localPosition.x;
         startWidth = this.GetComponent<RectTransform>().rect.width;
-        imageStartX = this.transform.GetChild(0).GetComponent<RectTransform>().localPosition.x;
+        imageStartX = /* this.transform.GetChild(0).GetComponent<RectTransform>().localPosition.x*/ 480;
         maskStartPos = new Vector3(startX, 0, 0);
         maskEndPos = new Vector3(endX, 0, 0);
         maskStartSize = new Vector2(startWidth, 0);
