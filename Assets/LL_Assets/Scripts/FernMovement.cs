@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class FernMovement : MonoBehaviour {
-
-	private bool isRotating = true;
+	//Direction to rotate
 	private bool goingRight = true;
 
+	//Inspector set variables for rotation speed & angle for the parent transform and the wiggle transform
 	[SerializeField]
 	private float AngleToRotate = 15.0f;
 	[SerializeField]
@@ -16,6 +16,7 @@ public class FernMovement : MonoBehaviour {
 	[SerializeField]
 	private float wiggleSpeed = 5.0f;
 
+	//Transform & Quaternions
 	private Quaternion targetRot;
 	private Transform wiggleTransform;
 	private Quaternion wiggleRot;
@@ -40,8 +41,8 @@ public class FernMovement : MonoBehaviour {
 				targetRot = Quaternion.Euler (0.0f, 0.0f, 180.0f + AngleToRotate);
 			}
 		}
+		//Apply rotations
 		this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRot, Time.deltaTime * rotSpeed);
-
 		wiggleTransform.localRotation =  Quaternion.Euler(0.0f, 0.0f, Mathf.Sin(Time.timeSinceLevelLoad * wiggleSpeed) * wiggleAngle);
 	}
 }
