@@ -7,6 +7,8 @@ public class GameController : MonoBehaviour
     //Jar player;
     UI uiController;
 
+    private AudioSFX aSFX;
+
     GameObject player;
     GameObject JarTopCollider;
     
@@ -88,6 +90,7 @@ public class GameController : MonoBehaviour
             SetStartGame(true);
         }*/
 
+        aSFX = GameObject.Find("SFXController").GetComponent<AudioSFX>();
 		GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
 		StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio());
 		//StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(1));
@@ -195,6 +198,7 @@ public class GameController : MonoBehaviour
 
             if (bugCounter == 10)
             {
+				aSFX.playJarDrop();
                 filledJars++;
                 bugCounter = 0;
                 uiController.SetJarYPos(filledJars);
@@ -312,7 +316,7 @@ public class GameController : MonoBehaviour
         if (jarCurrentDamage <= jarDamageLimit)
         {
             uiController.setJarImage(jarCurrentDamage);
-            //player.GetComponent<Jar>().ChangeSprite(jarCurrentDamage);
+            player.GetComponent<Drag>().FlashJar();
         }
 
         if (jarCurrentDamage == jarDamageLimit)

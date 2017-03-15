@@ -20,8 +20,13 @@ public class UI : MonoBehaviour {
     //public Image uiJarMultiplier;
     //public Image fireflyJarMultiplier;
 
-    public Text scoreTextFG;
+    public Text bugsCaughtFG;
+	public Text jarsFilledFG;
+	public Text totalScoreMulFG;
     public Text totalScoreFG;
+	
+
+
     public Image FGOverlay;
     public GameObject exitButtonFG;
 
@@ -70,7 +75,7 @@ public class UI : MonoBehaviour {
         jarsY = new float[jars.Length];
         fireflyColorConvert = new float[jars.Length];
         jarsYSetAlready = new bool[jars.Length];
-        jarsPulseAlready = new bool[jars.Length];
+        jarsPulseAlready = new bool[jars.Length];		
 
         for (int i = 0; i < jars.Length; i++)
         {
@@ -305,22 +310,26 @@ public class UI : MonoBehaviour {
         //currentColorMultiplier = new Color32(255, 255, 255, (byte)fireflyColorConvertUI);
     }
 
-    public void FinishGame(int multiplier)
-    {
-        scoreTextFG.text = score.ToString() + " x " + multiplier.ToString();
-        totalScoreFG.text = tempScoreCounter.ToString();
+    public void FinishGame (int multiplier)
+	{
+		bugsCaughtFG.text = (score/10).ToString();
+		jarsFilledFG.text = multiplier.ToString ();
 
         FGOverlay.gameObject.SetActive(true);
 
         if (multiplier > 0)
         {
+			totalScoreMulFG.text = score.ToString () + " x " + multiplier.ToString ();
+			totalScoreFG.text = tempScoreCounter.ToString ();
             totalScore = score * multiplier;
+			
         }
         else
         {
+			totalScoreMulFG.text = tempScoreCounter.ToString ();
+			totalScoreFG.text = "";
             totalScore = score;
         }
-        
 
         StartCoroutine("CountUpScore");
     }
@@ -336,7 +345,7 @@ public class UI : MonoBehaviour {
         //yield return new WaitForFixedUpdate();
         //yield return new WaitForEndOfFrame();
 
-        totalScoreFG.text = tempScoreCounter.ToString();
+        //totalScoreFG.text = tempScoreCounter.ToString();
 
         if (tempScoreCounter < totalScore)
         {

@@ -24,9 +24,12 @@ public class EvilBug : MonoBehaviour {
     [SerializeField] float speed = 1.25f;
     [SerializeField] float rotSpeed = 5.0f;
 
+    AudioSFX aSFX;
+
     void Awake ()
 	{
 		gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+		aSFX = GameObject.Find("SFXController").GetComponent<AudioSFX>();
 	}
 
     void Update ()
@@ -142,6 +145,9 @@ public class EvilBug : MonoBehaviour {
 		if (other.gameObject.CompareTag("JarTop"))
 		{
 			Debug.Log("Hit player!!");
+			aSFX.playDodo();
+
+			//TODO: Disable Collider? or end lyfe cycle?
 
 			gameController.CrackJar();
 			gameController.GetComponent<VibrationController>().Vibrate();
