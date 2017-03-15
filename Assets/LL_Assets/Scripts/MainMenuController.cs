@@ -204,49 +204,17 @@ public class MainMenuController : MonoBehaviour {
 
     public void LoadScene()
     {
-        //yield return new WaitUntil(() => brighterBars[2].color.a >= (brighterBarsColors[2].a - 1));
-
-        // need to make scenes with the background and music in it already
-        // for now just loads and finds the music/bg and sets it
-        // since it is using ints, maybe have the scene named like Main_Mobile_01 for a backyard bg and Get Free music
-
-        //string sceneName = "Main_Mobile_" + PlayerPrefs.GetInt("bgNumber").ToString() + PlayerPrefs.GetInt("sceneNumber").ToString();
-
-        //SceneManager.LoadScene(sceneName);
+        //
 
         if (PlayerPrefs.GetInt("bgNumber") != -1 && PlayerPrefs.GetString("sceneNumber") != "")
         {
-            // Debug.Log("Loading scene");
-            // SceneManager.LoadScene("Main_Mobile");
-
-            // Just load instructions here 
-
-            //Load selected scene
-            switch (PlayerPrefs.GetInt("bgNumber")) {
-                case 1:
-                    SceneManager.LoadScene("Main_Mobile");
-                    //GetComponent<LoadingScreen>().LoadScene("Main_Mobile");
-                    break;
-                case 2:
-                    SceneManager.LoadScene("Main_Mobile_DeepForest");
-                    // SceneManager.LoadScene("Main_Mobile");
-                    //GetComponent<LoadingScreen>().LoadScene("Main_Mobile");
-                    break;
-                case 3:
-                    SceneManager.LoadScene("Main_Mobile_DeepForest");
-                    //GetComponent<LoadingScreen>().LoadScene("Main_Mobile_DeepForest");
-                    break;
-                case 4:
-                    SceneManager.LoadScene("Main_Mobile_DeepForest");
-                    //GetComponent<LoadingScreen>().LoadScene("Main_Mobile_DeepForest");
-                    break;
-            }
+            SceneManager.LoadScene("Loading");
         } else
         {
-            Debug.Log("You missed a selection!!");
+            // Debug.Log("You missed a selection!!");
 
-            Debug.Log("bgNumber " + PlayerPrefs.GetInt("bgNumber"));
-            Debug.Log("sceneNumber " + PlayerPrefs.GetInt("sceneNumber"));
+            // Debug.Log("bgNumber " + PlayerPrefs.GetInt("bgNumber"));
+            // Debug.Log("sceneNumber " + PlayerPrefs.GetInt("sceneNumber"));
 
             startGame = false;
         }
