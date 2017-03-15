@@ -6,7 +6,8 @@ public class Drag : MonoBehaviour {
 	Rigidbody2D rb;
 	[SerializeField]float speed = 10.0f;
 	[SerializeField]float rotSpeed = 25.0f;
-
+	[SerializeField]float flashTime = 1.5f;
+	[SerializeField]int numOfFlashes = 3;
 
 	//angles for look at 2d
 	protected Vector3 normTarget;
@@ -191,21 +192,16 @@ public class Drag : MonoBehaviour {
 		yield return new WaitForSecondsRealtime(5.0f);
 		hasEndedGame = true;
 	}
-	
+
+
 	public IEnumerator FlashJar()
     {
-        netSprites.SetActive(false);
-        yield return new WaitForSecondsRealtime(0.3f);
-        netSprites.SetActive(true);
-        yield return new WaitForSecondsRealtime(0.3f);
-        netSprites.SetActive(false);
-        yield return new WaitForSecondsRealtime(0.3f);
-        netSprites.SetActive(true);
-        yield return new WaitForSecondsRealtime(0.3f);
-        netSprites.SetActive(false);
-        yield return new WaitForSecondsRealtime(0.3f);
-        netSprites.SetActive(true);
-        yield return new WaitForSecondsRealtime(0.3f);
+    	for(int i = 0; i< numOfFlashes; i++)
+    	{
+			netSprites.SetActive(false);	
+			yield return new WaitForSecondsRealtime(flashTime/2.0f);
+       	 	netSprites.SetActive(true);
+			yield return new WaitForSecondsRealtime(flashTime);
+    	}
     }
-
 }
