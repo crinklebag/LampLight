@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour {
 
+    [SerializeField] PlayButtonController playButton;
+
     public Image[] topBar;
     // public Image[] brighterBars;
     public Image[] navButtonsBG;
@@ -101,7 +103,7 @@ public class MainMenuController : MonoBehaviour {
             case MenuState.PlayGame:
                 // Fade in Play Game to white
                 for (int k = 0; k < navButtonsPlay.Length; k++) {
-                    navButtonsPlay[k].color = Color32.Lerp(navButtonsPlay[k].color, Color.white, lerpColorTime);
+                    navButtonsPlay[k].color = Color32.Lerp(navButtonsPlay[k].color, Color.white, lerpColorTime * 5);
                 }
                 break;
         }
@@ -158,6 +160,7 @@ public class MainMenuController : MonoBehaviour {
             case 3:
                 currentState = MenuState.PlayGame;
                 lerpColorTime = 0;
+                playButton.StartPlay();
                 // brighterBarsColors[2] = Color.white;
 
                 string sceneToSave = "";
@@ -225,7 +228,8 @@ public class MainMenuController : MonoBehaviour {
                     //GetComponent<LoadingScreen>().LoadScene("Main_Mobile");
                     break;
                 case 2:
-                    SceneManager.LoadScene("Main_Mobile");
+                    SceneManager.LoadScene("Main_Mobile_DeepForest");
+                    // SceneManager.LoadScene("Main_Mobile");
                     //GetComponent<LoadingScreen>().LoadScene("Main_Mobile");
                     break;
                 case 3:
