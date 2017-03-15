@@ -4,7 +4,6 @@ using System.Collections;
 
 public class GameController : MonoBehaviour
 {
-
     //Jar player;
     UI uiController;
 
@@ -21,8 +20,8 @@ public class GameController : MonoBehaviour
 
     [SerializeField]
     GameObject dragonflyPrefab;
-    [SerializeField]
-    private GameObject[] dragonflies;
+    //[SerializeField]
+    //private GameObject[] dragonflies;
 
     [SerializeField]
     float[] bounds;
@@ -67,7 +66,7 @@ public class GameController : MonoBehaviour
     {
         bounds = new float[4];
         fireflies = new GameObject[10];
-        dragonflies = new GameObject[2];
+        //dragonflies = new GameObject[2];
         bandFrequencies = new int[10];
 
         bounds[0] = GameObject.Find("Top").gameObject.transform.position.y;
@@ -126,7 +125,7 @@ public class GameController : MonoBehaviour
 
     void InstantiateDragonfly()
     {
-
+    /*
         for (int i = 0; i < dragonflies.Length; i++)
         {
             if (dragonflies[i] == null && i == 0)
@@ -155,7 +154,7 @@ public class GameController : MonoBehaviour
 
                 return;
             }
-        }
+        }*/
     }
     void InitializeBugs()
     {

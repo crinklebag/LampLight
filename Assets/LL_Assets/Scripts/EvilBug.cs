@@ -72,7 +72,6 @@ public class EvilBug : MonoBehaviour {
 			
 			yield return null;
 		}
-
 		yield return null;
 	}
 
@@ -87,7 +86,6 @@ public class EvilBug : MonoBehaviour {
 
 			yield return null;
 		}
-
 		yield return null;
 	}
 
@@ -101,23 +99,19 @@ public class EvilBug : MonoBehaviour {
 			
 			yield return null;
 		}
-
 		yield return null;
 	}
 
 	//Set randomPosition to a random position within the give range when audioManager returns a beat
 	void RandomPosition ()
 	{
-		//yield return new WaitForSeconds(0.1f);
-		if (AudioManager.beatCheck)
+		if (AudioManager.beatCheckHalf)
 		{
 			float randY = Random.Range(minMoveY, maxMoveY);
             float randX = Random.Range(minMoveX, maxMoveX);
 
             randomPosition = new Vector3(randX, randY, -1.0f);
 		}
-
-		//StartCoroutine(RandomPosition());
 	}
 
 	//Constantly force the bug to face the in the direction of its destination

@@ -34,6 +34,8 @@ public class MainMenuController : MonoBehaviour {
     float end = 0;
     int dir = 0;
 
+    [SerializeField] AudioSFX menuSFX;
+
 	// Use this for initialization
 	void Start () {
         currentState = MenuState.Intro;
@@ -135,6 +137,8 @@ public class MainMenuController : MonoBehaviour {
     public void ButtonClick(int val)
     {
         lastState = currentState;
+
+        menuSFX.playTap();
 
         switch (val)
         {

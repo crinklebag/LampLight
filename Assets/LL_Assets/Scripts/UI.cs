@@ -139,7 +139,7 @@ public class UI : MonoBehaviour {
             AddBug(1);
         }*/
 
-        progressBar.fillAmount = am.GetComponent<AudioSource>().time / 1000.0f;
+        progressBar.fillAmount = am.GetComponent<AudioSource>().time / am.GetComponent<AudioSource>().clip.length;
 
         if (Input.GetKeyDown(KeyCode.L))
         {

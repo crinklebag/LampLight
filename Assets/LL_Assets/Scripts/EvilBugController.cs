@@ -112,6 +112,7 @@ public class EvilBugController : MonoBehaviour {
 
 		//tell the bug to start its life cycle with assigned times and at which spawn point
 		bugPool[indexToUse].GetComponent<EvilBug>().StartBugLyfeCoroutine(moveIn, moveAround, moveOut, boundsArray);
+
 		//Debug.Log("life cycle started: " + indexToUse);
 
 		//disable bug afer sum of its life time
