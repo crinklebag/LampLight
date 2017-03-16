@@ -12,63 +12,42 @@ public class GameController : MonoBehaviour
     GameObject player;
     GameObject JarTopCollider;
     
-    [SerializeField]
-    GameObject fireflyPrefab;
-    [SerializeField]
-    GameObject fireflyLightPrefab;
-    [SerializeField]
-    private GameObject[] fireflies;
+    [SerializeField] GameObject fireflyPrefab;
+    [SerializeField] GameObject fireflyLightPrefab;
+    // [SerializeField] private GameObject[] fireflies;
     [SerializeField] GameObject pauseButton;
 
-    [SerializeField]
-    GameObject dragonflyPrefab;
-    //[SerializeField]
-    //private GameObject[] dragonflies;
+    [SerializeField] GameObject dragonflyPrefab;
 
-    [SerializeField]
-    float[] bounds;
+    [SerializeField] float[] bounds;
 
-    [SerializeField]
-    bool finishGame = false;
-    [SerializeField]
-    bool stopDoingThis = false;
+    [SerializeField] bool finishGame = false;
+    [SerializeField] bool stopDoingThis = false;
 
-    [SerializeField]
-    int bugCounter;
-
-    [SerializeField]
-    int realAmountOfBugs;
-
-    [SerializeField]
-    int filledJars;
+    [SerializeField] int bugCounter;
+    [SerializeField] int realAmountOfBugs;
+    [SerializeField] int filledJars;
 
     int bugGoal = 10;
-
     int maxBugs = 10;
     int maxDragonflies = 2;
-
     int jarDamageLimit = 3;
 
-    [SerializeField]
-    int jarCurrentDamage = 0;
+    int bugCount = 0;
+    int maxBugCount = 30;
 
-    [SerializeField]
-    bool hitAlready = false;
-
+    [SerializeField] int jarCurrentDamage = 0;
+    [SerializeField] bool hitAlready = false;
     public static int[] bandFrequencies;
 
-    [SerializeField]
-    bool startGame = false;
-
-    [SerializeField]
-    bool startGameInEditor = false;
+    [SerializeField] bool startGame = false;
+    [SerializeField] bool startGameInEditor = false;
 
     // Use this for initialization
     void Start()
     {
         bounds = new float[4];
-        fireflies = new GameObject[10];
-        //dragonflies = new GameObject[2];
+        // fireflies = new GameObject[10];
         bandFrequencies = new int[10];
 
         bounds[0] = GameObject.Find("Top").gameObject.transform.position.y;
@@ -77,23 +56,12 @@ public class GameController : MonoBehaviour
         bounds[3] = GameObject.Find("Right").gameObject.transform.position.x;
 
         uiController = GameObject.FindGameObjectWithTag("UIController").GetComponent<UI>();
-        //player = GameObject.FindGameObjectWithTag("Player").GetComponent<Jar>();
         player = GameObject.FindGameObjectWithTag("Player");
         JarTopCollider = GameObject.FindGameObjectWithTag("JarTop");
-
-        /*if (Application.isEditor && startGameInEditor && GameObject.Find("ObjectKeeper ORIGINAL") == null)
-        {
-            GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
-            StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(PlayerPrefs.GetInt("sceneNumber")));
-            //StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(1));
-            GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
-            SetStartGame(true);
-        }*/
 
         aSFX = GameObject.Find("SFXController").GetComponent<AudioSFX>();
 		GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
 		StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio());
-		//StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio(1));
 		GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
 		SetStartGame(true);
     }
@@ -110,55 +78,33 @@ public class GameController : MonoBehaviour
 
     void InstantiateBug()
     {
-        for (int i = 0; i < fireflies.Length; i++)
-        {
-            if (fireflies[i] == null)
-            {
-                // Instantiate a new bug at a random position
-                Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
-                GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+        for(int j = 0; j < 10; j++) {
+            // Debug.Log("Making Bug # " + j);
+            // Instantiate a new bug at a random position
+            Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
+            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
 
-                newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[i];
-                fireflies[i] = newBug;
-                //Debug.LogWarning("Firefly " + i + " with band frequency " + bandFrequencies[i]);
-                return;
-            }
+            newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
+            bugCount++;
         }
     }
 
-    void InstantiateDragonfly()
-    {
-    /*
-        for (int i = 0; i < dragonflies.Length; i++)
+    IEnumerator InstantiateNewBugs() {
+        for (int j = 0; j < 10; j++)
         {
-            if (dragonflies[i] == null && i == 0)
-            {
-                // Instantiate a new bug at a random position
-                Vector2 randPos = new Vector2(bounds[2] - 4.0f, Random.Range(bounds[0], bounds[1]));
-                GameObject newBug = Instantiate(dragonflyPrefab, randPos, Quaternion.identity) as GameObject;
+            Debug.Log("Making Bug # " + j);
+            // Instantiate a new bug at a random position
+            Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
+            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
 
-                //Debug.Log("Starting Bug: " + randPos);
+            newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
+            bugCount++;
 
-                newBug.GetComponent<Dragonfly>().SetSpawnSide(false);
-
-                dragonflies[i] = newBug;
-
-                return;
-            }
-            else if (dragonflies[i] == null && i == 1)
-            {
-                // Instantiate a new bug at a random position
-                Vector2 randPos = new Vector2(bounds[3] + 4.0f, Random.Range(bounds[0], bounds[1]));
-                GameObject newBug = Instantiate(dragonflyPrefab, randPos, Quaternion.identity) as GameObject;
-
-                newBug.GetComponent<Dragonfly>().SetSpawnSide(true);
-
-                dragonflies[i] = newBug;
-
-                return;
-            }
-        }*/
+            float randWaitTime = Random.Range(0.4f, 1.5f);
+            yield return new WaitForSeconds(randWaitTime);
+        }
     }
+
     void InitializeBugs()
     {
         for (int i = 0; i < maxBugs; i++)
@@ -179,14 +125,12 @@ public class GameController : MonoBehaviour
                 newBug.GetComponentInChildren<Flicker>()._band = i;
             }
 
-            fireflies[i] = newBug;
             bandFrequencies[i] = newBug.GetComponentInChildren<Flicker>()._band;
 
             //Debug.Log("Firefly " + i + " with band frequency " + bandFrequencies[i]);
         }
 
         StartCoroutine("CheckToMakeNewFirefly");
-        StartCoroutine("CheckToMakeNewDragonfly");
     }
 
     public void CatchBug(string bugType, int jar)
@@ -195,9 +139,9 @@ public class GameController : MonoBehaviour
         {
             bugCounter++;
             realAmountOfBugs++;
+            bugCount--;
 
-            if (bugCounter == 10)
-            {
+            if (bugCounter == 30) {
 				aSFX.playJarDrop();
                 filledJars++;
                 bugCounter = 0;
@@ -205,17 +149,6 @@ public class GameController : MonoBehaviour
             }
 
             uiController.AddBug(jar);
-
-        }
-
-        if (finishGame)
-        {
-            if (bugCounter >= bugGoal)
-            {
-                stopDoingThis = true;
-                FinishGameTime();
-                finishGame = false;
-            }
         }
     }
 
@@ -329,29 +262,17 @@ public class GameController : MonoBehaviour
     {
         if (!stopDoingThis)
         {
-            int seconds = Random.Range(1, 4);
+            if (bugCount < maxBugCount) {
 
-            InstantiateBug();
+                // InstantiateBug();
+                StartCoroutine(InstantiateNewBugs());
+            }
 
             //Debug.Log("Went to CheckToMakeNewBug, seconds: " + seconds);
-
+            int seconds = Random.Range(10, 20);
             yield return new WaitForSecondsRealtime(seconds);
 
             StartCoroutine("CheckToMakeNewFirefly");
-        }
-    }
-
-    IEnumerator CheckToMakeNewDragonfly()
-    {
-        if (!stopDoingThis)
-        {
-            int seconds = Random.Range(5, 10);
-
-            yield return new WaitForSecondsRealtime(seconds);
-
-            InstantiateDragonfly();
-
-            StartCoroutine("CheckToMakeNewDragonfly");
         }
     }
 

@@ -45,10 +45,6 @@ public class UI : MonoBehaviour {
 
     [SerializeField] GameController gc;
 
-    //[SerializeField] GameObject fireflyUI;
-
-    //[SerializeField] private Color32 currentColorMultiplier;
-
     [SerializeField] private Color32[] currentColor;
     [SerializeField] private Color32[] previousColor;
 
@@ -89,8 +85,6 @@ public class UI : MonoBehaviour {
         }
 
         theState = IngameMenuStates.PLAY;
-
-        //currentColorMultiplier = Color.clear;
     }
 
     // Use this for initialization
@@ -104,15 +98,6 @@ public class UI : MonoBehaviour {
     void Update () {
 
         lerpColorTime = (lerpColorTime += Time.deltaTime) / 1f;
-
-        //fireflyJarMultiplier.color = Color32.Lerp(fireflyJarMultiplier.color, currentColorMultiplier, lerpColorTime);
-
-        /*if (fireflyJarMultiplier.color == Color.white)
-        {
-            lerpColorTime = 0;
-            fireflyColorConvertUI = 0;
-            currentColorMultiplier = Color.clear;
-        }*/
 
         for (int i = 0; i < glows.Length; i++)
         {
@@ -132,18 +117,6 @@ public class UI : MonoBehaviour {
             FinishGame(gc.GetFilledJars());
         }
 
-        //Debug.Log(crackedJarFireflies.isPlaying);
-
-        /*if (Input.GetKeyDown(KeyCode.J))
-        {
-            FinishGame(gc.GetFilledJars());
-        }
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            AddBug(1);
-        }*/
-
         progressBar.fillAmount = am.GetComponent<AudioSource>().time / am.GetComponent<AudioSource>().clip.length;
 
         if (Input.GetKeyDown(KeyCode.L))
@@ -158,7 +131,6 @@ public class UI : MonoBehaviour {
         }
 
         scoreText.text = gc.GetAmountOfBugs().ToString();
-        //multiplierText.text = "x " + gc.GetFilledJars();
 
         switch (theState)
         {
@@ -201,14 +173,6 @@ public class UI : MonoBehaviour {
     // get rid of the scaling when u have the final artwork for the cracked jars (with the strings holding it up)
     public void setJarImage(int val)
     {
-        /*jars[0].gameObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
-        jars[1].gameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-        jars[2].gameObject.transform.localScale = new Vector3(0.09f, 0.09f, 0.09f);
-        jars[3].gameObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
-        jars[4].gameObject.transform.localScale = new Vector3(0.09f, 0.09f, 0.09f);*/
-
-        //uiJarMultiplier.sprite = jarImagesMultiplier[val];
-
         for (int i = 0; i < jars.Length; i++)
         {
             jars[i].sprite = jarImages[val];
@@ -251,8 +215,6 @@ public class UI : MonoBehaviour {
             fireflyColorConvert[bugNumber] += 25.5f;
         }
 
-        //Mathf.Clamp(fireflyColorConvert, 0, 255);
-
         if (fireflyColorConvert[bugNumber] > 255)
         {
             fireflyColorConvert[bugNumber] = 255;
@@ -272,8 +234,6 @@ public class UI : MonoBehaviour {
         
         currentColor[bugNumber] = new Color32(255, 255, 255,(byte)fireflyColorConvert[bugNumber]);
 
-        //currentColorMultiplier = new Color32(255, 255, 255, (byte)fireflyColorConvertUI);
-
         jars[bugNumber].GetComponent<JarPulse>().SetPulse(true);
     }
 
@@ -285,8 +245,6 @@ public class UI : MonoBehaviour {
         {
             fireflyColorConvert[bugNumber] -= 25.5f;
         }
-
-        //Mathf.Clamp(fireflyColorConvert, 0, 255);
 
         if (fireflyColorConvert[bugNumber] < 0)
         {
@@ -306,8 +264,7 @@ public class UI : MonoBehaviour {
         previousColor[bugNumber] = glows[bugNumber].color;
         
         currentColor[bugNumber] = new Color32(255, 255, 255, (byte)fireflyColorConvert[bugNumber]);
-
-        //currentColorMultiplier = new Color32(255, 255, 255, (byte)fireflyColorConvertUI);
+        
     }
 
     public void FinishGame (int multiplier)
@@ -342,10 +299,6 @@ public class UI : MonoBehaviour {
     IEnumerator CountUpScore()
     {
         yield return new WaitForSecondsRealtime(0.001f);
-        //yield return new WaitForFixedUpdate();
-        //yield return new WaitForEndOfFrame();
-
-        //totalScoreFG.text = tempScoreCounter.ToString();
 
         if (tempScoreCounter < totalScore)
         {
