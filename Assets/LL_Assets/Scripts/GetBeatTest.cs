@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GetBeatTest : MonoBehaviour {
 
+	bool moveLeft = false;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -19,12 +21,16 @@ public class GetBeatTest : MonoBehaviour {
 
 	void move ()
 	{
-		if (this.transform.position.x >= 8.4) {
+		if (moveLeft) {
 			Vector3 newPos = new Vector3(5.5f , transform.position.y, transform.position.z);
 			this.transform.position = newPos;
-		} else {
+			moveLeft = false;
+		} 
+		else 
+		{
 			Vector3 newPos = new Vector3(8.5f , transform.position.y, transform.position.z);
 			this.transform.position = newPos;
+			moveLeft = true;
 		}
 
 	}

@@ -33,7 +33,7 @@ public class Flicker : MonoBehaviour {
     void audioFlicker ()
 	{
 		Color tempColor = this.GetComponent<SpriteRenderer> ().color;
-		float bandFreq = AudioManager._currAudioSamples[_band];
+		float bandFreq = AudioPeer._audioBandBuffer[_band];
 
 		if (bandFreq < minAudioFreq) {
 			bugParent.GetComponent<FireFly>().isOn = false;
@@ -59,10 +59,10 @@ public class Flicker : MonoBehaviour {
 	void audioScale ()
 	{
 		if (_useLerp) {
-			this.transform.localScale = Vector3.Lerp(this.transform.localScale, new Vector3 ((AudioManager._currAudioSamples[_band] * _scaleMultiplier) + _startScale, (AudioManager._currAudioSamples[_band] * _scaleMultiplier) + _startScale, 1.0f), _scaleSpeed * Time.deltaTime);
+			this.transform.localScale = Vector3.Lerp(this.transform.localScale, new Vector3 ((AudioPeer._audioBandBuffer[_band] * _scaleMultiplier) + _startScale, (AudioPeer._audioBandBuffer[_band]* _scaleMultiplier) + _startScale, 1.0f), _scaleSpeed * Time.deltaTime);
 		}
 		if (!_useLerp) {
-			this.transform.localScale = new Vector3 ((AudioManager._currAudioSamples[_band] * _scaleMultiplier) + _startScale, (AudioManager._currAudioSamples[_band] * _scaleMultiplier) + _startScale, 1.0f);
+			this.transform.localScale = new Vector3 ((AudioPeer._audioBandBuffer[_band] * _scaleMultiplier) + _startScale, (AudioPeer._audioBandBuffer[_band] * _scaleMultiplier) + _startScale, 1.0f);
 		}
 	}
 }

@@ -144,7 +144,6 @@ public class EvilBug : MonoBehaviour {
 	{
 		if (other.gameObject.CompareTag("JarTop"))
 		{
-			Debug.Log("Hit player!!");
 			aSFX.playDodo();
 
 			//TODO: Disable Collider? or end lyfe cycle?

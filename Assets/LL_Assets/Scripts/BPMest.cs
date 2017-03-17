@@ -9,6 +9,6 @@ public class BPMest : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		text.text = "BPM ESTIMATE: " + AudioPeer.EstimateBPM;
+		text.text = "BPM ESTIMATE: " + AudioManager.beatCheck;
 	}
 }
