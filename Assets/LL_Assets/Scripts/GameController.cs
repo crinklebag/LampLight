@@ -143,7 +143,12 @@ public class GameController : MonoBehaviour
 
             if (bugCounter == 30) {
 				aSFX.playJarDrop();
-                filledJars++;
+
+                if (filledJars < 5)
+                {
+                    filledJars++;
+                }
+
                 bugCounter = 0;
                 uiController.SetJarYPos(filledJars);
             }
@@ -160,7 +165,8 @@ public class GameController : MonoBehaviour
         Destroy(player.GetComponent<Jar>());
         Destroy(player.GetComponent<BoxCollider2D>());
         Destroy(JarTopCollider);
-        uiController.FinishGame(filledJars);
+        //uiController.FinishGame(filledJars);
+		uiController.setStartJarParticles(true);
         pauseButton.SetActive(false);
     }
 
@@ -251,6 +257,7 @@ public class GameController : MonoBehaviour
             uiController.setJarImage(jarCurrentDamage);
             player.GetComponent<Drag>().FlashJar();
         }
+
 
         if (jarCurrentDamage == jarDamageLimit)
         {

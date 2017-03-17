@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof (AudioSource))]
 public class AudioPeer : MonoBehaviour {
 
-	private string path = @"D:\Text\test.txt";
+	//private string path = @"D:\Text\test.txt";
 
 	private AudioSource _audioSource;
 	public static float[] _samples = new float[512];	//20,000 hz into 512 samples
@@ -26,14 +26,15 @@ public class AudioPeer : MonoBehaviour {
 	//public static float[] _beatSamples = new float[128];//20,000 hz into 128 samples [0]: 0-172hz :D
 														//60-120hz bass kick
 														//120-150hz snare
-	[SerializeField] float beatThreshValue = 0.3f;
-	[SerializeField] float beatPostIgnore = 250.0f;		//Time in milliseconds to ignore beat
-	private static float beatLastTime = 0.0f;					//Last time the beat occured
+	//[SerializeField] float beatThreshValue = 0.3f;
+	//[SerializeField] float beatPostIgnore = 250.0f;		//Time in milliseconds to ignore beat
+	//private static float beatLastTime = 0.0f;					//Last time the beat occured
 
-	private static bool beatDetected = false;
+	//private static bool beatDetected = false;
 
 	private static float CurrentTimeInMs = 0.0f;		//Hold the audio clip's current time in milliseconds
 
+	/*
 	private static Queue<float> beatTimes;
 	private static float lastQueuedTime;						//List of how many milliseconds ago the last beat was
 	private  static float beatQueueCutoff = 10000;		//Number of milliseconds of previous beats to keep in the queue
@@ -41,11 +42,12 @@ public class AudioPeer : MonoBehaviour {
 
 	static float msPerBeat;
 	public static float EstimateBPM;
+	*/
 
 	void Start () 
 	{
 		_audioSource = this.gameObject.GetComponent<AudioSource>();
-		beatTimes = new Queue<float>();
+		//beatTimes = new Queue<float>();
 	}
 
 	void Update () 
@@ -55,9 +57,9 @@ public class AudioPeer : MonoBehaviour {
 		BandBuffer();
 		CreateAudioBands();
 		GetAmplitude();
-		AudioClipTick();
-		DetectBeat();
-		PredictBPM();
+		//AudioClipTick();
+		//DetectBeat();
+		//PredictBPM();
 	}
 
 	void GetSpectrumAudioSource()
@@ -148,7 +150,7 @@ public class AudioPeer : MonoBehaviour {
 	//create audioband & audiobandbuffer for freq band & bufferband 0 to 1 values
 	void CreateAudioBands ()
 	{
-		path = @"D:\Text\" + _audioSource.clip.name + ".txt";
+		//path = @"D:\Text\" + _audioSource.clip.name + ".txt";
 		for (int i = 0; i < 8; i++) {
 			if (_freqBands [i] > _freqBandHighest [i]) {
 				_freqBandHighest [i] = _freqBands [i];
@@ -157,6 +159,7 @@ public class AudioPeer : MonoBehaviour {
 			_audioBand [i] = (_freqBands [i] / _freqBandHighest [i]);
 			_audioBandBuffer [i] = (_bandBuffer [i] / _freqBandHighest [i]);
 
+			/*
 			//Write to txt file
 			if (i == 7) {
 				System.IO.File.AppendAllText (path, _audioBandBuffer [i].ToString ());
@@ -164,6 +167,7 @@ public class AudioPeer : MonoBehaviour {
 			} else {
 				System.IO.File.AppendAllText (path, _audioBandBuffer [i].ToString () + ",");
 			}
+			*/
 		}
 	}
 
@@ -188,6 +192,7 @@ public class AudioPeer : MonoBehaviour {
 		_amplitudeBuffer = _currentAmplitudeBuffer / _amplitudeHighest;
 	}
 
+	/*
 	//Reset each frequency band's highest value, used for changing songs
 	//Reset current audio clip time in milliseconds as well
 	//Clear beatTimes Queue..
@@ -201,9 +206,9 @@ public class AudioPeer : MonoBehaviour {
 			_freqBandHighest[i] = 0.0f;
 		}
 
-		/*for(int i = 0; i < 8; i++){
+		for(int i = 0; i < 8; i++){
 			Debug.Log("freqBandHighest"+ i + ": " + _freqBandHighest[i]); 
-		}*/
+		}
 
 		CurrentTimeInMs = 0.0f;
 		beatLastTime = 0.0f;
@@ -212,6 +217,7 @@ public class AudioPeer : MonoBehaviour {
 		Debug.Log("Band Averages Reset");
 		yield return null;
 	}
+
 
 	void DetectBeat ()
 	{
@@ -275,6 +281,7 @@ public class AudioPeer : MonoBehaviour {
 		}
 	}
 
+
 	//Return the songs counter, for beatDetection
 	float GetAudioClipTime ()
 	{
@@ -286,4 +293,5 @@ public class AudioPeer : MonoBehaviour {
 	{
 		return beatDetected;
 	}
+	*/
 }

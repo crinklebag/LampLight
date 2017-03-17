@@ -33,11 +33,13 @@ public class AudioManager : MonoBehaviour {
 
 
 	/*AudioTxtReader*/
+	/*
 	public TextAsset[] audioData;//Text file containing audio band data
 	private static List<float> _allAudioSamples  = new List<float>();//extracted data from text asset
 	public static float[] _currAudioSamples = new float[8];//current data to read from
 	private float[] _prevAudioSamples = new float[8];//if data parse fails use the last known sample, also used to prevent rapid flickering at audio start
 	private float newVal = 0.0f;//hold the new sample value
+	*/
 
 	[SerializeField] private float _startDelay = 3.0f;//delay to start playing audio and reading data
 	[SerializeField] private float readIntervalTick = 0.02f;//Interval to read audio data, must be the same as interval written
@@ -57,10 +59,12 @@ public class AudioManager : MonoBehaviour {
 		beatCheckEighth = GetEighthBeat();
 
 		//Stop reading data once the song is over, the audio won't be playing and pause bool will still be false
+		/*
 		if (!aSource.isPlaying && !isPaused) 
 		{
 			stopReadingData();
 		}
+		*/
 
 		if(Input.GetKeyDown(KeyCode.Space))
 			StartCoroutine(PlayPauseAudio());
@@ -73,21 +77,41 @@ public class AudioManager : MonoBehaviour {
 
 	public IEnumerator StartAudio ()
 	{
-        //Set song index to selected index, set audio clip for audio source, set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
-        //songIndex = index;
-        //aSource.clip = allAudioClips [songIndex];
-        aSource.clip = Resources.Load<AudioClip>("Audio/" + PlayerPrefs.GetString("sceneNumber"));
+		//Set song index to selected index, set audio clip for audio source, set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
+		//songIndex = index;
+		//aSource.clip = allAudioClips [songIndex];
+		//Debug.Log (PlayerPrefs.GetString ("sceneNumber"));
+		aSource.clip = Resources.Load<AudioClip> ("Audio/" + PlayerPrefs.GetString ("sceneNumber"));
 		clipLength = aSource.clip.length;
 		beatCounter = 0;
+
+		switch (PlayerPrefs.GetString ("sceneNumber")) 
+		{
+			case "Seasons Change":
+				songIndex = 0;
+				break;
+			case "Get Free":
+				songIndex = 1;
+				break;
+			case "Dream Giver":
+				songIndex = 2;
+				break;
+			case "Spirit Speaker":
+				songIndex = 3;
+				break;
+			default:
+				break;
+		}
+
 		timeBetweenBeats = 60.0f / bpm[songIndex];
 
 		// Needed for making BG scroll to length of song
 		//GameObject.Find ("BG").GetComponent<BackgroundScroller> ().Reset (clipLength);
 
 		//Wait until txt file is loaded, play audio, invoke readAudioData and beatCount
-		yield return StartCoroutine(LoadTxtFile(songIndex));
+		//yield return StartCoroutine(LoadTxtFile(songIndex));
 		aSource.PlayScheduled(AudioSettings.dspTime + _startDelay);
-		InvokeRepeating("ReadAudioData", _startDelay, readIntervalTick);
+		//InvokeRepeating("ReadAudioData", _startDelay, readIntervalTick);
 		InvokeRepeating("BeatCount", _startDelay, timeBetweenBeats);
 
 		yield return null;
@@ -95,6 +119,7 @@ public class AudioManager : MonoBehaviour {
 
 	//Reads Audio data from txt file, splits txt file into lines (each line is the 8 bars current value per frame)
 	//Splits each line into values which are passed to the all audio samples list
+	/*
 	IEnumerator LoadTxtFile (int fileIndex)
 	{
 		//Reset line counter, clear arrays, set starting max value to prevent rapid flickering on start
@@ -128,7 +153,8 @@ public class AudioManager : MonoBehaviour {
 		}
 		yield return null;
 	}
-
+	*/
+	/*
 	//Reads audio data at a set interval, continuously invoked but only reads when we are unPaused
 	void ReadAudioData ()
 	{
@@ -143,6 +169,7 @@ public class AudioManager : MonoBehaviour {
 			sampleCounter += 8;
 		}
 	}
+	*/
 
 	//BeatCounter is increased at set interval of the bpm
 	bool GetBeat ()
@@ -189,7 +216,7 @@ public class AudioManager : MonoBehaviour {
 	//Cancel invokes when audio clip isnt playing, and the song hasnt been paused (end of audio)
 	void stopReadingData ()
 	{
-		CancelInvoke("ReadAudioData");
+		//CancelInvoke("ReadAudioData");
 		CancelInvoke("BeatCount");
 	}
 
@@ -250,78 +277,12 @@ public class AudioManager : MonoBehaviour {
 		for (int i = 0; i < 8; i++) 
 		{
 			//Lerp curr audio sample down to 0.0f
-			while(_currAudioSamples[i] > 0.01f)
+			while(AudioPeer._audioBandBuffer[i] > 0.01f)
 			{
-				_currAudioSamples[i] = Mathf.Lerp(_currAudioSamples[i], 0.0f, Time.deltaTime * sampleFadeTime);
+				AudioPeer._audioBandBuffer[i] = Mathf.Lerp(AudioPeer._audioBandBuffer[i], 0.0f, Time.deltaTime * sampleFadeTime);
 				yield return null;
 			}
 		}
 		yield return null;
 	}
-
-	/*
-	public IEnumerator NextSong ()
-	{
-		Debug.Log("Next Song");
-		aSource.Stop();
-		songIndex = songIndex+1;
-
-		//Prevent index from going out of bounds
-		if(songIndex > (allAudioClips.Count -1))
-			songIndex = 0;
-
-		//Reset band highest average in the audio peer class for the next song
-		//aSource.GetComponent<AudioPeer>().ResetBandAverage();
-		yield return StartCoroutine(AudioPeer.ResetFreqHighest());
-
-		Debug.Log("Song Index: " + songIndex);
-		aSource.clip = allAudioClips [songIndex];
-		clipLength = aSource.clip.length;
-
-        // Needed for making BG scroll to length of song
-        GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
-        aSource.Play ();
-	}
-	*/
-	/*
-	public IEnumerator PreviousSong()
-	{
-		Debug.Log("Previous Song");
-		aSource.Stop();
-		songIndex = songIndex-1;
-
-		//Prevent index from going out of bounds
-		if(songIndex < 0)
-			songIndex = allAudioClips.Count -1;
-
-		//Reset band highest average in the audio peer class for the next song
-		//aSource.GetComponent<AudioPeer>().ResetBandAverage();
-		yield return StartCoroutine(AudioPeer.ResetFreqHighest());
-
-		Debug.Log("Song Index: " + songIndex);
-		aSource.clip = allAudioClips [songIndex];
-		clipLength = aSource.clip.length;
-
-		// Needed for making BG scroll to length of song
-		GameObject.Find("BG").GetComponent<BackgroundScroller>().Reset(clipLength);
-		aSource.Play ();
-	}
-	*/
-	/*
-	IEnumerator AutoNextSong ()
-	{
-		//While the song has not ended & if audio is playing, decrease clipLength, when clipLength <= 0.0 the next song is started
-		while (clipLength > 0.0f) {
-			if (!isPaused) {
-				clipLength -= Time.deltaTime;
-				//Debug.Log("Clip Length Remaining: " + clipLength);
-			}
-			yield return null;
-		}
-		NextSong();
-		StartCoroutine(NextSong());
-
-		StartCoroutine(AutoNextSong());
-	}
-	*/
 }

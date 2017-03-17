@@ -64,6 +64,8 @@ public class UI : MonoBehaviour {
 
     [SerializeField] bool[] jarsPulseAlready;
 
+    [SerializeField] bool calledCountUpCoroutine = false;
+
     void Awake()
     {
         previousColor = new Color32[jars.Length];
@@ -288,7 +290,13 @@ public class UI : MonoBehaviour {
             totalScore = score;
         }
 
-        StartCoroutine("CountUpScore");
+		if (!calledCountUpCoroutine)
+		{
+			StartCoroutine("CountUpScore");
+			calledCountUpCoroutine = true;
+		}
+
+        
     }
 
     public void SetHasTouchedAtEnd(bool val)
@@ -298,20 +306,22 @@ public class UI : MonoBehaviour {
 
     IEnumerator CountUpScore()
     {
-        yield return new WaitForSecondsRealtime(0.001f);
+		yield return new WaitForSecondsRealtime(0.001f);
 
-        if (tempScoreCounter < totalScore)
-        {
+		while (tempScoreCounter < totalScore)
+		{
+            if (hasTouchedAtEnd)
+            {
+                break;
+            }
+
             tempScoreCounter++;
-        }
 
-        if (tempScoreCounter == totalScore || hasTouchedAtEnd)
-        {
-            tempScoreCounter = totalScore;
-            exitButtonFG.SetActive(true);
-        }
+			yield return new WaitForSecondsRealtime(0.001f);
+		}
 
-        StartCoroutine("CountUpScore");
+        tempScoreCounter = totalScore;
+        exitButtonFG.SetActive(true);
     }
 
     public void CallPause()
