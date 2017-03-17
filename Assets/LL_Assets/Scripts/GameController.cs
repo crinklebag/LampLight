@@ -143,7 +143,12 @@ public class GameController : MonoBehaviour
 
             if (bugCounter == 30) {
 				aSFX.playJarDrop();
-                filledJars++;
+
+                if (filledJars < 5)
+                {
+                    filledJars++;
+                }
+
                 bugCounter = 0;
                 uiController.SetJarYPos(filledJars);
             }
@@ -252,7 +257,9 @@ public class GameController : MonoBehaviour
             uiController.setJarImage(jarCurrentDamage);
             player.GetComponent<Drag>().FlashJar();
         }
-        else if (jarCurrentDamage == jarDamageLimit)
+
+
+        if (jarCurrentDamage == jarDamageLimit)
         {
             FinishGameDie();
         }

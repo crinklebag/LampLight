@@ -308,8 +308,13 @@ public class UI : MonoBehaviour {
     {
 		yield return new WaitForSecondsRealtime(0.001f);
 
-		while (tempScoreCounter < totalScore || hasTouchedAtEnd)
+		while (tempScoreCounter < totalScore)
 		{
+            if (hasTouchedAtEnd)
+            {
+                break;
+            }
+
             tempScoreCounter++;
 
 			yield return new WaitForSecondsRealtime(0.001f);
