@@ -160,7 +160,8 @@ public class GameController : MonoBehaviour
         Destroy(player.GetComponent<Jar>());
         Destroy(player.GetComponent<BoxCollider2D>());
         Destroy(JarTopCollider);
-        uiController.FinishGame(filledJars);
+        //uiController.FinishGame(filledJars);
+		uiController.setStartJarParticles(true);
         pauseButton.SetActive(false);
     }
 
@@ -251,8 +252,7 @@ public class GameController : MonoBehaviour
             uiController.setJarImage(jarCurrentDamage);
             player.GetComponent<Drag>().FlashJar();
         }
-
-        if (jarCurrentDamage == jarDamageLimit)
+        else if (jarCurrentDamage == jarDamageLimit)
         {
             FinishGameDie();
         }
