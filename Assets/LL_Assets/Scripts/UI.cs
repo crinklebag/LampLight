@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 public class UI : MonoBehaviour {
 
+    public int[] TimesFireflyWentHere { get { return timesFireflyWentHere; } set { timesFireflyWentHere = value; } }
+    public bool[] JarsYSetAlready { get { return jarsYSetAlready; } set { jarsYSetAlready = value; } }
+    public bool WinGame { get { return winGame; } set { winGame = value; } }
+
     public enum IngameMenuStates
     {
         PLAY,
@@ -19,107 +23,180 @@ public class UI : MonoBehaviour {
     //public Text multiplierText;
     //public Image uiJarMultiplier;
     //public Image fireflyJarMultiplier;
-
     public Text bugsCaughtFG;
 	public Text jarsFilledFG;
 	public Text totalScoreMulFG;
     public Text totalScoreFG;
-	
-
+    public Text countdown;
 
     public Image FGOverlay;
-    public GameObject exitButtonFG;
-
     public Image progressBar;
 
     public ParticleSystem[] crackedJarFireflies;
 
-    [SerializeField] public SpriteRenderer[] glows;
-    [SerializeField] public SpriteRenderer[] jars;
+    public Light[] pointLights;
+
+    public SpriteRenderer[] glows;
+    public SpriteRenderer[] jars;
 
     public Sprite[] jarImages; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
     //public Sprite[] jarImagesMultiplier; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
 
     public GameObject[] brokenHalfJars;
     public GameObject am;
+    public GameObject exitButtonFG;
 
-    [SerializeField] GameController gc;
+    GameController gc;
 
     [SerializeField] private Color32[] currentColor;
-    [SerializeField] private Color32[] previousColor;
 
+    [SerializeField] Vector3[] beginningJarPos;
+
+    [SerializeField] float[] intensities;
     [SerializeField] float[] fireflyColorConvert;
     [SerializeField] float[] jarsY;
-    [SerializeField] float lerpColorTime = 0;
-    [SerializeField] float fireflyColorConvertUI;
+    [SerializeField] float jarDistance;
+    [SerializeField] float jarDistanceOffset;
+    float lerpColorTime = 0;
+    float fireflyColorConvertUI;
+    float maxLightIntensity = 0.6f;
     float jarsYLerpTime = 0;
 
-    [SerializeField] int score = 0;
-    [SerializeField] int totalScore = 0;
-    [SerializeField] int tempScoreCounter = 0;
+    int maxFireflies = 30;
+    int score = 0;
+    int totalScore = 0;
+    int tempScoreCounter = 0;
+    [SerializeField] int[] timesFireflyWentHere;
 
-    [SerializeField] bool startJarParticles = false;
     [SerializeField] bool hasTouchedAtEnd = false;
     [SerializeField] bool[] jarsYSetAlready;
-
     [SerializeField] bool[] jarsPulseAlready;
-
-    [SerializeField] bool calledCountUpCoroutine = false;
+    bool calledCountUpCoroutine = false;
+    [SerializeField] bool winGame = false;
+    bool startedGame = false;
 
     void Awake()
     {
-        previousColor = new Color32[jars.Length];
+        countdown = GameObject.Find("Countdown").GetComponent<Text>();
+
         currentColor = new Color32[jars.Length];
         jarsY = new float[jars.Length];
         fireflyColorConvert = new float[jars.Length];
+        intensities = new float[jars.Length];
         jarsYSetAlready = new bool[jars.Length];
-        jarsPulseAlready = new bool[jars.Length];		
+        jarsPulseAlready = new bool[jars.Length];
+        beginningJarPos = new Vector3[jars.Length];
+        timesFireflyWentHere = new int[jars.Length + 1];
+
+        pointLights = new Light[jars.Length];
+        brokenHalfJars = new GameObject[jars.Length];
+        crackedJarFireflies = new ParticleSystem[jars.Length];
+        glows = new SpriteRenderer[jars.Length];
 
         for (int i = 0; i < jars.Length; i++)
         {
-            jars[i].gameObject.transform.position = new Vector3(jars[i].gameObject.transform.position.x, jars[i].gameObject.transform.position.y + 4.0f, jars[i].gameObject.transform.position.z);
+            pointLights[i] = jars[i].GetComponentInChildren<Light>();
 
-            previousColor[i] = glows[i].color;
-            currentColor[i] = Color.clear;
-            jarsY[i] = jars[i].gameObject.transform.position.y;
-            jarsYSetAlready[i] = false;
-            jarsPulseAlready[i] = false;
+            if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+            {
+                brokenHalfJars[i] = jars[i].GetComponentInChildren<Rigidbody2D>().gameObject;
+                brokenHalfJars[i].gameObject.GetComponent<Rigidbody2D>().simulated = true;
+                brokenHalfJars[i].gameObject.SetActive(false);
+            }
+            
+            crackedJarFireflies[i] = jars[i].GetComponentInChildren<ParticleSystem>();
+            glows[i] = jars[i].GetComponentsInChildren<SpriteRenderer>()[1];
         }
+
+        if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+        {
+            for (int i = 0; i < jars.Length; i++)
+            {
+                currentColor[i] = Color.clear;
+                intensities[i] = 0.0f;
+                jarsYSetAlready[i] = false;
+                jarsPulseAlready[i] = false;
+
+                jars[i].gameObject.transform.position = new Vector3(jars[i].gameObject.transform.position.x, jars[i].gameObject.transform.position.y + (jarDistance - jarDistanceOffset), jars[i].gameObject.transform.position.z);
+
+                beginningJarPos[i] = new Vector3(jars[i].gameObject.transform.position.x, jars[i].gameObject.transform.position.y, jars[i].gameObject.transform.position.z);
+
+                jarsY[i] = beginningJarPos[i].y;
+            }
+        }
+        
+        countdown.gameObject.SetActive(false);
+        startedGame = false;
 
         theState = IngameMenuStates.PLAY;
     }
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         gc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 
-        SetJarYPos(0);
+        StartCoroutine("Countdown");
     }
 
     // Update is called once per frame
-    void Update () {
-
+    void Update ()
+    {
         lerpColorTime = (lerpColorTime += Time.deltaTime) / 1f;
 
-        for (int i = 0; i < glows.Length; i++)
+        timesFireflyWentHere[5] = gc.FilledJars;
+
+        if (Application.loadedLevelName != "Main_Mobile_Waterfall")
         {
-            glows[i].color = Color32.Lerp(previousColor[i], currentColor[i], lerpColorTime);
-
-            jars[i].gameObject.transform.position = new Vector3(jars[i].gameObject.transform.position.x, Mathf.Lerp(jars[i].gameObject.transform.position.y, jarsY[i], jarsYLerpTime += (Time.deltaTime * 0.01f)), jars[i].gameObject.transform.position.z);
-
-            if (jarsYSetAlready[i] && !jarsPulseAlready[i] && jars[i].gameObject.transform.position.y <= jarsY[i] + 0.1f)
+            if (Vector3.Distance(jars[0].gameObject.transform.position, beginningJarPos[0]) >= 0.54f && Vector3.Distance(jars[0].gameObject.transform.position, beginningJarPos[0]) <= 0.65f && jarsYSetAlready[0] == false)
             {
-                jars[i].gameObject.GetComponent<JarPulse>().SetPulse(true);
-                jarsPulseAlready[i] = true;
+                SetJarYPos(0);
             }
         }
 
-        if (startJarParticles && glows[0].color == currentColor[0] && glows[1].color == currentColor[1] && glows[2].color == currentColor[2] && glows[3].color == currentColor[3] && glows[4].color == currentColor[4])
+        for (int i = 0; i < glows.Length; i++)
         {
-            FinishGame(gc.GetFilledJars());
+            glows[i].color = Color32.Lerp(glows[i].color, currentColor[i], lerpColorTime);
+            pointLights[i].intensity = Mathf.Lerp(pointLights[i].intensity, intensities[i], lerpColorTime);
+
+            if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+            {
+                float y = Mathf.Lerp(jars[i].gameObject.transform.position.y, jarsY[i], jarsYLerpTime += (Time.deltaTime * 0.01f));
+
+                jars[i].gameObject.transform.position = new Vector3(jars[i].gameObject.transform.position.x, y, jars[i].gameObject.transform.position.z);
+
+                if (jarsYSetAlready[i] && !jarsPulseAlready[i] && jars[i].gameObject.transform.position.y <= jarsY[i] + 0.1f)
+                {
+                    jars[i].gameObject.GetComponent<JarPulse>().SetPulse(true);
+                    jarsPulseAlready[i] = true;
+                }
+            }
+            else
+            {
+                if (jarsYSetAlready[i] && !jarsPulseAlready[i])
+                {
+                    jars[i].gameObject.GetComponent<JarPulse>().SetPulse(true);
+                    jarsPulseAlready[i] = true;
+                }
+            }
         }
 
-        progressBar.fillAmount = am.GetComponent<AudioSource>().time / am.GetComponent<AudioSource>().clip.length;
+            // to reset after every 5 jars are all full
+            if (timesFireflyWentHere[4] >= maxFireflies && jarsYSetAlready[4])
+            {
+                jarsYSetAlready[4] = false;
+                ResetJars();
+            }
+
+            if (winGame && glows[0].color == currentColor[0] && glows[1].color == currentColor[1] && glows[2].color == currentColor[2] && glows[3].color == currentColor[3] && glows[4].color == currentColor[4] )
+            {
+                FinishGame(gc.FilledJars);
+            }
+
+        if (startedGame)
+        {
+            progressBar.fillAmount = am.GetComponent<AudioSource>().time / am.GetComponent<AudioSource>().clip.length;
+        }
 
         if (Input.GetKeyDown(KeyCode.L))
         {
@@ -154,7 +231,38 @@ public class UI : MonoBehaviour {
             default:
                 break;
         }
+    }
 
+    IEnumerator Countdown()
+    {
+        for (int i = 3; i >= 0; i--)
+        {
+            countdown.gameObject.SetActive(true);
+
+            if (i == 0)
+            {
+                countdown.text = "GO!";
+            }
+            else
+            {
+                countdown.text = i.ToString();
+            }
+            
+            countdown.gameObject.GetComponent<Animator>().Play("CountdownFade", -1, 0.0f);
+
+            yield return new WaitForSecondsRealtime(1);
+        }
+
+        countdown.gameObject.SetActive(false);
+
+        if (Application.loadedLevelName == "Main_Mobile_Waterfall")
+        {
+            SetJarYPos(0);
+        }
+
+        startedGame = true;
+
+        gc.StartGameAfterCountdown();
     }
 
     public void SetJarYPos(int val)
@@ -162,23 +270,16 @@ public class UI : MonoBehaviour {
         if (val < jars.Length)
         {
             jarsYLerpTime = 0;
-            jarsY[val] = jars[val].gameObject.transform.position.y - 5.0f;
+            jarsY[val] = beginningJarPos[val].y - jarDistance;
             jarsYSetAlready[val] = true;
         }
     }
 
-    public void setStartJarParticles(bool val)
-    {
-        startJarParticles = val;
-    }
-
-    // get rid of the scaling when u have the final artwork for the cracked jars (with the strings holding it up)
     public void setJarImage(int val)
     {
         for (int i = 0; i < jars.Length; i++)
         {
             jars[i].sprite = jarImages[val];
-            //glows[i].transform.localScale = new Vector3(4, 4, 4);
         }
     }
 
@@ -192,29 +293,59 @@ public class UI : MonoBehaviour {
         lerpColorTime = 0;
         //currentColorMultiplier = Color.clear;
 
-        for (int i = 0; i < previousColor.Length; i++)
+        for (int i = 0; i < glows.Length; i++)
         {
             if (jarsYSetAlready[i] == true)
             {
                 fireflyColorConvert[i] = 0;
-                previousColor[i] = glows[i].color;
                 currentColor[i] = new Color32(255,255,255, (byte)fireflyColorConvert[i]);
+                intensities[i] = 0.0f;
 
-                brokenHalfJars[i].SetActive(true);
-                brokenHalfJars[i].GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-30, 30), Random.Range(-30, -10)));
+                if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+                {
+                    brokenHalfJars[i].SetActive(true);
+                    brokenHalfJars[i].GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-30, 30), Random.Range(-30, -10)));
+                }
 
                 crackedJarFireflies[i].Play();
             }
         }
     }
     
+    public void ResetJars()
+    {
+        for (int i = 0; i < glows.Length; i++)
+        {
+            fireflyColorConvert[i] = 0;
+            currentColor[i] = new Color32(255,255,255, (byte)fireflyColorConvert[i]);
+            intensities[i] = 0.0f;
+            timesFireflyWentHere[i] = 0;
+
+            if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+            {
+                jarsY[i] = beginningJarPos[i].y;
+            }
+
+            jarsYSetAlready[i] = false;
+            jarsPulseAlready[i] = false;
+        }
+
+        lerpColorTime = 0;
+        jarsYLerpTime = 0;
+
+        if (Application.loadedLevelName == "Main_Mobile_Waterfall")
+        {
+            SetJarYPos(0);
+        }
+    }
+
     public void AddBug(int bugNumber) {
         lerpColorTime = 0;
         score += 10;
 
         if (fireflyColorConvert[bugNumber] >= 0 && fireflyColorConvert[bugNumber] < 255)
         {
-            fireflyColorConvert[bugNumber] += 25.5f;
+            fireflyColorConvert[bugNumber] += (25.5f / (maxFireflies / 10));
         }
 
         if (fireflyColorConvert[bugNumber] > 255)
@@ -232,8 +363,19 @@ public class UI : MonoBehaviour {
             fireflyColorConvertUI = 255;
         }
 
-        previousColor[bugNumber] = glows[bugNumber].color;
-        
+        if (pointLights[bugNumber].intensity < maxLightIntensity)
+        {
+            intensities[bugNumber] += 0.05f;
+        }
+
+        timesFireflyWentHere[bugNumber]++;
+
+        if (timesFireflyWentHere[bugNumber] == maxFireflies)
+        {
+            gc.FilledJars++;
+            SetJarYPos(gc.FilledJars % 5);
+        }
+
         currentColor[bugNumber] = new Color32(255, 255, 255,(byte)fireflyColorConvert[bugNumber]);
 
         jars[bugNumber].GetComponent<JarPulse>().SetPulse(true);
@@ -245,7 +387,7 @@ public class UI : MonoBehaviour {
 
         if (fireflyColorConvert[bugNumber] > 0)
         {
-            fireflyColorConvert[bugNumber] -= 25.5f;
+            fireflyColorConvert[bugNumber] -= (25.5f / (maxFireflies / 10));
         }
 
         if (fireflyColorConvert[bugNumber] < 0)
@@ -263,8 +405,18 @@ public class UI : MonoBehaviour {
             fireflyColorConvertUI = 0;
         }
 
-        previousColor[bugNumber] = glows[bugNumber].color;
-        
+        intensities[bugNumber] -= 0.05f;
+
+        if (intensities[bugNumber] < 0.0f)
+        {
+            intensities[bugNumber] = 0.0f;
+        }
+
+        if (timesFireflyWentHere[bugNumber] > 0)
+        {
+            timesFireflyWentHere[bugNumber]--;
+        }
+
         currentColor[bugNumber] = new Color32(255, 255, 255, (byte)fireflyColorConvert[bugNumber]);
         
     }
@@ -281,7 +433,6 @@ public class UI : MonoBehaviour {
 			totalScoreMulFG.text = score.ToString () + " x " + multiplier.ToString ();
 			totalScoreFG.text = tempScoreCounter.ToString ();
             totalScore = score * multiplier;
-			
         }
         else
         {
@@ -295,8 +446,6 @@ public class UI : MonoBehaviour {
 			StartCoroutine("CountUpScore");
 			calledCountUpCoroutine = true;
 		}
-
-        
     }
 
     public void SetHasTouchedAtEnd(bool val)
