@@ -62,7 +62,7 @@ public class StretchUIMask : MonoBehaviour {
             ChooseLocation();
         }
 
-        Debug.Log(mainMenuController.GetCurrentState());
+        // Debug.Log(mainMenuController.GetCurrentState());
 
         if (mainMenuController.GetCurrentState() == 2) {
             buttons.SetActive(true);
