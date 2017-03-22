@@ -49,7 +49,7 @@ public class PlayButtonController : MonoBehaviour {
         float fracJourney = distCovered / journeyLength;
         this.transform.localScale = Vector3.Lerp(endSize, startSize, fracJourney);
         if (fracJourney >= 1) {
-            mmController.LoadScene();
+            // mmController.LoadScene();
             canPulse = false;
         }
     }

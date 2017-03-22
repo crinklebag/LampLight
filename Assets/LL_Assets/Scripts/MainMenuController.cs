@@ -17,6 +17,7 @@ public class MainMenuController : MonoBehaviour {
     [SerializeField] Image bottomBarTransparent;
     [SerializeField] Image bottomBarOpaque;
     [SerializeField] Image[] bottomBarDots;
+    [SerializeField] GameObject buttons;
 
     float opaqueJourneyLength = Vector3.Distance(Vector3.one, Vector3.zero);  // Vector3.one, Vector3.zero
     float transparentJourneyLength = Vector3.Distance(Vector3.zero, new Vector3(0.5f, 0.5f, 0.5f)); // Vectore3.zero, Vector3(0.5f, 0.5f, 0.5f)
@@ -30,49 +31,32 @@ public class MainMenuController : MonoBehaviour {
     float bottomBarFillMax = 0;
     float topBarT = 0;
     float bottomBarT = 0;
+    float smoothTime = 0.5f;
 
     bool startTopBarUpdate = false;
     bool startBottomBarUpdate = false;
     bool canFadeIn = false;
-
-    // Turn this into a player pref eventually.
-    int unlockedLevels = 3;
-
-
-
-    public Image[] topBar;
-    public Image[] navButtonsBG;
-    public Image[] navButtonsSong;
-    public Image[] navButtonsPlay;
-    private float lerpColorTime = 0;
-
-    public enum MenuState { Intro = 0, BGSelect, SongSelect, PlayGame, Count };
-    [SerializeField] MenuState currentState;
-    [SerializeField] MenuState lastState;
-    [SerializeField] RectTransform menuHolder;
-
-    [SerializeField] GameObject[] bgOptions;
-
-    Vector3 newPos = Vector3.zero;
-    Vector3 menuVelocity = Vector3.zero;
-
     bool moveUI = false;
     bool startGame = false;
     bool updateTopBar = false;
     bool updateBottomBar = false;
 
-    float destXPos;
-    float smoothTime = 0.5f;
-    float start = 0;
-    float end = 0;
-    int dir = 0;
+    // Turn this into a player pref eventually.
+    int unlockedLevels = 3;
+
+    Vector3 newPos = Vector3.zero;
+    Vector3 menuVelocity = Vector3.zero;
+    [SerializeField] RectTransform menuHolder;
+    [SerializeField] GameObject[] bgOptions;
+
+    public enum MenuState { Intro = 0, BGSelect, SongSelect, PlayGame, Count };
+    [SerializeField] MenuState currentState;
 
     [SerializeField] AudioSFX menuSFX;
 
 	// Use this for initialization
 	void Start () {
         currentState = MenuState.Intro;
-        lastState = MenuState.Intro;
 
         PlayerPrefs.SetInt("bgNumber", -1);
         PlayerPrefs.SetInt("sceneNumber", -1);
@@ -132,25 +116,28 @@ public class MainMenuController : MonoBehaviour {
                 updateTopBar = true;
                 topBarFillMax = 0;
                 if (bottomBarOpaque.color.a < 0.1f) { updateBottomBar = true; }
+                FadeOutDots(3);
                 break;
-
             // When going to BG Select: Update Nav Bar - Use the enum to pull from the position array
             case MenuState.BGSelect:
                 updateTopBar = true;
                 updateBottomBar = true;
                 topBarFillMax = topBarFillTargets[1];
+                topBarFillMin = topBarFillTargets[0];
                 break;
-
             // When at Song Select - Update the nav bar - fade out bottom bar
             case MenuState.SongSelect:
                 // Fade in X Button
                 updateTopBar = true;
                 topBarFillMax = topBarFillTargets[2];
+                topBarFillMin = topBarFillTargets[1];
+                FadeOutDots(3);
                 break;
             // Fill the rest of the top bar - then start the game
             case MenuState.PlayGame:
                 updateTopBar = true;
                 topBarFillMax = topBarFillTargets[3];
+                topBarFillMin = topBarFillTargets[2];
                 break;
         }
 
@@ -167,7 +154,7 @@ public class MainMenuController : MonoBehaviour {
                 newPos = new Vector3(0, 0, 0);
                 break;
             case MenuState.SongSelect:
-                Debug.Log("Move Menu");
+                // Debug.Log("Move Menu");
                 newPos = new Vector3(-3840, 0, 0);
                 break;
             case MenuState.BGSelect:
@@ -179,7 +166,7 @@ public class MainMenuController : MonoBehaviour {
     }
 
     void MoveUI() {
-        Debug.Log("Moving UI to " + newPos);
+        // Debug.Log("Moving UI to " + newPos);
         menuHolder.localPosition = Vector3.SmoothDamp(menuHolder.localPosition, newPos, ref menuVelocity, smoothTime);
     }
 
@@ -193,7 +180,7 @@ public class MainMenuController : MonoBehaviour {
         // When the lerp is completed
         if (fracJourney >= 1) {
             canFadeIn = false;
-            Debug.Log("Setting Can Fade to true");
+            // Debug.Log("Setting Can Fade to true");
             if (currentState == MenuState.BGSelect && !startTopBarUpdate) { startTopBarUpdate = true; }
         }
     }
@@ -242,9 +229,7 @@ public class MainMenuController : MonoBehaviour {
                 break;
             case 3:
                 bottomBarFillMax = bottomBarFillTargets[2];
-                bottomBarDots[0].color = Color.white;
-                bottomBarDots[1].color = Color.white;
-                bottomBarDots[2].color = Color.white;
+                FadeInDot(3);
                 break;
             case 4:
                 bottomBarFillMax = bottomBarFillTargets[3];
@@ -266,8 +251,17 @@ public class MainMenuController : MonoBehaviour {
 
         if (topBarOpaque.fillAmount == topBarFillMax) {
             startTopBarUpdate = false;
+            updateTopBar = false;
+            topBarT = 0;
+
+            if (currentState == MenuState.PlayGame) {
+                StartCoroutine(LoadScene());
+            }
+
+            if (currentState == MenuState.BGSelect) {
+                buttons.SetActive(true);
+            }
         }
-        
     }
 
     void ResetTopBar() {
@@ -280,17 +274,25 @@ public class MainMenuController : MonoBehaviour {
     }
 
     void FadeInDot(int dotIndex) {
+        float distCovered = (Time.time - startTime) * speed;
+        float fracJourney = distCovered / opaqueJourneyLength;
 
+        bottomBarDots[0].color = Color.Lerp(Color.clear, Color.white, fracJourney);
+        bottomBarDots[1].color = Color.Lerp(Color.clear, Color.white, fracJourney);
+        bottomBarDots[2].color = Color.Lerp(Color.clear, Color.white, fracJourney);
     }
 
     void FadeOutDots(int dotIndex) {
+        float distCovered = (Time.time - startTime) * speed;
+        float fracJourney = distCovered / opaqueJourneyLength;
 
+        bottomBarDots[0].color = Color.Lerp(Color.white, Color.clear, fracJourney);
+        bottomBarDots[1].color = Color.Lerp(Color.white, Color.clear, fracJourney);
+        bottomBarDots[2].color = Color.Lerp(Color.white, Color.clear, fracJourney);
     }
 
     public void ButtonClick(int val)
     {
-        lastState = currentState;
-
         menuSFX.playTap();
 
         switch (val)
@@ -306,7 +308,7 @@ public class MainMenuController : MonoBehaviour {
                 break;
             case 2:
                 currentState = MenuState.SongSelect;
-                ChooseSong();
+                // ChooseSong();
                 break;
             case 3:
                 currentState = MenuState.PlayGame;
@@ -315,36 +317,14 @@ public class MainMenuController : MonoBehaviour {
             default:
                 break;
         }
-
-        Debug.Log("Clicked Button to state: " + currentState);
+        
+        // Debug.Log("Clicked Button to state: " + currentState);
         UpdateMenuState();
         RegisterUpdate();
     }
 
-    public void ChooseSong() {
-        string sceneToSave = "";
-
-        switch (EventSystem.current.currentSelectedGameObject.name) {
-            case "Seasons Change":
-                sceneToSave = "Seasons Change";
-                break;
-            case "Get Free":
-                sceneToSave = "Get Free";
-                break;
-            case "Dream Giver":
-                sceneToSave = "Dream Giver";
-                break;
-            case "Spirit Speaker":
-                sceneToSave = "Spirit Speaker";
-                break;
-            default:
-                break;
-        }
-
-        // Debug.Log(sceneToSave);
-
-        PlayerPrefs.SetString("sceneNumber", sceneToSave);
-        PlayerPrefs.Save();
+    public void ChooseSong(string songTitle) {
+        PlayerPrefs.SetString("sceneNumber", songTitle);
     }
 
     public void ResetBackgroundSelection() {
@@ -356,11 +336,13 @@ public class MainMenuController : MonoBehaviour {
             }
         }
     }
-
-    public void LoadScene()
+ 
+    IEnumerator LoadScene()
     {
-        //
 
+        // Debug.Log("BG: " + PlayerPrefs.GetInt("bgNumber"));
+        // Debug.Log("Song: " + PlayerPrefs.GetString("sceneNumber"));
+        yield return new WaitForSeconds(1);
         if (PlayerPrefs.GetInt("bgNumber") != -1 && PlayerPrefs.GetString("sceneNumber") != "")
         {
             SceneManager.LoadScene("Loading");
