@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -100,7 +101,7 @@ public class GameController : MonoBehaviour
     IEnumerator InstantiateNewBugs() {
         for (int j = 0; j < 10; j++)
         {
-            Debug.Log("Making Bug # " + j);
+            //Debug.Log("Making Bug # " + j);
             // Instantiate a new bug at a random position
             //Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
 			spawnIndex = Random.Range(0, spawnPoints.Length);
@@ -175,6 +176,9 @@ public class GameController : MonoBehaviour
         stopDoingThis = true;
 		player.GetComponent<Drag>().SetEndGame (true);
         StopAllCoroutines();
+
+		StartCoroutine(GameObject.Find("AudioManager").GetComponent<AudioManager>().EndGame());//Perform audio tasks at end of game
+
         Destroy(player.GetComponent<Jar>());
         Destroy(player.GetComponent<BoxCollider2D>());
         Destroy(JarTopCollider);
@@ -185,9 +189,13 @@ public class GameController : MonoBehaviour
 
     public void FinishGameDie()
     {
+
         stopDoingThis = true;
         player.GetComponent<Drag>().SetEndGame(true);
         StopAllCoroutines();
+
+		StartCoroutine(GameObject.Find("AudioManager").GetComponent<AudioManager>().EndGame());//Perform audio tasks at end of game
+
         Destroy(player.GetComponent<Jar>());
         Destroy(player.GetComponent<BoxCollider2D>());
         Destroy(JarTopCollider);
@@ -245,14 +253,14 @@ public class GameController : MonoBehaviour
         {
             if (uiController.GetBugInJarColor(4).a > 0)
             {
-                ReleaseBug(4);
+                //AE - ReleaseBug(4);
             }
         }
         else
         {
             if (uiController.GetBugInJarColor(filledJars).a > 0)
             {
-                ReleaseBug(filledJars);
+                //AE - ReleaseBug(filledJars);
             }
         }
 
@@ -346,5 +354,14 @@ public class GameController : MonoBehaviour
             newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
             bugCount++;
         }
+    }
+
+    //Call on exit button press
+    //fade audio back out, change to fun facts loading scene
+    public void ReturnToMenu()
+    {
+    	SceneManager.LoadScene("LoadingFacts");
+
+    	return;
     }
 }

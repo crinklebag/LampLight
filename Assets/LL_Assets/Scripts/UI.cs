@@ -322,6 +322,10 @@ public class UI : MonoBehaviour {
 
         tempScoreCounter = totalScore;
         exitButtonFG.SetActive(true);
+
+        yield return new WaitForSeconds(3.0f);
+
+		gc.ReturnToMenu();
     }
 
     public void CallPause()

@@ -8,6 +8,8 @@ using System.Text;
 [RequireComponent(typeof (AudioSource))]
 public class AudioManager : MonoBehaviour {
 
+	[SerializeField] private AudioSource subASource;
+
 	/*Audio Manager*/
 	public List<AudioClip> allAudioClips;//Songs to be included
 	public float[] bpm;//bpm of the songs
@@ -25,25 +27,19 @@ public class AudioManager : MonoBehaviour {
 	private float timeBetweenBeats = 0.0f;
 
 	private AudioSource aSource;
+
 	private bool audioFade = false;//True while audio is fading in or out, to ensure coroutine isnt called twice
 	private bool isPaused = false;
 	private float clipLength = 0.0f;
-	[SerializeField] private float audioFadeTime = 5.0f;
-	[SerializeField] private float sampleFadeTime = 5.0f;
 
-
-	/*AudioTxtReader*/
-	/*
-	public TextAsset[] audioData;//Text file containing audio band data
-	private static List<float> _allAudioSamples  = new List<float>();//extracted data from text asset
-	public static float[] _currAudioSamples = new float[8];//current data to read from
-	private float[] _prevAudioSamples = new float[8];//if data parse fails use the last known sample, also used to prevent rapid flickering at audio start
-	private float newVal = 0.0f;//hold the new sample value
-	*/
+	[SerializeField] private float endGameFadeSpeed = 5.0f;
+	[SerializeField] private float pauseGameFadeSpeed = 5.0f;
 
 	[SerializeField] private float _startDelay = 3.0f;//delay to start playing audio and reading data
 	[SerializeField] private float readIntervalTick = 0.02f;//Interval to read audio data, must be the same as interval written
 	private int sampleCounter = 0;//keep track of sample to pass to current samples
+
+	[SerializeField] AudioClip endGameAudio;
 
 	void Awake ()
 	{
@@ -57,30 +53,16 @@ public class AudioManager : MonoBehaviour {
 		beatCheckHalf = GetHalfBeat ();
 		beatCheckQuarter = GetQuarterBeat ();
 		beatCheckEighth = GetEighthBeat();
-
-		//Stop reading data once the song is over, the audio won't be playing and pause bool will still be false
-		/*
-		if (!aSource.isPlaying && !isPaused) 
-		{
-			stopReadingData();
-		}
-		*/
-
-		if(Input.GetKeyDown(KeyCode.Space))
-			StartCoroutine(PlayPauseAudio());
 	}
 
 	public void startAudioCoroutine(int index)
 	{
-		//StartCoroutine(StartAudio(index));
+		return;
 	}
 
 	public IEnumerator StartAudio ()
 	{
 		//Set song index to selected index, set audio clip for audio source, set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
-		//songIndex = index;
-		//aSource.clip = allAudioClips [songIndex];
-		//Debug.Log (PlayerPrefs.GetString ("sceneNumber"));
 		aSource.clip = Resources.Load<AudioClip> ("Audio/" + PlayerPrefs.GetString ("sceneNumber"));
 		clipLength = aSource.clip.length;
 		beatCounter = 0;
@@ -105,71 +87,12 @@ public class AudioManager : MonoBehaviour {
 
 		timeBetweenBeats = 60.0f / bpm[songIndex];
 
-		// Needed for making BG scroll to length of song
-		//GameObject.Find ("BG").GetComponent<BackgroundScroller> ().Reset (clipLength);
-
-		//Wait until txt file is loaded, play audio, invoke readAudioData and beatCount
-		//yield return StartCoroutine(LoadTxtFile(songIndex));
 		aSource.PlayScheduled(AudioSettings.dspTime + _startDelay);
-		//InvokeRepeating("ReadAudioData", _startDelay, readIntervalTick);
+
 		InvokeRepeating("BeatCount", _startDelay, timeBetweenBeats);
 
 		yield return null;
 	}
-
-	//Reads Audio data from txt file, splits txt file into lines (each line is the 8 bars current value per frame)
-	//Splits each line into values which are passed to the all audio samples list
-	/*
-	IEnumerator LoadTxtFile (int fileIndex)
-	{
-		//Reset line counter, clear arrays, set starting max value to prevent rapid flickering on start
-		sampleCounter = 0;
-		_allAudioSamples.Clear ();
-		System.Array.Clear (_currAudioSamples, 0, _currAudioSamples.Length);
-		_prevAudioSamples = new float[8] {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
-
-		string[] lines = audioData [fileIndex].text.Split ("\n" [0]);//split by line breaks
-
-		//Traverse lines
-		for (int i = 0; i < lines.Length; i++) {
-			if (lines [i] != null) {
-				//Split lines into their values and store in lineVals
-				string[] lineVals = lines [i].Split (',');
-
-				//Traverse lineVals, convert strings into floats, add to all Audio Samples list
-				for (int j = 0; j < lineVals.Length; j++) 
-				{
-					//if parse fails use previous known sample value
-					if (!float.TryParse (lineVals[j], out newVal)) 
-					{
-						newVal = _prevAudioSamples[j];
-					} 
-
-					//Keep track of last value and add newVal to sample array for reading
-					_prevAudioSamples[j] = newVal;
-					_allAudioSamples.Add(newVal);
-				}
-			}
-		}
-		yield return null;
-	}
-	*/
-	/*
-	//Reads audio data at a set interval, continuously invoked but only reads when we are unPaused
-	void ReadAudioData ()
-	{
-		if(!isPaused)
-		{
-			//Traverse line, add the correct line's data by keeping count of total values
-			for (int i = 0; i < 8; i++)
-			{
-				_currAudioSamples[i] = _allAudioSamples[(sampleCounter + i)];
-			}
-			//Increase counter for next pass
-			sampleCounter += 8;
-		}
-	}
-	*/
 
 	//BeatCounter is increased at set interval of the bpm
 	bool GetBeat ()
@@ -232,13 +155,13 @@ public class AudioManager : MonoBehaviour {
 				//Debug.Log ("Un Pause Audio");
 				isPaused = false;
 				aSource.UnPause ();
-				yield return StartCoroutine(FadeAudio(true));
+				yield return StartCoroutine(FadeAudio(true, pauseGameFadeSpeed));
 				audioFade = false;
 			}
 			else //Pause Audio
 			{
 				//Debug.Log("Pause Audio");
-				yield return StartCoroutine(FadeAudio(false));
+				yield return StartCoroutine(FadeAudio(false, pauseGameFadeSpeed));
 				isPaused = true;
 				aSource.Pause();
 				audioFade = false;
@@ -249,32 +172,33 @@ public class AudioManager : MonoBehaviour {
 
 	//Fade the audio up or down
 	//On fade down, current audio sample values are lerped down to stop firefly glowing
-	public IEnumerator FadeAudio (bool fadeUp)
+	public IEnumerator FadeAudio (bool fadeUp, float fadeTime)
 	{
 		if (fadeUp) 
 		{
 			while (aSource.volume < 0.95f)
 			{
-				aSource.volume = Mathf.MoveTowards (aSource.volume, 1.0f, Time.deltaTime * audioFadeTime);
+				aSource.volume = Mathf.MoveTowards (aSource.volume, 1.0f, Time.deltaTime * fadeTime);
 				yield return null;
 			}
 			aSource.volume = 1.0f;
 		} 
 		else 
 		{
-			StartCoroutine(LerpSampleValueDown());
+			StartCoroutine(LerpSampleValueDown(fadeTime));
 			while (aSource.volume > 0.05f) 
 			{
-				aSource.volume = Mathf.MoveTowards (aSource.volume, 0.0f, Time.deltaTime * audioFadeTime);
+				aSource.volume = Mathf.MoveTowards (aSource.volume, 0.0f, Time.deltaTime * fadeTime);
 				yield return null;
 			}
 			aSource.volume = 0.0f;
 		}
+
 		yield return null;
 	}
 
 	//Lerp current audio sample down
-	IEnumerator LerpSampleValueDown ()
+	IEnumerator LerpSampleValueDown (float sampleFadeTime)
 	{
 		//traverse current samples
 		for (int i = 0; i < 8; i++) 
@@ -282,10 +206,60 @@ public class AudioManager : MonoBehaviour {
 			//Lerp curr audio sample down to 0.0f
 			while(AudioPeer._audioBandBuffer[i] > 0.01f)
 			{
-				AudioPeer._audioBandBuffer[i] = Mathf.Lerp(AudioPeer._audioBandBuffer[i], 0.0f, Time.deltaTime * sampleFadeTime);
+				AudioPeer._audioBandBuffer[i] = Mathf.MoveTowards(AudioPeer._audioBandBuffer[i], 0.0f, Time.deltaTime * sampleFadeTime);
 				yield return null;
 			}
 		}
+		yield return null;
+	}
+
+	//Perform end game audio shiz
+	//fade audio down
+	//change audio to short loop
+	//fade audio back in
+	public IEnumerator EndGame()
+	{
+		yield return StartCoroutine(FadeAudio(false, endGameFadeSpeed));
+
+		aSource.clip = endGameAudio;
+
+		//yield return new WaitForSeconds(0.5f);
+
+		aSource.PlayScheduled(AudioSettings.dspTime);
+
+		yield return StartCoroutine(FadeAudio(true, endGameFadeSpeed));
+
+		yield return null;
+	}
+
+
+	//Fade the audio up or down
+	//On fade down, current audio sample values are lerped down to stop firefly glowing
+	public IEnumerator FadeSubAudio (bool fadeUp, float fadeTime)
+	{
+		if (fadeUp) 
+		{
+			subASource.clip = endGameAudio;
+			subASource.PlayScheduled(AudioSettings.dspTime);
+
+			while (subASource.volume < 0.95f)
+			{
+				subASource.volume = Mathf.MoveTowards (subASource.volume, 1.0f, Time.deltaTime * fadeTime);
+				yield return null;
+			}
+			subASource.volume = 1.0f;
+		} 
+		else 
+		{
+			while (subASource.volume > 0.05f) 
+			{
+				subASource.volume = Mathf.MoveTowards (subASource.volume, 0.0f, Time.deltaTime * fadeTime);
+				yield return null;
+			}
+			subASource.volume = 0.0f;
+			subASource.Stop();
+		}
+
 		yield return null;
 	}
 }
