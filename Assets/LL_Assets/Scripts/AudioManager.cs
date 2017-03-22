@@ -247,13 +247,15 @@ public class AudioManager : MonoBehaviour {
 		yield return null;
 	}
 
-	IEnumerator FadeAudio (bool fadeUp)
+	//Fade the audio up or down
+	//On fade down, current audio sample values are lerped down to stop firefly glowing
+	public IEnumerator FadeAudio (bool fadeUp)
 	{
 		if (fadeUp) 
 		{
-			while (aSource.volume < 0.9f)
+			while (aSource.volume < 0.95f)
 			{
-				aSource.volume = Mathf.Lerp (aSource.volume, 1.0f, Time.deltaTime * audioFadeTime);
+				aSource.volume = Mathf.MoveTowards (aSource.volume, 1.0f, Time.deltaTime * audioFadeTime);
 				yield return null;
 			}
 			aSource.volume = 1.0f;
@@ -261,9 +263,9 @@ public class AudioManager : MonoBehaviour {
 		else 
 		{
 			StartCoroutine(LerpSampleValueDown());
-			while (aSource.volume > 0.1f) 
+			while (aSource.volume > 0.05f) 
 			{
-				aSource.volume = Mathf.Lerp (aSource.volume, 0.0f, Time.deltaTime * audioFadeTime);
+				aSource.volume = Mathf.MoveTowards (aSource.volume, 0.0f, Time.deltaTime * audioFadeTime);
 				yield return null;
 			}
 			aSource.volume = 0.0f;
@@ -271,6 +273,7 @@ public class AudioManager : MonoBehaviour {
 		yield return null;
 	}
 
+	//Lerp current audio sample down
 	IEnumerator LerpSampleValueDown ()
 	{
 		//traverse current samples

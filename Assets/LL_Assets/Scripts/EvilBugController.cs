@@ -6,7 +6,7 @@ public class EvilBugController : MonoBehaviour {
 
 	private List<GameObject> bugPool;//object pool
 	[SerializeField] int evilBugCount = 8;//pool size
-	[SerializeField] GameObject eBug;//evil bugs
+	[SerializeField] GameObject bug;//evil bugs or blue bugs
 	private int indexToUse = 0;//bug to enable
 
 	[SerializeField] int bugsAllowed = 3;//Allow only this many bugs enabled at one time
@@ -27,20 +27,30 @@ public class EvilBugController : MonoBehaviour {
 	[SerializeField] float minOutTime = 3.0f;
 	[SerializeField] float maxOutTime = 10.0f;
 
-	[SerializeField] Transform[] spawnPoints;//points to spawn the bugs at, 3 points(left, right, top)
-	private int spawnIndex = 0;
+	[SerializeField] Transform[] spawnPoints;//points to spawn the bugs at
+	private int spawnIndex = 0;//which point to spawn at
 
-	[SerializeField] GameObject[] boundsArray;
+	[SerializeField] GameObject[] boundsArray;//array opf bounds to pass the bugs for ignoring collision
+
+	[SerializeField] private bool pointyBoy = false;
 
 	//Create pool of evil bugs, instantiate, add to pool, give them a name, disable them
 	void Awake ()
 	{
 		bugPool = new List<GameObject> ();
 
-		for (int i = 0; i < 8; i++) 
+		for (int i = 0; i < evilBugCount; i++) 
 		{
-			string name = "evilBug_" + "0" + i;
-			GameObject obj = Instantiate(eBug) as GameObject;
+			if(pointyBoy)
+			{
+				string name = "evilBug_" + "0" + i;
+			}
+			else
+			{
+				string name = "blueBug_" + "0" + i;
+			}
+
+			GameObject obj = Instantiate(bug) as GameObject;
 			bugPool.Add(obj);
 			obj.name = name;
 
@@ -102,16 +112,22 @@ public class EvilBugController : MonoBehaviour {
 		float sum = moveIn + moveAround + moveOut;
 
 		//set the index at which the bug will spawn
-		if (spawnIndex > spawnPoints.Length - 1) 
-		{
-			spawnIndex = 0;
-		}
+		spawnIndex = Random.Range(0, spawnPoints.Length);
 
 		//give the bug a position to start at
 		bugPool[indexToUse].GetComponent<Transform>().position = spawnPoints[spawnIndex].position;
 
 		//tell the bug to start its life cycle with assigned times and at which spawn point
-		bugPool[indexToUse].GetComponent<EvilBug>().StartBugLyfeCoroutine(moveIn, moveAround, moveOut, boundsArray);
+		if(pointyBoy)
+		{
+			bugPool[indexToUse].GetComponent<EvilBug>().StartBugLyfeCoroutine(moveIn, moveAround, moveOut, boundsArray);
+		}
+		else
+		{
+			bugPool[indexToUse].GetComponent<BlueBug>().StartBugLyfeCoroutine(moveIn, moveAround, moveOut, boundsArray);
+		}
+
+
 
 		//Debug.Log("life cycle started: " + indexToUse);
 

@@ -43,6 +43,12 @@ public class GameController : MonoBehaviour
     [SerializeField] bool startGame = false;
     [SerializeField] bool startGameInEditor = false;
 
+
+    [SerializeField] Transform[] spawnPoints;//For the fireflies
+    private int spawnIndex = 0;//Which spawn point are we using
+
+    [SerializeField] GameObject[] boundsColliders;
+
     // Use this for initialization
     void Start()
     {
@@ -81,9 +87,11 @@ public class GameController : MonoBehaviour
         for(int j = 0; j < 10; j++) {
             // Debug.Log("Making Bug # " + j);
             // Instantiate a new bug at a random position
-            Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
-            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+            //Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
+            spawnIndex = Random.Range(0, spawnPoints.Length);
+            GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject; //Instantitate at random spawn point
 
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
             newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
             bugCount++;
         }
@@ -94,9 +102,11 @@ public class GameController : MonoBehaviour
         {
             Debug.Log("Making Bug # " + j);
             // Instantiate a new bug at a random position
-            Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
-            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+            //Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
+			spawnIndex = Random.Range(0, spawnPoints.Length);
+			GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject;
 
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
             newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
             bugCount++;
 
@@ -111,8 +121,11 @@ public class GameController : MonoBehaviour
         {
             float randX = Random.Range(bounds[2], bounds[3]);
             float randY = Random.Range(bounds[0], bounds[1]);
-            Vector3 randPos = new Vector3(randX, randY, -0.5f);
-            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+            //Vector3 randPos = new Vector3(randX, randY, -0.5f);
+			spawnIndex = Random.Range(0, spawnPoints.Length);
+			GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject;
+
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
 
             //Assign each bug a frequency band, band range 0-5
             if (i > 5)
@@ -319,6 +332,19 @@ public class GameController : MonoBehaviour
         else
         {
             return Random.Range(0,4);
+        }
+    }
+
+    public void makeLotsOfBugs()
+    {
+		for(int j = 0; j < 10; j++)
+		{
+            spawnIndex = Random.Range(0, spawnPoints.Length);
+            GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject; //Instantitate at random spawn point
+
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
+            newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
+            bugCount++;
         }
     }
 }
