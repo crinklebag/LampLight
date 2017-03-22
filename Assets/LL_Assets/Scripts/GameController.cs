@@ -8,6 +8,9 @@ public class GameController : MonoBehaviour
 
     public float[] Bounds { get { return bounds; } }
 
+    public Texture[] netStates;
+    public SkinnedMeshRenderer net;
+
     //Jar player;
     UI uiController;
 
@@ -219,6 +222,7 @@ public class GameController : MonoBehaviour
         if (jarCurrentDamage <= jarDamageLimit)
         {
             uiController.setJarImage(jarCurrentDamage);
+            net.material.SetTexture("_MainTex",  netStates[jarCurrentDamage]);
             player.GetComponent<Drag>().FlashJar();
         }
 
