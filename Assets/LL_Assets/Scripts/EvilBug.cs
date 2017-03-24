@@ -46,11 +46,11 @@ public class EvilBug : MonoBehaviour {
 	}
 
 	//Call to start life cycle
-	public void StartBugLyfeCoroutine (float inT, float arT, float outT, GameObject[] bounds)
+	public void StartBugLyfeCoroutine (float inT, float arT, float outT)
 	{
-		for (int i = 0; i < bounds.Length; i++) 
+		for (int i = 0; i < gameController.BoundsGameObjects.Length; i++) 
 		{
-			Physics2D.IgnoreCollision(bounds[i].GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
+			Physics2D.IgnoreCollision(gameController.BoundsGameObjects[i].GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
 		}
 
 		//StartCoroutine(RandomPosition());

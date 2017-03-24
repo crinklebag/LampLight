@@ -182,6 +182,6 @@ public class ObjectKeeper : MonoBehaviour
         GameObject.Find("AudioManager").gameObject.GetComponent<AudioSource>().Stop();
         StartCoroutine(GameObject.Find("AudioManager").gameObject.GetComponent<AudioManager>().StartAudio());
         GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
-        GameObject.Find("GameController").gameObject.GetComponent<GameController>().SetStartGame(true);
+        //GameObject.Find("GameController").gameObject.GetComponent<GameController>().SetStartGame(true);
     }
 }

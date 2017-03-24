@@ -97,7 +97,7 @@ public class LightController : MonoBehaviour {
             {
                 if (!endSong)
                 {
-                    GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().FinishGameTime();
+                    GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().FinishGame();
                     endSong = true;
                 }
 
@@ -105,7 +105,7 @@ public class LightController : MonoBehaviour {
 
             CheckGodRod(1);
             CheckGodRod(2);
-            MoveGodRods();
+            //MoveGodRods();
             RotateLight();
         }
     }
@@ -122,7 +122,7 @@ public class LightController : MonoBehaviour {
                         previousColorGodRod1 = godRod1Color;
                         currentColorGodRod1.a = godRodLimit;
                         lerpColorTimeGodRod1 = 0;
-                        lerpColorTimeGodRod1Duration = Random.Range(5.0f, 10.0f);
+                        lerpColorTimeGodRod1Duration = Random.Range(1.0f, 5.0f);
                         setAlready1 = true;
                     }
                     else if (lerpColorTimeGodRod1 >= 1.0f && setAlready1)
@@ -131,7 +131,7 @@ public class LightController : MonoBehaviour {
                         previousColorGodRod1 = godRod1Color;
                         currentColorGodRod1.a = 0;
                         lerpColorTimeGodRod1 = 0;
-                        lerpColorTimeGodRod1Duration = Random.Range(5.0f, 10.0f);
+                        lerpColorTimeGodRod1Duration = Random.Range(1.0f, 5.0f);
                         setAlready1 = false;
                     }
 
@@ -149,7 +149,7 @@ public class LightController : MonoBehaviour {
                         previousColorGodRod2 = godRod2Color;
                         currentColorGodRod2.a = godRodLimit;
                         lerpColorTimeGodRod2 = 0;
-                        lerpColorTimeGodRod2Duration = Random.Range(5.0f, 10.0f);
+                        lerpColorTimeGodRod2Duration = Random.Range(1.0f, 5.0f);
                         setAlready2 = true;
                     }
                     else if (lerpColorTimeGodRod2 >= 1.0f && setAlready2)
@@ -158,7 +158,7 @@ public class LightController : MonoBehaviour {
                         previousColorGodRod2 = godRod2Color;
                         currentColorGodRod2.a = 0;
                         lerpColorTimeGodRod2 = 0;
-                        lerpColorTimeGodRod2Duration = Random.Range(5.0f, 10.0f);
+                        lerpColorTimeGodRod2Duration = Random.Range(1.0f, 5.0f);
                         setAlready2 = false;
                     }
 
@@ -202,11 +202,11 @@ public class LightController : MonoBehaviour {
         float lerpRotate = Mathf.LerpAngle(transform.eulerAngles.y, -40, (Time.deltaTime / (clipLength / 4.0f)));
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, lerpRotate, transform.eulerAngles.z);
 
-        float lerpRotateGodRod1 = Mathf.LerpAngle(godRod1.transform.eulerAngles.z, -40, (Time.deltaTime / (clipLength / 4.0f)));
+        /*float lerpRotateGodRod1 = Mathf.LerpAngle(godRod1.transform.eulerAngles.z, -40, (Time.deltaTime / (clipLength / 4.0f)));
         float lerpRotateGodRod2 = Mathf.LerpAngle(godRod2.transform.eulerAngles.z, -60, (Time.deltaTime / (clipLength / 4.0f)));
 
         godRod1.transform.eulerAngles = new Vector3(godRod1.transform.eulerAngles.x, godRod1.transform.eulerAngles.y, lerpRotateGodRod1);
-        godRod2.transform.eulerAngles = new Vector3(godRod2.transform.eulerAngles.x, godRod2.transform.eulerAngles.y, lerpRotateGodRod2);
+        godRod2.transform.eulerAngles = new Vector3(godRod2.transform.eulerAngles.x, godRod2.transform.eulerAngles.y, lerpRotateGodRod2);*/
     }
 
     public void SetGame()
