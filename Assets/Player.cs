@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour 
 {
     public static Player instance = null;
-    private string playerName = "SumNayme";
+    private string playerName = "PN";
 
     public class PlayerInfo
     {
@@ -50,8 +50,9 @@ public class Player : MonoBehaviour
     {
 		info.playerName = playerName;
 
-        AddInfo("song6", 6555);
-        AddInfo("song3", 1000);
+        AddInfo("song6", 32);
+        AddInfo("song3", 9000);
+        AddInfo("song1", 3);
 	}
 	
 	// Update is called once per frame

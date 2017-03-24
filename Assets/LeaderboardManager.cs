@@ -20,6 +20,7 @@ using System.Text;
 //Add playerInfo text templates to leaderboard.  Instantiate according to numTopScores and height of text.
 //Future development: creating leaderboards programatically according to numTopScores
 //Get text fields
+//Leaderboard offset variable?
 
 public class LeaderboardManager : MonoBehaviour 
 {
@@ -35,6 +36,16 @@ public class LeaderboardManager : MonoBehaviour
     //public string[] delimiters = { @":" };
     char[] charSeparators = new char[] {':'};
 	StreamReader infile;
+    
+    public List<GameObject> leaderboardPrefabList;
+    private int numLeaderboards = 0;
+
+    [SerializeField] private Transform startPoint = null;
+    public Vector2 leaderboardSize = Vector2.zero;
+    public GameObject leaderboardPrefab = null;
+    public Bounds leaderboardPrefabBounds;
+    public Canvas canvas = null;
+    public GameObject[] leaderboards;
 
     private class PlayerInfo
     {
@@ -74,6 +85,7 @@ public class LeaderboardManager : MonoBehaviour
         LoadScores();    
         UpdateAllScores(info.playerName, info, ref leaderboardList);
         WriteScores(ref leaderboardList);
+        DisplayLeaderboards();
 	}
 	
 	// Update is called once per frame
@@ -333,5 +345,60 @@ public class LeaderboardManager : MonoBehaviour
         StreamWriter outfile = new StreamWriter (filepath);
         outfile.Write("");
         outfile.Close();
+    }
+
+    private void DisplayLeaderboards()
+    {
+        numLeaderboards = leaderboardList.Count;
+        //print(numLeaderboards);
+
+        GameObject tempBoard = Instantiate(leaderboardPrefab) as GameObject;
+        leaderboardPrefabBounds = tempBoard.GetComponent<BoxCollider2D>().bounds;
+        DestroyImmediate(tempBoard);
+        print(leaderboardPrefabBounds.size);
+
+        for (int x = 0; x < numLeaderboards; x++) 
+        {
+            GameObject board = Instantiate(leaderboardPrefab) as GameObject;
+            board.transform.parent = canvas.transform;
+            board.transform.localPosition = new Vector2((x * leaderboardPrefabBounds.size.x) + startPoint.position.x, 0);
+        }
+
+        leaderboards = GameObject.FindGameObjectsWithTag("Leaderboard");
+        print(leaderboards.Length);
+        //print(leaderboards[0].transform.childCount);
+
+        for (int i = 0; i < leaderboards.Length; i++)
+        {
+            for (int j = 0; j < leaderboards[i].transform.childCount; j++) 
+            {
+                Transform child = leaderboards[i].transform.GetChild(j);
+                if(child.gameObject.tag == "SongName")
+                {
+                    //print("Found");
+                    child.gameObject.GetComponent<Text>().text = leaderboardList[i].songName;
+                }
+
+                else if(child.gameObject.tag == "PlayerInfo")
+                {
+                    for (int k = 0; k < child.gameObject.transform.childCount; k++) 
+                    {
+                        Transform grandchild = child.gameObject.transform.GetChild(k);
+
+                        if (grandchild.gameObject.tag == "PlayerName")
+                        {
+                            grandchild.gameObject.GetComponent<Text>().text = leaderboardList[i].playersInfo[j - 1].playerName;
+                            //print("found");
+                        }
+
+                        if (grandchild.gameObject.tag == "PlayerScore")
+                        {
+                            grandchild.gameObject.GetComponent<Text>().text = leaderboardList[i].playersInfo[j - 1].playerScore.ToString();
+                            //print("found");
+                        }
+                    }
+                }
+            }
+        }
     }
 }
