@@ -430,6 +430,8 @@ public class UI : MonoBehaviour {
 
         //AE - FGOverlay.gameObject.SetActive(true); - want to move this as the timing seems to be off, as in the level will become dark sometimes before the overlay is up
 
+        FGOverlay.gameObject.SetActive(true);
+
         if (multiplier > 0)
         {
 			totalScoreMulFG.text = score.ToString () + " x " + multiplier.ToString ();

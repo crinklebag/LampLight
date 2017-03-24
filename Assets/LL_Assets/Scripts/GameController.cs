@@ -193,7 +193,7 @@ public class GameController : MonoBehaviour
         StopAllCoroutines();
 
 		//show end game overlay and start end game audio
-		uiController.showFGOverlay();
+		//uiController.showFGOverlay();
 		StartCoroutine(GameObject.Find("AudioManager").GetComponent<AudioManager>().EndGame());//Perform audio tasks at end of game (fade out current audio, fade in end game audio)
 
         Destroy(player.GetComponent<Jar>());
