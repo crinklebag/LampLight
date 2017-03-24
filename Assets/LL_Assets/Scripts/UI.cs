@@ -235,6 +235,8 @@ public class UI : MonoBehaviour {
 
     IEnumerator Countdown()
     {
+        yield return new WaitForSecondsRealtime(2);
+
         for (int i = 3; i >= 0; i--)
         {
             countdown.gameObject.SetActive(true);
