@@ -156,10 +156,10 @@ public class GameController : MonoBehaviour
             bugCount--;
 
             if (bugCounter == 30) {
-				aSFX.playJarDrop();
 
                 if (filledJars < 5)
                 {
+					aSFX.playJarDrop();
                     filledJars++;
                 }
 
@@ -177,7 +177,9 @@ public class GameController : MonoBehaviour
 		player.GetComponent<Drag>().SetEndGame (true);
         StopAllCoroutines();
 
-		StartCoroutine(GameObject.Find("AudioManager").GetComponent<AudioManager>().EndGame());//Perform audio tasks at end of game
+        //show end game overlay and start end game audio
+		uiController.showFGOverlay();
+		StartCoroutine(GameObject.Find("AudioManager").GetComponent<AudioManager>().EndGame());//Perform audio tasks at end of game (fade out current audio, fade in end game audio)
 
         Destroy(player.GetComponent<Jar>());
         Destroy(player.GetComponent<BoxCollider2D>());
@@ -194,7 +196,9 @@ public class GameController : MonoBehaviour
         player.GetComponent<Drag>().SetEndGame(true);
         StopAllCoroutines();
 
-		StartCoroutine(GameObject.Find("AudioManager").GetComponent<AudioManager>().EndGame());//Perform audio tasks at end of game
+		//show end game overlay and start end game audio
+		uiController.showFGOverlay();
+		StartCoroutine(GameObject.Find("AudioManager").GetComponent<AudioManager>().EndGame());//Perform audio tasks at end of game (fade out current audio, fade in end game audio)
 
         Destroy(player.GetComponent<Jar>());
         Destroy(player.GetComponent<BoxCollider2D>());

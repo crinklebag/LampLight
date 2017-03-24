@@ -26,6 +26,8 @@ public class EvilBug : MonoBehaviour {
 
     AudioSFX aSFX;
 
+    private bool beenHit = false;
+
     void Awake ()
 	{
 		gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -142,14 +144,17 @@ public class EvilBug : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject.CompareTag("JarTop"))
+		if(!beenHit)
 		{
-			aSFX.playDodo();
+			if (other.gameObject.CompareTag("JarTop"))
+			{
+				beenHit = true;
 
-			//TODO: Disable Collider? or end lyfe cycle?
+				aSFX.playDodo();
 
-			gameController.CrackJar();
-			gameController.GetComponent<VibrationController>().Vibrate();
+				gameController.CrackJar();
+				gameController.GetComponent<VibrationController>().Vibrate();
+			}
 		}
 	}
 }

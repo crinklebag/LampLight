@@ -63,10 +63,11 @@ public class AudioManager : MonoBehaviour {
 	public IEnumerator StartAudio ()
 	{
 		//Set song index to selected index, set audio clip for audio source, set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
-		aSource.clip = Resources.Load<AudioClip> ("Audio/" + PlayerPrefs.GetString ("sceneNumber"));
+		aSource.clip = Resources.Load<AudioClip> ("Audio/OGG_1Min/" + PlayerPrefs.GetString ("sceneNumber"));
 		clipLength = aSource.clip.length;
 		beatCounter = 0;
 
+		//songIndex now only used to determine which bpm the audioManager need to use
 		switch (PlayerPrefs.GetString ("sceneNumber")) 
 		{
 			case "Seasons Change":

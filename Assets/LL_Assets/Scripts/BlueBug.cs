@@ -26,6 +26,8 @@ public class BlueBug : MonoBehaviour {
 
     AudioSFX aSFX;
 
+	private bool beenHit = false;
+
     void Awake ()
 	{
 		gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -142,14 +144,18 @@ public class BlueBug : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject.CompareTag("JarTop"))
+
+		if(!beenHit)
 		{
-			aSFX.playDodo();
+			beenHit = true;
 
-			//TODO: Disable Collider? or end lyfe cycle?
+			if (other.gameObject.CompareTag("JarTop"))
+			{
+				aSFX.playDodo();
 
-			gameController.makeLotsOfBugs();
-			//gameController.GetComponent<VibrationController>().Vibrate(); ?????
+				gameController.makeLotsOfBugs();
+				//gameController.GetComponent<VibrationController>().Vibrate(); ?????
+			}
 		}
 	}
 }
