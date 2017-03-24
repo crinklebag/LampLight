@@ -23,7 +23,7 @@ public class EvilBug : MonoBehaviour {
 
 	[SerializeField] GameObject glow;
 	[SerializeField] GameObject sprite;
-	//[SerializeField] GameObject destroyParticle;
+	[SerializeField] GameObject hitParticle;
 
     [SerializeField] float speed = 1.25f;
     [SerializeField] float rotSpeed = 5.0f;
@@ -169,6 +169,8 @@ public class EvilBug : MonoBehaviour {
 	{
 		glow.SetActive(false);
 		sprite.SetActive(false);
-		//destroyParticle.SetActive(true);
+
+		GameObject RedParticle = Instantiate(hitParticle) as GameObject;
+		RedParticle.transform.position = this.transform.position;
 	}
 }

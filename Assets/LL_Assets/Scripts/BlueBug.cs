@@ -23,7 +23,7 @@ public class BlueBug : MonoBehaviour {
 
 	[SerializeField] GameObject glow;
 	[SerializeField] GameObject sprite;
-	//[SerializeField] GameObject destroyParticle;
+	[SerializeField] GameObject hitParticle;
 
     [SerializeField] float speed = 1.25f;
     [SerializeField] float rotSpeed = 5.0f;
@@ -168,6 +168,8 @@ public class BlueBug : MonoBehaviour {
 	{
 		glow.SetActive(false);
 		sprite.SetActive(false);
-		//destroyParticle.SetActive(true);
+
+		GameObject BlueParticle = Instantiate(hitParticle) as GameObject;
+		BlueParticle.transform.position = this.transform.position;
 	}
 }
