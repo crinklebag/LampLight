@@ -64,7 +64,7 @@ public class UI : MonoBehaviour {
     float maxLightIntensity = 0.6f;
     float jarsYLerpTime = 0;
 
-    int maxFireflies = 20;
+    int maxFireflies = 10;
     int score = 0;
     int totalScore = 0;
     int tempScoreCounter = 0;
@@ -150,12 +150,12 @@ public class UI : MonoBehaviour {
 
         timesFireflyWentHere[5] = gc.FilledJars;
 
-        //Debug.Log(Vector3.Distance(jars[0].gameObject.transform.position, jar1Pos.transform.position));
-
         if (Application.loadedLevelName != "Main_Mobile_Waterfall")
         {
+            //Debug.Log(Vector3.Distance(jars[0].gameObject.transform.position, jar1Pos.transform.position));
+
             //if (Vector3.Distance(jars[0].gameObject.transform.position, beginningJarPos[0]) >= 0.54f && Vector3.Distance(jars[0].gameObject.transform.position, beginningJarPos[0]) <= 0.65f && jarsYSetAlready[0] == false)
-            if (Vector3.Distance(jars[0].gameObject.transform.position, jar1Pos.transform.position) < 1 && jarsYSetAlready[0] == false)
+            if (Vector3.Distance(jars[0].gameObject.transform.position, jar1Pos.transform.position) < 0.5f && jarsYSetAlready[0] == false)
             {
                 SetJarYPos(0);
             }
