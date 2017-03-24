@@ -20,7 +20,7 @@ public class LoadSceneController : MonoBehaviour {
         switch (PlayerPrefs.GetInt("bgNumber"))
         {
             case 1:
-                SceneManager.LoadScene("Main_Mobile");
+                SceneManager.LoadScene("Main_Mobile_DeepForest");
                 //GetComponent<LoadingScreen>().LoadScene("Main_Mobile");
                 break;
             case 2:
@@ -29,7 +29,7 @@ public class LoadSceneController : MonoBehaviour {
                 //GetComponent<LoadingScreen>().LoadScene("Main_Mobile");
                 break;
             case 3:
-                SceneManager.LoadScene("Main_Mobile_DeepForest");
+                SceneManager.LoadScene("Main_Mobile_Waterfall");
                 //GetComponent<LoadingScreen>().LoadScene("Main_Mobile_DeepForest");
                 break;
             case 4:

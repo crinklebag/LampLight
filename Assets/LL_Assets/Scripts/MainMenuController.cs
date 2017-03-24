@@ -345,6 +345,9 @@ public class MainMenuController : MonoBehaviour {
         yield return new WaitForSeconds(1);
         if (PlayerPrefs.GetInt("bgNumber") != -1 && PlayerPrefs.GetString("sceneNumber") != "")
         {
+            Debug.Log(PlayerPrefs.GetInt("bgNumber"));
+            Debug.Log(PlayerPrefs.GetString("sceneNumber"));
+
             SceneManager.LoadScene("Loading");
         } else {
 
