@@ -62,7 +62,7 @@ public class UI : MonoBehaviour {
     float maxLightIntensity = 0.6f;
     float jarsYLerpTime = 0;
 
-    int maxFireflies = 30;
+    int maxFireflies = 20;
     int score = 0;
     int totalScore = 0;
     int tempScoreCounter = 0;

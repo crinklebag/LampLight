@@ -71,11 +71,13 @@ public class FireFly : MonoBehaviour {
 	}
 
 
-	public void startFireflyLife(GameObject[] bounds)
+	public void startFireflyLife()
 	{
-		for (int i = 0; i < bounds.Length; i++) 
+        gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+
+        for (int i = 0; i < gameController.BoundsGameObjects.Length; i++) 
 		{
-			Physics2D.IgnoreCollision(bounds[i].GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
+			Physics2D.IgnoreCollision(gameController.BoundsGameObjects[i].GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
 		}
 	}
 

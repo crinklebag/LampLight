@@ -9,6 +9,10 @@ public class GameController : MonoBehaviour
 
     public float[] Bounds { get { return bounds; } }
 
+    public GameObject[] BoundsGameObjects { get { return boundsColliders; } }
+
+    public Transform[] SpawnPoints { get { return spawnPoints; } }
+
     public Texture[] netStates;
     public SkinnedMeshRenderer net;
 
@@ -106,7 +110,7 @@ public class GameController : MonoBehaviour
             spawnIndex = Random.Range(0, spawnPoints.Length);
             GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject; //Instantitate at random spawn point
 
-			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
+			newBug.GetComponent<FireFly>().startFireflyLife();
             newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
             bugCount++;
         }
@@ -125,7 +129,7 @@ public class GameController : MonoBehaviour
 			spawnIndex = Random.Range(0, spawnPoints.Length);
 			GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject;
 
-			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
+			newBug.GetComponent<FireFly>().startFireflyLife();
             newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
             bugCount++;
 
@@ -150,7 +154,7 @@ public class GameController : MonoBehaviour
 			spawnIndex = Random.Range(0, spawnPoints.Length);
 			GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject;
 
-			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
+			newBug.GetComponent<FireFly>().startFireflyLife();
 
             //Assign each bug a frequency band, band range 0-5
             if (i > 5)
@@ -177,22 +181,6 @@ public class GameController : MonoBehaviour
         {
             realAmountOfBugs++;
             bugCount--;
-
-            if (uiController.TimesFireflyWentHere[jar] == 10)
-            {
-				aSFX.playJarDrop();
-
-            //if (bugCounter == 30) {
-
-                if (filledJars < 5)
-                {
-					aSFX.playJarDrop();
-                    filledJars++;
-                }
-
-                bugCounter = 0;
-                uiController.SetJarYPos(filledJars);
-            }
 
             uiController.AddBug(jar);
         }
@@ -318,7 +306,7 @@ public class GameController : MonoBehaviour
             spawnIndex = Random.Range(0, spawnPoints.Length);
             GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject; //Instantitate at random spawn point
 
-			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
+			newBug.GetComponent<FireFly>().startFireflyLife();
             newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
             bugCount++;
         }
