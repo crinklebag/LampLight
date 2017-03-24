@@ -13,9 +13,11 @@ public class LockedPanelController : MonoBehaviour {
     bool shakeRight = true;
     bool stopShake = false;
 
+    Vector3 originalRotation;
+
     // Use this for initialization
     void Start () {
-		
+		originalRotation = transform.eulerAngles;
 	}
 	
 	// Update is called once per frame
@@ -58,5 +60,6 @@ public class LockedPanelController : MonoBehaviour {
         shakeRight = true;
         stopShake = false;
         canShake = true;
+        transform.eulerAngles = originalRotation;
     }
 }

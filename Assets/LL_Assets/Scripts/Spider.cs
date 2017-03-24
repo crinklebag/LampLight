@@ -40,7 +40,7 @@ public class Spider : MonoBehaviour {
 	}
 
     void OnTriggerEnter2D(Collider2D other) {
-        if (other.gameObject.CompareTag("JarTop") && gameController.GetBugCount() > 0) {
+        if (other.gameObject.CompareTag("JarTop") /*&& gameController.GetBugCount() > 0*/) {
             //gameController.ReleaseBug();
             RaiseSpider();
         }

@@ -25,6 +25,8 @@ public class AudioSFX : MonoBehaviour {
 	{
 		aSource.clip = dodoClip;
 		aSource.Play();
+		//Debug.Log("dodo Played");
+
 	}
 
 	public void playJarDrop ()

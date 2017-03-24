@@ -9,6 +9,8 @@ public class FunFactController : MonoBehaviour {
 	private int numOfFacts = 5;
 
 	[SerializeField] Text factsText;
+    [SerializeField]
+    float waitTime = 7.0f;
 
 	void Awake()
 	{
@@ -29,7 +31,7 @@ public class FunFactController : MonoBehaviour {
 
 	private IEnumerator Wait()
 	{
-		yield return new WaitForSeconds(7.0f);
-		this.GetComponent<SceneLoad>().LoadScene("MainMenu_Mobile");
+		yield return new WaitForSeconds(waitTime);
+        this.GetComponent<SceneLoad>().LoadScene("MainMenu_Mobile");
 	}
 }

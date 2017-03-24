@@ -41,8 +41,6 @@ public class FireFly : MonoBehaviour {
     Vector3 startMarker = Vector3.zero;
     float startTime = 0;
     float journeyLength = 0;
-    float maxLightIntensity = 0.6f;
-
     bool setDest = false;
 
     int randJar = 0;
@@ -50,6 +48,12 @@ public class FireFly : MonoBehaviour {
     // Use this for initialization
     void Start () {
         gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+
+        minMoveX = gameController.Bounds[2];
+        minMoveY = gameController.Bounds[0];
+        maxMoveX = gameController.Bounds[3];
+        maxMoveY = gameController.Bounds[1];
+
         //StartCoroutine("ChoosePath");
 		StartCoroutine("RandomPosition");
 		StartCoroutine(ChangeState());
@@ -67,17 +71,21 @@ public class FireFly : MonoBehaviour {
 	}
 
 
-	public void startFireflyLife(GameObject[] bounds)
+	public void startFireflyLife()
 	{
-		for (int i = 0; i < bounds.Length; i++) 
+        gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+
+        for (int i = 0; i < gameController.BoundsGameObjects.Length; i++) 
 		{
-			Physics2D.IgnoreCollision(bounds[i].GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
+			Physics2D.IgnoreCollision(gameController.BoundsGameObjects[i].GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
 		}
 	}
 
     // Update is called once per frame
     void Update()
     {
+        SetDestination();
+
         if (caught)
         {
             // if (this.transform.position.x < destination.transform.position.x - 0.1f)
@@ -96,13 +104,8 @@ public class FireFly : MonoBehaviour {
             {
                 //Debug.Log("Light intensity: " + destination.GetComponentInChildren<Light>().intensity);
                 //Debug.Log("Max Light intensity: " + maxLightIntensity);
-                if (destination.GetComponentInChildren<Light>().intensity < maxLightIntensity)
-                {
-                    //Debug.Log("Lighting");
-                    float newLightIntensity = destination.GetComponentInChildren<Light>().intensity + 0.05f;
-                    destination.GetComponentInChildren<Light>().intensity = newLightIntensity;
-                }
-                gameController.CatchBug("Firefly", randJar);
+                
+                gameController.CatchBug(randJar);
                 Destroy(this.gameObject);
             }
            //  }
@@ -138,7 +141,7 @@ public class FireFly : MonoBehaviour {
             Debug.Log("Hit Jar Top");
         }*/
         
-        if (other.gameObject.CompareTag("JarTop") && isOn) {
+        if (other.gameObject.CompareTag("JarTop") && isOn && GameObject.FindGameObjectWithTag("UIController").GetComponent<UI>().JarsYSetAlready[randJar] == true) {
 
             GameObject fireflySparkle = GameObject.Instantiate(fireflySparklePrefab);
 
@@ -155,7 +158,6 @@ public class FireFly : MonoBehaviour {
             // Play Sound
             //this.GetComponent<AudioSource>().Play();
             // Calculate the journey length and get the start pos
-            SetDestination();
             startMarker = this.transform.position;
             startTime = Time.time;
             journeyLength = Vector3.Distance(startMarker, destination.transform.position);
