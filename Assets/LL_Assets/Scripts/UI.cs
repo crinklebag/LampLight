@@ -274,7 +274,7 @@ public class UI : MonoBehaviour {
 		bugsCaughtFG.text = (score/10).ToString();
 		jarsFilledFG.text = multiplier.ToString ();
 
-        FGOverlay.gameObject.SetActive(true);
+        //AE - FGOverlay.gameObject.SetActive(true); - want to move this as the timing seems to be off, as in the level will become dark sometimes before the overlay is up
 
         if (multiplier > 0)
         {
@@ -322,6 +322,10 @@ public class UI : MonoBehaviour {
 
         tempScoreCounter = totalScore;
         exitButtonFG.SetActive(true);
+
+        yield return new WaitForSeconds(3.0f);
+
+		gc.ReturnToMenu();
     }
 
     public void CallPause()
@@ -351,5 +355,10 @@ public class UI : MonoBehaviour {
             default:
                 break;
         }
+    }
+
+    public void showFGOverlay()
+    {
+		FGOverlay.gameObject.SetActive(true);
     }
 }

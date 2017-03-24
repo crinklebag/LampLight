@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -43,6 +44,12 @@ public class GameController : MonoBehaviour
     [SerializeField] bool startGame = false;
     [SerializeField] bool startGameInEditor = false;
 
+
+    [SerializeField] Transform[] spawnPoints;//For the fireflies
+    private int spawnIndex = 0;//Which spawn point are we using
+
+    [SerializeField] GameObject[] boundsColliders;
+
     // Use this for initialization
     void Start()
     {
@@ -81,9 +88,11 @@ public class GameController : MonoBehaviour
         for(int j = 0; j < 10; j++) {
             // Debug.Log("Making Bug # " + j);
             // Instantiate a new bug at a random position
-            Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
-            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+            //Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
+            spawnIndex = Random.Range(0, spawnPoints.Length);
+            GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject; //Instantitate at random spawn point
 
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
             newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
             bugCount++;
         }
@@ -92,11 +101,13 @@ public class GameController : MonoBehaviour
     IEnumerator InstantiateNewBugs() {
         for (int j = 0; j < 10; j++)
         {
-            Debug.Log("Making Bug # " + j);
+            //Debug.Log("Making Bug # " + j);
             // Instantiate a new bug at a random position
-            Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
-            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+            //Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
+			spawnIndex = Random.Range(0, spawnPoints.Length);
+			GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject;
 
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
             newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
             bugCount++;
 
@@ -111,8 +122,11 @@ public class GameController : MonoBehaviour
         {
             float randX = Random.Range(bounds[2], bounds[3]);
             float randY = Random.Range(bounds[0], bounds[1]);
-            Vector3 randPos = new Vector3(randX, randY, -0.5f);
-            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+            //Vector3 randPos = new Vector3(randX, randY, -0.5f);
+			spawnIndex = Random.Range(0, spawnPoints.Length);
+			GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject;
+
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
 
             //Assign each bug a frequency band, band range 0-5
             if (i > 5)
@@ -142,10 +156,10 @@ public class GameController : MonoBehaviour
             bugCount--;
 
             if (bugCounter == 30) {
-				aSFX.playJarDrop();
 
                 if (filledJars < 5)
                 {
+					aSFX.playJarDrop();
                     filledJars++;
                 }
 
@@ -162,6 +176,11 @@ public class GameController : MonoBehaviour
         stopDoingThis = true;
 		player.GetComponent<Drag>().SetEndGame (true);
         StopAllCoroutines();
+
+        //show end game overlay and start end game audio
+		uiController.showFGOverlay();
+		StartCoroutine(GameObject.Find("AudioManager").GetComponent<AudioManager>().EndGame());//Perform audio tasks at end of game (fade out current audio, fade in end game audio)
+
         Destroy(player.GetComponent<Jar>());
         Destroy(player.GetComponent<BoxCollider2D>());
         Destroy(JarTopCollider);
@@ -172,9 +191,15 @@ public class GameController : MonoBehaviour
 
     public void FinishGameDie()
     {
+
         stopDoingThis = true;
         player.GetComponent<Drag>().SetEndGame(true);
         StopAllCoroutines();
+
+		//show end game overlay and start end game audio
+		uiController.showFGOverlay();
+		StartCoroutine(GameObject.Find("AudioManager").GetComponent<AudioManager>().EndGame());//Perform audio tasks at end of game (fade out current audio, fade in end game audio)
+
         Destroy(player.GetComponent<Jar>());
         Destroy(player.GetComponent<BoxCollider2D>());
         Destroy(JarTopCollider);
@@ -232,14 +257,14 @@ public class GameController : MonoBehaviour
         {
             if (uiController.GetBugInJarColor(4).a > 0)
             {
-                ReleaseBug(4);
+                //AE - ReleaseBug(4);
             }
         }
         else
         {
             if (uiController.GetBugInJarColor(filledJars).a > 0)
             {
-                ReleaseBug(filledJars);
+                //AE - ReleaseBug(filledJars);
             }
         }
 
@@ -320,5 +345,27 @@ public class GameController : MonoBehaviour
         {
             return Random.Range(0,4);
         }
+    }
+
+    public void makeLotsOfBugs()
+    {
+		for(int j = 0; j < 10; j++)
+		{
+            spawnIndex = Random.Range(0, spawnPoints.Length);
+            GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject; //Instantitate at random spawn point
+
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
+            newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
+            bugCount++;
+        }
+    }
+
+    //Call on exit button press
+    //fade audio back out, change to fun facts loading scene
+    public void ReturnToMenu()
+    {
+    	SceneManager.LoadScene("LoadingFacts");
+
+    	return;
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EvilBug : MonoBehaviour {
+public class BlueBug : MonoBehaviour {
 
 	private GameController gameController;
 
@@ -26,7 +26,7 @@ public class EvilBug : MonoBehaviour {
 
     AudioSFX aSFX;
 
-    private bool beenHit = false;
+	private bool beenHit = false;
 
     void Awake ()
 	{
@@ -144,16 +144,17 @@ public class EvilBug : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
+
 		if(!beenHit)
 		{
+			beenHit = true;
+
 			if (other.gameObject.CompareTag("JarTop"))
 			{
-				beenHit = true;
-
 				aSFX.playDodo();
 
-				gameController.CrackJar();
-				gameController.GetComponent<VibrationController>().Vibrate();
+				gameController.makeLotsOfBugs();
+				//gameController.GetComponent<VibrationController>().Vibrate(); ?????
 			}
 		}
 	}
