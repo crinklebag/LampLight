@@ -66,6 +66,8 @@ public class UI : MonoBehaviour {
 
     [SerializeField] bool calledCountUpCoroutine = false;
 
+    private int scoreMultiplier = 1;
+
     void Awake()
     {
         previousColor = new Color32[jars.Length];
@@ -271,8 +273,7 @@ public class UI : MonoBehaviour {
 
     public void FinishGame (int multiplier)
 	{
-		bugsCaughtFG.text = (score/10).ToString();
-		jarsFilledFG.text = multiplier.ToString ();
+		scoreMultiplier = multiplier;
 
         //AE - FGOverlay.gameObject.SetActive(true); - want to move this as the timing seems to be off, as in the level will become dark sometimes before the overlay is up
 
@@ -359,6 +360,9 @@ public class UI : MonoBehaviour {
 
     public void showFGOverlay()
     {
+		bugsCaughtFG.text = (score/10).ToString();
+		jarsFilledFG.text = scoreMultiplier.ToString ();
+
 		FGOverlay.gameObject.SetActive(true);
     }
 }

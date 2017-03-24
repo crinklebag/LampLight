@@ -38,21 +38,23 @@ public class EvilBugController : MonoBehaviour {
 	void Awake ()
 	{
 		bugPool = new List<GameObject> ();
+		string bugName;
+
 
 		for (int i = 0; i < evilBugCount; i++) 
 		{
 			if(pointyBoy)
 			{
-				string name = "evilBug_" + "0" + i;
+				bugName = "evilBug_" + "0" + i;
 			}
 			else
 			{
-				string name = "blueBug_" + "0" + i;
+				bugName = "blueBug_" + "0" + i;
 			}
 
 			GameObject obj = Instantiate(bug) as GameObject;
 			bugPool.Add(obj);
-			obj.name = name;
+			obj.name = bugName;
 
 			bugPool[i].SetActive(false);
 		}

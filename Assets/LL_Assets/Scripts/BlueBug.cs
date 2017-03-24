@@ -21,6 +21,10 @@ public class BlueBug : MonoBehaviour {
 	private float angle;
 	private Quaternion rot;
 
+	[SerializeField] GameObject glow;
+	[SerializeField] GameObject sprite;
+	//[SerializeField] GameObject destroyParticle;
+
     [SerializeField] float speed = 1.25f;
     [SerializeField] float rotSpeed = 5.0f;
 
@@ -152,10 +156,18 @@ public class BlueBug : MonoBehaviour {
 			if (other.gameObject.CompareTag("JarTop"))
 			{
 				aSFX.playDodo();
-
+				endLyfe();
 				gameController.makeLotsOfBugs();
 				//gameController.GetComponent<VibrationController>().Vibrate(); ?????
 			}
 		}
+	}
+
+	//turn sprites off and turn particle effect on
+	void endLyfe()
+	{
+		glow.SetActive(false);
+		sprite.SetActive(false);
+		//destroyParticle.SetActive(true);
 	}
 }

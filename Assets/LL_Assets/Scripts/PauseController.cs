@@ -53,7 +53,26 @@ public class PauseController : MonoBehaviour {
 
 	public void RestartLevel()
 	{
-		SceneManager.LoadScene("Loading");
+		switch (PlayerPrefs.GetInt("bgNumber"))
+        {
+            case 1:
+                SceneManager.LoadScene("Main_Mobile");
+                //GetComponent<LoadingScreen>().LoadScene("Main_Mobile");
+                break;
+            case 2:
+                SceneManager.LoadScene("Main_Mobile_DeepForest");
+                // SceneManager.LoadScene("Main_Mobile");
+                //GetComponent<LoadingScreen>().LoadScene("Main_Mobile");
+                break;
+            case 3:
+                SceneManager.LoadScene("Main_Mobile_DeepForest");
+                //GetComponent<LoadingScreen>().LoadScene("Main_Mobile_DeepForest");
+                break;
+            case 4:
+                SceneManager.LoadScene("Main_Mobile_DeepForest");
+                //GetComponent<LoadingScreen>().LoadScene("Main_Mobile_DeepForest");
+                break;
+        }
 	}
 
 
