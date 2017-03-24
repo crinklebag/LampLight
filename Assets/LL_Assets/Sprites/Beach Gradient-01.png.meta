@@ -1,13 +1,9 @@
 fileFormatVersion: 2
-guid: 90b68a2b78bc05d4da80e74e76d83c66
-timeCreated: 1490125225
+guid: 87c70edeff9bf5441ac8ed1c7b6fec80
+timeCreated: 1490126211
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName:
-    21300000: Menu Bars-01_0
-    21300002: Menu Bars-01_1
-    21300004: Menu Bars-01_2
-    21300006: Menu Bars-01_3
+  fileIDToRecycleName: {}
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -38,7 +34,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -96,59 +92,7 @@ TextureImporter:
     overridden: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: Menu Bars-01_0
-      rect:
-        serializedVersion: 2
-        x: 16
-        y: 384
-        width: 1983
-        height: 104
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: Menu Bars-01_1
-      rect:
-        serializedVersion: 2
-        x: 16
-        y: 232
-        width: 1983
-        height: 110
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: Menu Bars-01_2
-      rect:
-        serializedVersion: 2
-        x: 146
-        y: 65
-        width: 1682
-        height: 76
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: Menu Bars-01_3
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 57
-        height: 54
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
+    sprites: []
     outline: []
   spritePackingTag: 
   userData: 

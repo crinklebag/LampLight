@@ -61,14 +61,6 @@ public class StretchUIMask : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space)) {
             ChooseLocation();
         }
-
-        // Debug.Log(mainMenuController.GetCurrentState());
-
-        if (mainMenuController.GetCurrentState() == 2) {
-            buttons.SetActive(true);
-        } else {
-            buttons.SetActive(false);
-        }
     }
 
     public void ChooseLocation() {
@@ -98,7 +90,7 @@ public class StretchUIMask : MonoBehaviour {
             currentTime += Time.deltaTime;
             // When it is finsihed - call update menu 
             if (currentTime >= travelTime) {
-                mainMenuController.UpdateMenuState(true);
+                mainMenuController.UpdateMenuState();
             }
             normalizedValue = currentTime / travelTime;
             this.GetComponent<RectTransform>().anchoredPosition = Vector3.Lerp(maskStartPos, maskEndPos, normalizedValue);

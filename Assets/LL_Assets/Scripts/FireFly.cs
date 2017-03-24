@@ -70,6 +70,15 @@ public class FireFly : MonoBehaviour {
         image.SetActive(false);
 	}
 
+
+	public void startFireflyLife(GameObject[] bounds)
+	{
+		for (int i = 0; i < bounds.Length; i++) 
+		{
+			Physics2D.IgnoreCollision(bounds[i].GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
+		}
+	}
+
     // Update is called once per frame
     void Update()
     {

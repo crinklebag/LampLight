@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -39,6 +40,12 @@ public class GameController : MonoBehaviour
     [SerializeField] bool hitAlready = false;
     [SerializeField] bool startGameInEditor = false;
     [SerializeField] bool stopDoingThis = false;
+
+
+    [SerializeField] Transform[] spawnPoints;//For the fireflies
+    private int spawnIndex = 0;//Which spawn point are we using
+
+    [SerializeField] GameObject[] boundsColliders;
 
     // Use this for initialization
     void Start()
@@ -91,9 +98,15 @@ public class GameController : MonoBehaviour
         for(int j = 0; j < maxBugs; j++) {
             // Debug.Log("Making Bug # " + j);
             // Instantiate a new bug at a random position
-            Vector2 randPos = new Vector2(Random.Range(bounds[2] + bounds[2], bounds[3] * 2), Random.Range(bounds[0] + bounds[0], bounds[1] * 2));
-            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
 
+            //Vector2 randPos = new Vector2(Random.Range(bounds[2] + bounds[2], bounds[3] * 2), Random.Range(bounds[0] + bounds[0], bounds[1] * 2));
+            //GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+
+            //Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
+            spawnIndex = Random.Range(0, spawnPoints.Length);
+            GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject; //Instantitate at random spawn point
+
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
             newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
             bugCount++;
         }
@@ -104,9 +117,15 @@ public class GameController : MonoBehaviour
         {
             //Debug.Log("Making Bug # " + j);
             // Instantiate a new bug at a random position
-            Vector2 randPos = new Vector2(Random.Range(bounds[2] + bounds[2], bounds[3] * 2), Random.Range(bounds[0] + bounds[0], bounds[1] * 2));
-            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
 
+            //Vector2 randPos = new Vector2(Random.Range(bounds[2] + bounds[2], bounds[3] * 2), Random.Range(bounds[0] + bounds[0], bounds[1] * 2));
+            //GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+
+            //Vector2 randPos = new Vector2(Random.Range(bounds[2], bounds[3]), Random.Range(bounds[0], bounds[1]));
+			spawnIndex = Random.Range(0, spawnPoints.Length);
+			GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject;
+
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
             newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
             bugCount++;
 
@@ -119,10 +138,19 @@ public class GameController : MonoBehaviour
     {
         for (int i = 0; i < maxBugs; i++)
         {
-            float randX = Random.Range(bounds[2] - bounds[2], bounds[3] * 2);
-            float randY = Random.Range(bounds[0] - bounds[0], bounds[1] * 2);
-            Vector3 randPos = new Vector3(randX, randY, -0.5f);
-            GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+
+            //float randX = Random.Range(bounds[2] - bounds[2], bounds[3] * 2);
+            //float randY = Random.Range(bounds[0] - bounds[0], bounds[1] * 2);
+            //Vector3 randPos = new Vector3(randX, randY, -0.5f);
+            //GameObject newBug = Instantiate(fireflyPrefab, randPos, Quaternion.identity) as GameObject;
+
+            float randX = Random.Range(bounds[2], bounds[3]);
+            float randY = Random.Range(bounds[0], bounds[1]);
+            //Vector3 randPos = new Vector3(randX, randY, -0.5f);
+			spawnIndex = Random.Range(0, spawnPoints.Length);
+			GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject;
+
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
 
             //Assign each bug a frequency band, band range 0-5
             if (i > 5)
@@ -153,6 +181,17 @@ public class GameController : MonoBehaviour
             if (uiController.TimesFireflyWentHere[jar] == 10)
             {
 				aSFX.playJarDrop();
+
+            //if (bugCounter == 30) {
+
+                if (filledJars < 5)
+                {
+					aSFX.playJarDrop();
+                    filledJars++;
+                }
+
+                bugCounter = 0;
+                uiController.SetJarYPos(filledJars);
             }
 
             uiController.AddBug(jar);
@@ -164,6 +203,11 @@ public class GameController : MonoBehaviour
         stopDoingThis = true;
         player.GetComponent<Drag>().SetEndGame(true);
         StopAllCoroutines();
+
+		//show end game overlay and start end game audio
+		uiController.showFGOverlay();
+		StartCoroutine(GameObject.Find("AudioManager").GetComponent<AudioManager>().EndGame());//Perform audio tasks at end of game (fade out current audio, fade in end game audio)
+
         Destroy(player.GetComponent<Jar>());
         Destroy(player.GetComponent<BoxCollider2D>());
         Destroy(JarTopCollider);
@@ -265,5 +309,27 @@ public class GameController : MonoBehaviour
     public int WhichJar()
     {
         return filledJars % 5;
+    }
+
+    public void makeLotsOfBugs()
+    {
+		for(int j = 0; j < 10; j++)
+		{
+            spawnIndex = Random.Range(0, spawnPoints.Length);
+            GameObject newBug = Instantiate(fireflyPrefab, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject; //Instantitate at random spawn point
+
+			newBug.GetComponent<FireFly>().startFireflyLife(boundsColliders);
+            newBug.GetComponentInChildren<Flicker>()._band = bandFrequencies[j];
+            bugCount++;
+        }
+    }
+
+    //Call on exit button press
+    //fade audio back out, change to fun facts loading scene
+    public void ReturnToMenu()
+    {
+    	SceneManager.LoadScene("LoadingFacts");
+
+    	return;
     }
 }
