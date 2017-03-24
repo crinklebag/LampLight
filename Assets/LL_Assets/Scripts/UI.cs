@@ -46,6 +46,8 @@ public class UI : MonoBehaviour {
     public GameObject am;
     public GameObject exitButtonFG;
 
+    public GameObject jar1Pos;
+
     GameController gc;
 
     [SerializeField] private Color32[] currentColor;
@@ -148,9 +150,12 @@ public class UI : MonoBehaviour {
 
         timesFireflyWentHere[5] = gc.FilledJars;
 
+        //Debug.Log(Vector3.Distance(jars[0].gameObject.transform.position, jar1Pos.transform.position));
+
         if (Application.loadedLevelName != "Main_Mobile_Waterfall")
         {
-            if (Vector3.Distance(jars[0].gameObject.transform.position, beginningJarPos[0]) >= 0.54f && Vector3.Distance(jars[0].gameObject.transform.position, beginningJarPos[0]) <= 0.65f && jarsYSetAlready[0] == false)
+            //if (Vector3.Distance(jars[0].gameObject.transform.position, beginningJarPos[0]) >= 0.54f && Vector3.Distance(jars[0].gameObject.transform.position, beginningJarPos[0]) <= 0.65f && jarsYSetAlready[0] == false)
+            if (Vector3.Distance(jars[0].gameObject.transform.position, jar1Pos.transform.position) < 1 && jarsYSetAlready[0] == false)
             {
                 SetJarYPos(0);
             }

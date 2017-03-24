@@ -124,6 +124,7 @@ public class SplashSceneController : MonoBehaviour {
                 startTime = Time.time;
             } else if (currentState == SplashScreenState.HIDE_ISTHESOUL_LOGO) {
                 Debug.Log("Load Level");
+                GetComponent<SceneLoad>().LoadScene("MainMenu_Mobile");
             }
         }
     }
