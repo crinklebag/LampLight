@@ -172,14 +172,6 @@ public class BackgroundScroller : MonoBehaviour
             treeColorBar = nightTree.color;
         }
 
-        if (y <= -0.999f && startScroll)
-        {
-            GameObject.Find("GameController").GetComponent<GameController>().FinishGame();
-            startScroll = false;
-            //Debug.Log("Called GAMECONTROLLER FinishGameTime");
-            return;
-        }
-
         //Debug.Log(tree.color);
     }
 

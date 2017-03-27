@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
-using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class UI : MonoBehaviour {
 
@@ -20,9 +20,6 @@ public class UI : MonoBehaviour {
     public IngameMenuStates theState;
 
     public Text scoreText;
-    //public Text multiplierText;
-    //public Image uiJarMultiplier;
-    //public Image fireflyJarMultiplier;
     public Text bugsCaughtFG;
 	public Text jarsFilledFG;
 	public Text totalScoreMulFG;
@@ -101,7 +98,7 @@ public class UI : MonoBehaviour {
         {
             pointLights[i] = jars[i].GetComponentInChildren<Light>();
 
-            if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+            if (SceneManager.GetActiveScene().name == "Main_Mobile_DeepForest")
             {
                 brokenHalfJars[i] = jars[i].GetComponentInChildren<Rigidbody2D>().gameObject;
                 brokenHalfJars[i].gameObject.GetComponent<Rigidbody2D>().simulated = true;
@@ -112,7 +109,7 @@ public class UI : MonoBehaviour {
             glows[i] = jars[i].GetComponentsInChildren<SpriteRenderer>()[1];
         }
 
-        if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+        if (SceneManager.GetActiveScene().name == "Main_Mobile_DeepForest")
         {
             for (int i = 0; i < jars.Length; i++)
             {
@@ -150,7 +147,7 @@ public class UI : MonoBehaviour {
 
         timesFireflyWentHere[5] = gc.FilledJars;
 
-        if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+        if (SceneManager.GetActiveScene().name == "Main_Mobile_DeepForest")
         {
             //Debug.Log(Vector3.Distance(jars[0].gameObject.transform.position, jar1Pos.transform.position));
 
@@ -166,7 +163,7 @@ public class UI : MonoBehaviour {
             glows[i].color = Color32.Lerp(glows[i].color, currentColor[i], lerpColorTime);
             pointLights[i].intensity = Mathf.Lerp(pointLights[i].intensity, intensities[i], lerpColorTime);
 
-            if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+            if (SceneManager.GetActiveScene().name == "Main_Mobile_DeepForest")
             {
                 float y = Mathf.Lerp(jars[i].gameObject.transform.position.y, jarsY[i], jarsYLerpTime += (Time.deltaTime * 0.01f));
 
@@ -188,21 +185,26 @@ public class UI : MonoBehaviour {
             }
         }
 
-            // to reset after every 5 jars are all full
-            if (timesFireflyWentHere[4] >= maxFireflies && jarsYSetAlready[4])
-            {
-                jarsYSetAlready[4] = false;
-                ResetJars();
-            }
+        // to reset after every 5 jars are all full
+        if (timesFireflyWentHere[4] >= maxFireflies && jarsYSetAlready[4])
+        {
+            jarsYSetAlready[4] = false;
+            ResetJars();
+        }
 
-            if (winGame && glows[0].color == currentColor[0] && glows[1].color == currentColor[1] && glows[2].color == currentColor[2] && glows[3].color == currentColor[3] && glows[4].color == currentColor[4] )
-            {
-                FinishGame(gc.FilledJars);
-            }
+        if (winGame)
+        {
+            Debug.Log("Won Game??");
+            ShowEndUI(gc.FilledJars);
+        }
 
         if (startedGame)
         {
             progressBar.fillAmount = am.GetComponent<AudioSource>().time / am.GetComponent<AudioSource>().clip.length;
+            if (progressBar.fillAmount >= 0.99f) {
+                winGame = true;
+                gc.FinishGame();
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.L))
@@ -217,27 +219,6 @@ public class UI : MonoBehaviour {
         }
 
         scoreText.text = gc.GetAmountOfBugs().ToString();
-
-        switch (theState)
-        {
-            case IngameMenuStates.PLAY:
-                {
-
-                }
-                break;
-            case IngameMenuStates.PAUSE:
-                {
-
-                }
-                break;
-            case IngameMenuStates.EXIT:
-                {
-
-                }
-                break;
-            default:
-                break;
-        }
     }
 
     IEnumerator Countdown()
@@ -264,7 +245,7 @@ public class UI : MonoBehaviour {
 
         countdown.gameObject.SetActive(false);
 
-        if (Application.loadedLevelName == "Main_Mobile_Waterfall")
+        if (SceneManager.GetActiveScene().name == "Main_Mobile_DeepForest")
         {
             SetJarYPos(0);
         }
@@ -310,7 +291,7 @@ public class UI : MonoBehaviour {
                 currentColor[i] = new Color32(255,255,255, (byte)fireflyColorConvert[i]);
                 intensities[i] = 0.0f;
 
-                if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+                if (SceneManager.GetActiveScene().name == "Main_Mobile_DeepForest")
                 {
                     brokenHalfJars[i].SetActive(true);
                     brokenHalfJars[i].GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-30, 30), Random.Range(-30, -10)));
@@ -330,7 +311,7 @@ public class UI : MonoBehaviour {
             intensities[i] = 0.0f;
             timesFireflyWentHere[i] = 0;
 
-            if (Application.loadedLevelName != "Main_Mobile_Waterfall")
+            if (SceneManager.GetActiveScene().name == "Main_Mobile_DeepForest")
             {
                 jarsY[i] = beginningJarPos[i].y;
             }
@@ -342,7 +323,7 @@ public class UI : MonoBehaviour {
         lerpColorTime = 0;
         jarsYLerpTime = 0;
 
-        if (Application.loadedLevelName == "Main_Mobile_Waterfall")
+        if (SceneManager.GetActiveScene().name == "Main_Mobile_DeepForest")
         {
             SetJarYPos(0);
         }
@@ -430,9 +411,11 @@ public class UI : MonoBehaviour {
         
     }
 
-    public void FinishGame (int multiplier)
+    public void ShowEndUI (int multiplier)
 	{
 		scoreMultiplier = multiplier;
+        bugsCaughtFG.text = (score / 10).ToString();
+        jarsFilledFG.text = scoreMultiplier.ToString();
 
         //AE - FGOverlay.gameObject.SetActive(true); - want to move this as the timing seems to be off, as in the level will become dark sometimes before the overlay is up
 
@@ -440,7 +423,7 @@ public class UI : MonoBehaviour {
 
         if (multiplier > 0)
         {
-			totalScoreMulFG.text = score.ToString () + " x " + multiplier.ToString ();
+			totalScoreMulFG.text = (score / 10).ToString() + " x " + multiplier.ToString ();
 			totalScoreFG.text = tempScoreCounter.ToString ();
             totalScore = score * multiplier;
         }
@@ -467,7 +450,7 @@ public class UI : MonoBehaviour {
     {
 		yield return new WaitForSecondsRealtime(0.001f);
 
-		while (tempScoreCounter < totalScore)
+		while (tempScoreCounter < totalScore / 10)
 		{
             if (hasTouchedAtEnd)
             {
@@ -490,30 +473,6 @@ public class UI : MonoBehaviour {
     public void CallPause()
     {
         theState = IngameMenuStates.PAUSE;
-    }
-
-    public void ChangeState()
-    {
-        switch (EventSystem.current.currentSelectedGameObject.GetComponent<Text>().text)
-        {
-            case "RESUME":
-                {
-
-                }
-                break;
-            case "RESTART":
-                {
-
-                }
-                break;
-            case "EXIT GAME":
-                {
-
-                }
-                break;
-            default:
-                break;
-        }
     }
 
     public void showFGOverlay()

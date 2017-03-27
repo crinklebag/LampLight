@@ -261,6 +261,7 @@ public class GameController : MonoBehaviour
 
         if (jarCurrentDamage == jarDamageLimit)
         {
+            Debug.Log("Game Over: Torn Net");
             FinishGame();
         }
     }

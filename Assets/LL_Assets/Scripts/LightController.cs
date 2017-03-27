@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-[RequireComponent (typeof (Light))]
-public class LightController : MonoBehaviour {
+[RequireComponent(typeof(Light))]
+[DisallowMultipleComponent]
+public class LightController : MonoBehaviour
+{
 
     public GameObject audioManager;
     public GameObject godRod1;
@@ -11,9 +14,29 @@ public class LightController : MonoBehaviour {
 
     public Color godRod1Color;
     public Color godRod2Color;
+    bool startGodRays = false;
 
     private Light lightOfMyLife;
 
+    [Header("Scene Lighting Variables")]
+    [SerializeField]
+    Color nightLightColour;
+    [SerializeField]
+    Color dayLightColour;
+    [Tooltip("Duration in seconds.")]
+    [SerializeField]
+    float duration = 20;
+    float lightLerpControl = 0;
+
+    [Header("Night Sky Variables")]
+    [SerializeField]
+    GameObject skyMaterial;
+    [SerializeField]
+    Color nightSkyColor;
+    [SerializeField]
+    Color daySkyColor;
+
+    [Header("God Ray Variables")]
     [SerializeField]
     private Color32 previousColorGodRod1 = Color.clear;
     [SerializeField]
@@ -34,8 +57,8 @@ public class LightController : MonoBehaviour {
 
     [SerializeField]
     private float intensity = 0;
-	[SerializeField]
-	private float maxIntensity = 0.15f;
+    [SerializeField]
+    private float maxIntensity = 0.15f;
     [SerializeField]
     private float clipLength = 0;
     [SerializeField]
@@ -63,10 +86,11 @@ public class LightController : MonoBehaviour {
     private bool endSong = false;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         lightOfMyLife = GetComponent<Light>();
 
-		//clipLength = audioManager.GetComponent<AudioSource>().clip.length;
+        //clipLength = audioManager.GetComponent<AudioSource>().clip.length;
 
         godRod1Color = godRod1.GetComponent<MeshRenderer>().material.color;
         godRod2Color = godRod2.GetComponent<MeshRenderer>().material.color;
@@ -74,39 +98,40 @@ public class LightController : MonoBehaviour {
         previousColorGodRod1 = godRod1Color;
         previousColorGodRod2 = godRod2Color;
 
-        b = GameObject.FindGameObjectWithTag("Scaler").GetComponent<Scaler>().GetBounds();
+        //   b = GameObject.FindGameObjectWithTag("Scaler").GetComponent<Scaler>().GetBounds();
 
         lerpPositionRandomNumber1 = Random.Range(clipLength / 4.0f, clipLength);
         lerpPositionRandomNumber2 = Random.Range(clipLength / 4.0f, clipLength);
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
 
         if (startGame)
         {
-            if (intensity < 0.99f)
+            lightOfMyLife.color = Color.Lerp(nightLightColour, dayLightColour, lightLerpControl);
+            skyMaterial.GetComponent<MeshRenderer>().material.color = Color.Lerp(nightSkyColor, daySkyColor, lightLerpControl);
+            if (lightLerpControl < 1)
             {
-                startTime = audioManager.GetComponent<AudioSource>().time;
-
-                intensity = startTime / clipLength;
-
-                lightOfMyLife.intensity = intensity;
-            }
-            else
-            {
-                if (!endSong)
+                lightLerpControl += Time.deltaTime / duration;
+                if (lightLerpControl > 0.6f && SceneManager.GetActiveScene().name != "Beach")
                 {
-                    GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().FinishGame();
-                    endSong = true;
+                    // Start God Rays
+                    startGodRays = true;
                 }
-
             }
 
-            CheckGodRod(1);
-            CheckGodRod(2);
-            //MoveGodRods();
-            RotateLight();
+            if (startGodRays)
+            {
+                if (!godRod1.activeSelf)
+                {
+                    godRod1.SetActive(true);
+                    godRod2.SetActive(true);
+                }
+                CheckGodRod(1);
+                CheckGodRod(2);
+            }
         }
     }
 
@@ -122,7 +147,7 @@ public class LightController : MonoBehaviour {
                         previousColorGodRod1 = godRod1Color;
                         currentColorGodRod1.a = godRodLimit;
                         lerpColorTimeGodRod1 = 0;
-                        lerpColorTimeGodRod1Duration = Random.Range(1.0f, 5.0f);
+                        lerpColorTimeGodRod1Duration = Random.Range(5.0f, 10.0f);
                         setAlready1 = true;
                     }
                     else if (lerpColorTimeGodRod1 >= 1.0f && setAlready1)
@@ -131,7 +156,7 @@ public class LightController : MonoBehaviour {
                         previousColorGodRod1 = godRod1Color;
                         currentColorGodRod1.a = 0;
                         lerpColorTimeGodRod1 = 0;
-                        lerpColorTimeGodRod1Duration = Random.Range(1.0f, 5.0f);
+                        lerpColorTimeGodRod1Duration = Random.Range(5.0f, 10.0f);
                         setAlready1 = false;
                     }
 
@@ -149,7 +174,7 @@ public class LightController : MonoBehaviour {
                         previousColorGodRod2 = godRod2Color;
                         currentColorGodRod2.a = godRodLimit;
                         lerpColorTimeGodRod2 = 0;
-                        lerpColorTimeGodRod2Duration = Random.Range(1.0f, 5.0f);
+                        lerpColorTimeGodRod2Duration = Random.Range(5.0f, 10.0f);
                         setAlready2 = true;
                     }
                     else if (lerpColorTimeGodRod2 >= 1.0f && setAlready2)
@@ -158,7 +183,7 @@ public class LightController : MonoBehaviour {
                         previousColorGodRod2 = godRod2Color;
                         currentColorGodRod2.a = 0;
                         lerpColorTimeGodRod2 = 0;
-                        lerpColorTimeGodRod2Duration = Random.Range(1.0f, 5.0f);
+                        lerpColorTimeGodRod2Duration = Random.Range(5.0f, 10.0f);
                         setAlready2 = false;
                     }
 
@@ -202,11 +227,11 @@ public class LightController : MonoBehaviour {
         float lerpRotate = Mathf.LerpAngle(transform.eulerAngles.y, -40, (Time.deltaTime / (clipLength / 4.0f)));
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, lerpRotate, transform.eulerAngles.z);
 
-        /*float lerpRotateGodRod1 = Mathf.LerpAngle(godRod1.transform.eulerAngles.z, -40, (Time.deltaTime / (clipLength / 4.0f)));
+        float lerpRotateGodRod1 = Mathf.LerpAngle(godRod1.transform.eulerAngles.z, -40, (Time.deltaTime / (clipLength / 4.0f)));
         float lerpRotateGodRod2 = Mathf.LerpAngle(godRod2.transform.eulerAngles.z, -60, (Time.deltaTime / (clipLength / 4.0f)));
 
         godRod1.transform.eulerAngles = new Vector3(godRod1.transform.eulerAngles.x, godRod1.transform.eulerAngles.y, lerpRotateGodRod1);
-        godRod2.transform.eulerAngles = new Vector3(godRod2.transform.eulerAngles.x, godRod2.transform.eulerAngles.y, lerpRotateGodRod2);*/
+        godRod2.transform.eulerAngles = new Vector3(godRod2.transform.eulerAngles.x, godRod2.transform.eulerAngles.y, lerpRotateGodRod2);
     }
 
     public void SetGame()

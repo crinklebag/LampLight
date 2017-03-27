@@ -19,10 +19,6 @@ public class FireFly : MonoBehaviour {
 	public bool isOn;
     [SerializeField]
     bool caught = false;
-    //float lightMin = 0.3f;
-    //float lightMax = 0.8f;
-    //float maxWaitTime = 6.0f;
-    //float minWaitTime = 2.0f;
     float minMoveX = -10.0f;
     float maxMoveX = 10.0f;
 	float minMoveY = -5.5f;
@@ -102,33 +98,11 @@ public class FireFly : MonoBehaviour {
             } 
             else
             {
-                //Debug.Log("Light intensity: " + destination.GetComponentInChildren<Light>().intensity);
-                //Debug.Log("Max Light intensity: " + maxLightIntensity);
                 
                 gameController.CatchBug(randJar);
                 Destroy(this.gameObject);
             }
            //  }
-
-            /*newPos = destination.transform.position;
-
-            if (transform.position.x == newPos.x && transform.position.y == newPos.y)
-            {
-                Debug.Log("Light intensity: " + destination.GetComponentInChildren<Light>().intensity);
-                Debug.Log("Max Light intensity: " + maxLightIntensity);
-                if (destination.GetComponentInChildren<Light>().intensity < maxLightIntensity)
-                {
-                    Debug.Log("Lighting");
-                    float newLightIntensity = destination.GetComponentInChildren<Light>().intensity + Vector3.Distance(this.transform.position, newPos) / 10;
-                    destination.GetComponentInChildren<Light>().intensity = newLightIntensity;
-                }
-
-                if (destination.GetComponentInChildren<Light>().intensity == maxLightIntensity)
-                {
-                    gameController.CatchBug("Firefly");
-                    Destroy(this.gameObject);
-                }
-            }*/
 
         } else
         {
@@ -141,7 +115,7 @@ public class FireFly : MonoBehaviour {
             Debug.Log("Hit Jar Top");
         }*/
         
-        if (other.gameObject.CompareTag("JarTop") && isOn && GameObject.FindGameObjectWithTag("UIController").GetComponent<UI>().JarsYSetAlready[randJar] == true) {
+        if (other.gameObject.CompareTag("JarTop") && isOn ) {
 
             GameObject fireflySparkle = GameObject.Instantiate(fireflySparklePrefab);
 

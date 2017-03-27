@@ -33,7 +33,7 @@ public class LoadSceneController : MonoBehaviour {
                 //GetComponent<LoadingScreen>().LoadScene("Main_Mobile_DeepForest");
                 break;
             case 4:
-                SceneManager.LoadScene("Main_Mobile_DeepForest");
+                SceneManager.LoadScene("Main_Mobile_Beach");
                 //GetComponent<LoadingScreen>().LoadScene("Main_Mobile_DeepForest");
                 break;
         }
