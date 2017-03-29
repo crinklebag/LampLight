@@ -90,6 +90,8 @@ public class AudioManager : MonoBehaviour {
 
 		aSource.PlayScheduled(AudioSettings.dspTime + _startDelay);
 
+
+
 		InvokeRepeating("BeatCount", _startDelay, timeBetweenBeats);
 
 		yield return null;
