@@ -24,16 +24,32 @@ public class EvilBug : MonoBehaviour {
 	[SerializeField] GameObject glow;
 	[SerializeField] GameObject sprite;
 	[SerializeField] GameObject hitParticle;
+	[SerializeField] GameObject notification;
 
-    [SerializeField] float speed = 1.25f;
-    [SerializeField] float rotSpeed = 5.0f;
+    [SerializeField] private float speed = 1.25f;
+    [SerializeField] private float rotSpeed = 5.0f;
+
+	[SerializeField] private float margin = 1.0f;
+
+	[SerializeField] private float notificationScale = 4.0f;
+	[SerializeField] private float notificationScaleMul = 1.5f;
+	[SerializeField] private float notificationScaleSpeed = 5.0f;
+	[SerializeField] private float notificationActiveScaleSpeed = 15.0f;
 
     AudioSFX aSFX;
 
     private bool beenHit = false;
 
+    private bool isNotificationOff = false;
+    private bool isNotificationOn = false;
+    private bool canFlash = false;
+
     void Awake ()
 	{
+		//Ensure notification is proper size to size up and turn it off
+		notification.transform.localScale = new Vector3(0.05f, 0.05f, 1.0f); 
+		notification.SetActive(false);
+
 		gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		aSFX = GameObject.Find("SFXController").GetComponent<AudioSFX>();
 	}
@@ -43,6 +59,8 @@ public class EvilBug : MonoBehaviour {
 		CountTime();
 		RandomPosition();
 		lookAtPosition();
+		showNotification();
+		flashNotificationCheck();
 	}
 
 	//Call to start life cycle
@@ -146,6 +164,157 @@ public class EvilBug : MonoBehaviour {
 		timeCount = 0.0f;
 	}
 
+	//Check if object is visible
+	//Check which side were on
+	//Set notification position & set active
+	void showNotification()
+	{
+		float posX = this.transform.position.x;
+		float posY = this.transform.position.y;
+
+		if(posX <= (minMoveX - margin) && posY <= maxMoveY)//left side
+		{
+			//Debug.Log("Left Side");
+
+			notification.transform.position = new Vector3(minMoveX + 0.5f, this.transform.position.y, this.transform.position.z);
+			if(!isNotificationOn)
+			{
+				isNotificationOn = true;
+				StartCoroutine(turnOnNotification());
+			}
+		}
+		else if (posX >= (maxMoveX + margin)&& posY <= maxMoveY)//right side
+		{
+			//Debug.Log("Right Side");
+
+			notification.transform.position = new Vector3(maxMoveX - 0.5f, this.transform.position.y, this.transform.position.z);
+			if(!isNotificationOn)
+			{
+				isNotificationOn = true;
+				StartCoroutine(turnOnNotification());
+			}
+		}
+		else if (posY >= (maxMoveY + margin) && posX >= minMoveX && posX <= maxMoveX)//top side
+		{
+			//Debug.Log("Top Side");
+
+			notification.transform.position = new Vector3(this.transform.position.x, maxMoveY - 0.5f, this.transform.position.z);
+			if(!isNotificationOn)
+			{
+				isNotificationOn = true;
+				StartCoroutine(turnOnNotification());
+			}
+		}
+		else if (posX <= (minMoveX - margin) && posX <= maxMoveX && posY >= (maxMoveY + margin))//top left corner
+		{
+			//Debug.Log("Top Left Side");
+
+			notification.transform.position = new Vector3(minMoveX + 0.5f, maxMoveY - 0.5f, this.transform.position.z);
+			if(!isNotificationOn)
+			{
+				isNotificationOn = true;
+				StartCoroutine(turnOnNotification());
+			}
+		}
+		else if (posX >= (maxMoveX + margin) && posX >= minMoveX && posY >= (maxMoveY + margin))//top right corner
+		{
+			//Debug.Log("Top Right Side");
+
+			notification.transform.position = new Vector3(maxMoveX - 0.5f, maxMoveY - 0.5f, this.transform.position.z);
+			if(!isNotificationOn)
+			{
+				isNotificationOn = true;
+				StartCoroutine(turnOnNotification());
+			}
+		}
+		else
+		{
+			//Debug.Log("Visible!");
+			if(!isNotificationOff)
+			{
+				isNotificationOff = true;
+				StartCoroutine(turnOffNotification());
+			}
+
+		}
+	}
+
+	//turn sprites off and turn particle effect on
+	void endLyfe()
+	{
+		glow.SetActive(false);
+		sprite.SetActive(false);
+
+		GameObject RedParticle = Instantiate(hitParticle) as GameObject;
+		RedParticle.transform.position = this.transform.position;
+	}
+
+	void flashNotificationCheck()
+	{
+		if(notification.activeSelf && canFlash)
+		{
+			if(AudioManager.beatCheck)
+			{
+				StartCoroutine(flashNotification());
+			}
+		}
+	}
+
+	IEnumerator flashNotification()
+	{
+		float currSize = notification.transform.localScale.x;
+		float desiredSize = notification.transform.localScale.x * notificationScaleMul;
+		float tempSize = notification.transform.localScale.x;
+
+		while(tempSize < desiredSize)
+		{
+			tempSize = Mathf.MoveTowards(tempSize, desiredSize, Time.deltaTime * notificationScaleSpeed);
+			notification.transform.localScale = new Vector3(tempSize, tempSize, 1.0f);
+			yield return null;
+		}
+
+		while(tempSize > currSize)
+		{
+			tempSize = Mathf.MoveTowards(tempSize, currSize, Time.deltaTime * notificationScaleSpeed);
+			notification.transform.localScale = new Vector3(tempSize, tempSize, 1.0f);
+			yield return null;
+		}
+
+		yield return null;
+	}
+
+	IEnumerator turnOnNotification()
+	{
+		notification.SetActive(true);
+
+		float tempSize = notification.transform.localScale.x;
+
+		while(tempSize <= notificationScale - 0.05f)
+		{
+			tempSize = Mathf.MoveTowards(tempSize, notificationScale, Time.deltaTime * notificationActiveScaleSpeed);
+			notification.transform.localScale = new Vector3(tempSize, tempSize, 1.0f);
+			yield return null;
+		}
+
+		canFlash = true;
+		yield return null;
+	}
+
+	IEnumerator turnOffNotification()
+	{
+		float tempSize = notification.transform.localScale.x;
+
+		while(tempSize > 0.05f)
+		{
+			tempSize = Mathf.MoveTowards(tempSize, 0.05f, Time.deltaTime * notificationActiveScaleSpeed);
+			notification.transform.localScale = new Vector3(tempSize, tempSize, 1.0f);
+			yield return null;
+		}
+
+		notification.SetActive(false);
+		yield return null;
+	}
+
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		if(!beenHit)
@@ -162,15 +331,5 @@ public class EvilBug : MonoBehaviour {
 				gameController.GetComponent<VibrationController>().Vibrate();
 			}
 		}
-	}
-
-	//turn sprites off and turn particle effect on
-	void endLyfe()
-	{
-		glow.SetActive(false);
-		sprite.SetActive(false);
-
-		GameObject RedParticle = Instantiate(hitParticle) as GameObject;
-		RedParticle.transform.position = this.transform.position;
 	}
 }

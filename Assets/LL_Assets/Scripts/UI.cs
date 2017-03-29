@@ -28,6 +28,7 @@ public class UI : MonoBehaviour {
 
     public Image FGOverlay;
     public Image progressBar;
+    [SerializeField] private float progressFlashSpeed = 5.0f;
 
     public ParticleSystem[] crackedJarFireflies;
 
@@ -74,9 +75,13 @@ public class UI : MonoBehaviour {
     [SerializeField] bool winGame = false;
     bool startedGame = false;
 
+    bool startedProgressBarFlash = false;
+    bool startedFinalCountdown = false;
+
     private int scoreMultiplier = 1;
 
     [SerializeField] private float FinalScoreFinishWait = 5.0f;
+	private float timeRemaining; 
 
     void Awake()
     {
@@ -202,11 +207,10 @@ public class UI : MonoBehaviour {
 
         if (startedGame)
         {
-            progressBar.fillAmount = am.GetComponent<AudioSource>().time / am.GetComponent<AudioSource>().clip.length;
-            if (progressBar.fillAmount >= 0.99f) {
-                winGame = true;
-                gc.FinishGame();
-            }
+			timeRemaining = am.GetComponent<AudioSource>().clip.length - am.GetComponent<AudioSource>().time;
+
+            progressBarUpdate();
+            endGameUpdate();
         }
 
         if (Input.GetKeyDown(KeyCode.L))
@@ -333,7 +337,7 @@ public class UI : MonoBehaviour {
 
     public void AddBug(int bugNumber) {
         lerpColorTime = 0;
-        score += 10;
+        score += 1;
 
         if (fireflyColorConvert[bugNumber] >= 0 && fireflyColorConvert[bugNumber] < 255)
         {
@@ -416,7 +420,7 @@ public class UI : MonoBehaviour {
     public void ShowEndUI (int multiplier)
 	{
 		scoreMultiplier = multiplier;
-        bugsCaughtFG.text = (score / 10).ToString();
+        bugsCaughtFG.text = (score).ToString();
         jarsFilledFG.text = scoreMultiplier.ToString();
 
         //AE - FGOverlay.gameObject.SetActive(true); - want to move this as the timing seems to be off, as in the level will become dark sometimes before the overlay is up
@@ -425,7 +429,7 @@ public class UI : MonoBehaviour {
 
         if (multiplier > 0)
         {
-			totalScoreMulFG.text = (score / 10).ToString() + " x " + multiplier.ToString ();
+			totalScoreMulFG.text = (score).ToString() + " x " + multiplier.ToString ();
 			totalScoreFG.text = tempScoreCounter.ToString ();
             totalScore = score * multiplier;
         }
@@ -452,14 +456,14 @@ public class UI : MonoBehaviour {
     {
 		yield return new WaitForSecondsRealtime(0.001f);
 
-		while (tempScoreCounter < totalScore / 10)
+		while (tempScoreCounter < totalScore)
 		{
             if (hasTouchedAtEnd)
             {
                 break;
             }
 
-            tempScoreCounter += 10;
+            tempScoreCounter++;
 
 			yield return new WaitForSecondsRealtime(0.001f);
 		}
@@ -484,4 +488,75 @@ public class UI : MonoBehaviour {
 
 		FGOverlay.gameObject.SetActive(true);
     }
+
+    void progressBarUpdate()
+    {
+		progressBar.fillAmount = am.GetComponent<AudioSource>().time / am.GetComponent<AudioSource>().clip.length;
+
+		//Debug.Log("t: " + timeRemaining);
+
+		if(timeRemaining <= 10.0f && !startedProgressBarFlash)
+		{
+			startedProgressBarFlash = true;
+			StartCoroutine(flashProgressBar());
+		}
+
+        if (progressBar.fillAmount >= 0.999f)
+        {
+            winGame = true;
+            gc.FinishGame();
+		}
+    }
+
+    void endGameUpdate()
+    {
+		if(timeRemaining <= 5.0f && !startedFinalCountdown)
+		{
+			startedFinalCountdown = true;
+			StartCoroutine(FinishGameCountdown());
+		}
+    }
+
+    IEnumerator flashProgressBar()
+    {
+		float temp = progressBar.color.b;
+
+    	while(temp > 0.0f)
+    	{
+    		temp = Mathf.MoveTowards(temp, 0.0f, Time.deltaTime * progressFlashSpeed);
+    		progressBar.color =  new Color(progressBar.color.r, temp, temp);
+    		yield return null;
+    	}
+
+    	yield return new WaitForSeconds(0.1f);
+
+		while(temp < 1.0f)
+    	{
+    		temp = Mathf.MoveTowards(temp, 1.0f, Time.deltaTime * progressFlashSpeed);
+			progressBar.color =  new Color(progressBar.color.r, temp, temp);
+    		yield return null;
+    	}
+
+    	startedProgressBarFlash = false;
+    	yield return null;
+    }
+
+    IEnumerator FinishGameCountdown()
+    {
+    	countdown.gameObject.SetActive(true);
+    	float intervalTime = timeRemaining/3.0f;
+
+    	for(int i = 3; i > 0; i--)
+    	{
+			countdown.text = i.ToString();
+
+			countdown.gameObject.GetComponent<Animator>().Play("CountdownFade", -1, 0.0f);
+
+			yield return new WaitForSeconds(intervalTime);
+    	}
+
+		countdown.gameObject.SetActive(false);
+    	yield return null;
+    }
+
 }
