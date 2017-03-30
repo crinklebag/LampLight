@@ -463,7 +463,7 @@ public class UI : MonoBehaviour {
                 break;
             }
 
-            tempScoreCounter++;
+            tempScoreCounter += 10;
 
 			yield return new WaitForSecondsRealtime(0.001f);
 		}
