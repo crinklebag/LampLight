@@ -51,6 +51,8 @@ public class EvilBug : MonoBehaviour {
 	//Collision bool
     private bool beenHit = false;
 
+    //Hacky Pause Bool
+    private bool isPaused = false;
 
     //Ensure notification scale is set and obj is not active
     //Find game controller and find sfx controller
@@ -67,11 +69,16 @@ public class EvilBug : MonoBehaviour {
 	//Update functions
     void Update ()
 	{
-		CountTime();
-		RandomPosition();
-		lookAtPosition();
-		showNotification();
-		flashNotificationCheck();
+		isPaused = gameController.gameObject.GetComponent<PauseController>().isPaused;
+
+		if(!isPaused)
+		{
+			CountTime();
+			RandomPosition();
+			lookAtPosition();
+			showNotification();
+			flashNotificationCheck();
+		}
 	}
 
 	//Call to start life cycle
@@ -106,35 +113,40 @@ public class EvilBug : MonoBehaviour {
 
 		while(timeCount < t)
 		{
-			this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
-			
+			if(!isPaused)
+			{
+				this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
+			}
 			yield return null;
 		}
 		yield return null;
 	}
 
-	//move around for a give time
+	//Move around for a give time
 	IEnumerator MoveAround (float t)
 	{
 		while(timeCount < t)
 		{
 			destination = randomPosition;
-
-			this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
-
+			if(!isPaused)
+			{
+				this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
+			}
 			yield return null;
 		}
 		yield return null;
 	}
 
-	//move off the screen for a given time
+	//Move off the screen for a given time
 	IEnumerator MoveOut (float t)
 	{
 		destination = new Vector3(this.transform.position.x, -10.0f, -1.0f);
 		while(timeCount < t)
 		{
-			this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
-			
+			if(!isPaused)
+			{
+				this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
+			}
 			yield return null;
 		}
 		yield return null;
@@ -250,7 +262,7 @@ public class EvilBug : MonoBehaviour {
 		}
 	}
 
-	//turn sprites off and turn particle effect on
+	//Turn sprites off and turn particle effect on
 	void endLyfe()
 	{
 		glow.SetActive(false);
@@ -273,9 +285,9 @@ public class EvilBug : MonoBehaviour {
 		}
 	}
 
-	//set local variables
-	//while notification size is less than the desired size move towards the desired size
-	//then move back to its original size
+	//Set local variables
+	//While notification size is less than the desired size move towards the desired size
+	//Then move back to its original size
 	IEnumerator flashNotification()
 	{
 		float currSize = notification.transform.localScale.x;

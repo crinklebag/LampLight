@@ -14,7 +14,7 @@ public class PauseController : MonoBehaviour {
 
 	[SerializeField] GameObject pausePanel;
 
-	private bool isPaused = false;
+	public bool isPaused = false;
 
 	[SerializeField] float pauseFadeTime = 5.0f;
 

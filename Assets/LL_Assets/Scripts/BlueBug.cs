@@ -4,16 +4,21 @@ using UnityEngine;
 
 public class BlueBug : MonoBehaviour {
 
+	//Controllers
 	private GameController gameController;
+	AudioSFX aSFX;
 
-	private Vector3 destination;
-	private Vector3 randomPosition;
+	//Movement Positions
+	private Vector3 destination; //Centre of the screen, for bug start life cycle
+	private Vector3 randomPosition; //Random position to move to, for main life cycle
 
+	//Game Bounds
 	private float minMoveX = -10.0f;
     private float maxMoveX = 10.0f;
 	private float minMoveY = -5.5f;
     private float maxMoveY = 5.5f;
 
+	//Time to check agains't each life cycles assigned length
     private float timeCount = 0.0f;
 
     //LookAt 2D
@@ -21,28 +26,41 @@ public class BlueBug : MonoBehaviour {
 	private float angle;
 	private Quaternion rot;
 
+	//Child objects and particle
 	[SerializeField] GameObject glow;
 	[SerializeField] GameObject sprite;
 	[SerializeField] GameObject hitParticle;
 
+	//Movement Variables
     [SerializeField] float speed = 1.25f;
     [SerializeField] float rotSpeed = 5.0f;
 
-    AudioSFX aSFX;
-
+    //Collision bool
 	private bool beenHit = false;
 
+	//Hacky Pause Bool
+    private bool isPaused = false;
+
+	
+
+	//Find game controller and find sfx controller
     void Awake ()
 	{
 		gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		aSFX = GameObject.Find("SFXController").GetComponent<AudioSFX>();
 	}
 
+	//Update functions
     void Update ()
 	{
-		CountTime();
-		RandomPosition();
-		lookAtPosition();
+		isPaused = gameController.gameObject.GetComponent<PauseController>().isPaused;
+
+		if(!isPaused)
+		{
+			CountTime();
+			RandomPosition();
+			lookAtPosition();
+		}
 	}
 
 	//Call to start life cycle
@@ -77,35 +95,42 @@ public class BlueBug : MonoBehaviour {
 
 		while(timeCount < t)
 		{
-			this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
-			
+			if(!isPaused)
+			{
+				this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
+			}
 			yield return null;
 		}
 		yield return null;
 	}
 
-	//move around for a give time
+	//Move around for a give time
 	IEnumerator MoveAround (float t)
 	{
 		while(timeCount < t)
 		{
 			destination = randomPosition;
 
-			this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
-
+			if(!isPaused)
+			{
+				this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
+			}
 			yield return null;
 		}
 		yield return null;
 	}
 
-	//move off the screen for a given time
+	//Move off the screen for a given time
 	IEnumerator MoveOut (float t)
 	{
 		destination = new Vector3(this.transform.position.x, -10.0f, -1.0f);
 		while(timeCount < t)
 		{
-			this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
-			
+			if(!isPaused)
+			{
+				this.transform.position = Vector3.MoveTowards(this.transform.position, destination, Time.deltaTime * speed);
+			}
+
 			yield return null;
 		}
 		yield return null;
@@ -146,6 +171,19 @@ public class BlueBug : MonoBehaviour {
 		timeCount = 0.0f;
 	}
 
+	//Turn sprites off and turn particle effect on
+	void endLyfe()
+	{
+		glow.SetActive(false);
+		sprite.SetActive(false);
+
+		GameObject BlueParticle = Instantiate(hitParticle) as GameObject;
+		BlueParticle.transform.position = this.transform.position;
+	}
+
+	//Check it the bug has already been hit & check if it is colliding with the player
+	//Set bool to ensure no double hit, play sound effect, end bug life
+	//Tell game controller that the player has been hit, tell vibration controller to vibrate
 	void OnTriggerEnter2D(Collider2D other)
 	{
 
@@ -158,18 +196,7 @@ public class BlueBug : MonoBehaviour {
 				aSFX.playDodo();
 				endLyfe();
 				gameController.makeLotsOfBugs();
-				//gameController.GetComponent<VibrationController>().Vibrate(); ?????
 			}
 		}
-	}
-
-	//turn sprites off and turn particle effect on
-	void endLyfe()
-	{
-		glow.SetActive(false);
-		sprite.SetActive(false);
-
-		GameObject BlueParticle = Instantiate(hitParticle) as GameObject;
-		BlueParticle.transform.position = this.transform.position;
 	}
 }

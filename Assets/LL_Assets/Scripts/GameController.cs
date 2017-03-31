@@ -270,8 +270,8 @@ public class GameController : MonoBehaviour
     {
         if (!stopDoingThis)
         {
-            if (bugCount < maxBugCount) {
-
+            if (bugCount < maxBugCount && !this.gameObject.GetComponent<PauseController>().isPaused) 
+            {
                 // InstantiateBug();
                 StartCoroutine(InstantiateNewBugs());
             }
