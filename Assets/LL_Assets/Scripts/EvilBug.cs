@@ -4,16 +4,21 @@ using UnityEngine;
 
 public class EvilBug : MonoBehaviour {
 
+	//Controllers
 	private GameController gameController;
+	private AudioSFX aSFX;
 
-	private Vector3 destination;
-	private Vector3 randomPosition;
+	//Movement Positions
+	private Vector3 destination; //Centre of the screen, for bug start life cycle
+	private Vector3 randomPosition; //Random position to move to, for main life cycle
 
+	//Game Bounds
 	private float minMoveX = -10.0f;
     private float maxMoveX = 10.0f;
 	private float minMoveY = -5.5f;
     private float maxMoveY = 5.5f;
 
+    //Time to check agains't each life cycles assigned length
     private float timeCount = 0.0f;
 
     //LookAt 2D
@@ -21,29 +26,34 @@ public class EvilBug : MonoBehaviour {
 	private float angle;
 	private Quaternion rot;
 
+	//Child objects and particle
 	[SerializeField] GameObject glow;
 	[SerializeField] GameObject sprite;
 	[SerializeField] GameObject hitParticle;
 	[SerializeField] GameObject notification;
 
+	//Movement Variables
     [SerializeField] private float speed = 1.25f;
     [SerializeField] private float rotSpeed = 5.0f;
 
-	[SerializeField] private float margin = 1.0f;
+    //Notification variables
+	[SerializeField] private float margin = 1.0f; //Margin outside the bounds for when the bug's notification should turn off
+	[SerializeField] private float notificationScale = 4.0f; //Not affected scale
+	[SerializeField] private float notificationScaleMul = 1.5f; //Multiply the scale by this when flashing on beat
+	[SerializeField] private float notificationScaleSpeed = 5.0f; //On beat scale speed
+	[SerializeField] private float notificationActiveScaleSpeed = 15.0f; //Activate/Deactivate scale speed
 
-	[SerializeField] private float notificationScale = 4.0f;
-	[SerializeField] private float notificationScaleMul = 1.5f;
-	[SerializeField] private float notificationScaleSpeed = 5.0f;
-	[SerializeField] private float notificationActiveScaleSpeed = 15.0f;
-
-    AudioSFX aSFX;
-
-    private bool beenHit = false;
-
-    private bool isNotificationOff = false;
+	//Notification bools
+	private bool isNotificationOff = false;
     private bool isNotificationOn = false;
     private bool canFlash = false;
 
+	//Collision bool
+    private bool beenHit = false;
+
+
+    //Ensure notification scale is set and obj is not active
+    //Find game controller and find sfx controller
     void Awake ()
 	{
 		//Ensure notification is proper size to size up and turn it off
@@ -54,6 +64,7 @@ public class EvilBug : MonoBehaviour {
 		aSFX = GameObject.Find("SFXController").GetComponent<AudioSFX>();
 	}
 
+	//Update functions
     void Update ()
 	{
 		CountTime();
@@ -249,6 +260,8 @@ public class EvilBug : MonoBehaviour {
 		RedParticle.transform.position = this.transform.position;
 	}
 
+	//Check if notification is active and if it isn't already flashing
+	//flash on beat, start flash notification coroutine
 	void flashNotificationCheck()
 	{
 		if(notification.activeSelf && canFlash)
@@ -260,6 +273,9 @@ public class EvilBug : MonoBehaviour {
 		}
 	}
 
+	//set local variables
+	//while notification size is less than the desired size move towards the desired size
+	//then move back to its original size
 	IEnumerator flashNotification()
 	{
 		float currSize = notification.transform.localScale.x;
@@ -283,6 +299,9 @@ public class EvilBug : MonoBehaviour {
 		yield return null;
 	}
 
+	//Set notification obj active
+	//Increase notification scale until it has reached the proper size
+	//Allow notification to flash by setting bool
 	IEnumerator turnOnNotification()
 	{
 		notification.SetActive(true);
@@ -300,6 +319,8 @@ public class EvilBug : MonoBehaviour {
 		yield return null;
 	}
 
+	//Scale obj notification size down until it is almost 0
+	//Set notification object not active
 	IEnumerator turnOffNotification()
 	{
 		float tempSize = notification.transform.localScale.x;
@@ -315,6 +336,9 @@ public class EvilBug : MonoBehaviour {
 		yield return null;
 	}
 
+	//check it the bug has already been hit & check if it is colliding with the player
+	//set bool to ensure no double hit, play sound effect, end bug life
+	//tell game controller that the player has been hit, tell vibration controller to vibrate
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		if(!beenHit)
