@@ -9,11 +9,10 @@ using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour 
 {
     public static Player instance = null;
-    private string playerName = "PN";
 
     public class PlayerInfo
     {
-        public string songName = "??";
+        public string playerName = "??";
         public int playerScore = 0;
     }
 
@@ -23,7 +22,9 @@ public class Player : MonoBehaviour
         public List<PlayerInfo> playerInfo = new List<PlayerInfo>();
     }
 
-    public SessionInfo info = new SessionInfo();
+    //public SessionInfo info = new SessionInfo();
+
+    public PlayerInfo info = new PlayerInfo();
 
     void Awake()
     {
@@ -48,38 +49,23 @@ public class Player : MonoBehaviour
 	// Use this for initialization
 	void Start () 
     {
-		info.playerName = playerName;
+		/*info.playerName = playerName;
 
         AddInfo("song6", 32);
         AddInfo("song3", 9000);
-        AddInfo("song1", 3);
+        AddInfo("song1", 3);*/
+
+        info.playerName = "RGD";
+        info.playerScore = 20000;
 	}
 	
 	// Update is called once per frame
 	void Update () 
     {
-        if(Input.GetKey(KeyCode.Space))
+        if(Input.GetKey(KeyCode.Space) && SceneManager.GetActiveScene().name != "LeaderboardTester")
         {
             //Application.LoadLevel("LeaderboardTester");
             SceneManager.LoadScene("LeaderboardTester");
         }
 	}
-
-    public void AddInfo(string songName, int playerScore)
-    {
-        PlayerInfo temp = new PlayerInfo();
-        temp.songName = songName;
-        temp.playerScore = playerScore;
-        info.playerInfo.Add(temp);
-    }
-
-    public SessionInfo GetSessionInfo()
-    {
-        return info;
-    }
-
-    public string GetPlayerName()
-    {
-        return playerName;
-    }
 }
