@@ -56,7 +56,7 @@ public class Player : MonoBehaviour
         AddInfo("song1", 3);*/
 
         info.playerName = "RGD";
-        info.playerScore = 20000;
+        info.playerScore = 500;
 	}
 	
 	// Update is called once per frame

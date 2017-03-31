@@ -19,18 +19,18 @@ using System.Text;
 public class LeaderboardManager : MonoBehaviour 
 {
     [SerializeField]
-	private string filepath;
+    private string filepath;
 
     [SerializeField]
     private string projectName;
 
-	string filename;
-	//public Text testText; //use for testing file paths
-	private int numTopScores = 5;
-    private int numMaxScores = 15;
+    string filename;
+    //public Text testText; //use for testing file paths
+    private int numTopScores = 5;
+    private int numMaxScores = 100;
     //public string[] delimiters = { @":" };
     char[] charSeparators = new char[] {':'};
-	StreamReader infile;
+    StreamReader infile;
 
     [SerializeField] private Transform startPoint = null;
     public Vector2 leaderboardSize = Vector2.zero;
@@ -46,6 +46,7 @@ public class LeaderboardManager : MonoBehaviour
         public string playerName = "??";
         public int playerScore = 0;
         public bool wasAdded = false;
+        public int rank = 0;
     }
 
     public class LeaderboardInfo
@@ -62,22 +63,22 @@ public class LeaderboardManager : MonoBehaviour
     //private Player.SessionInfo info = new Player.SessionInfo();
     private PlayerInfo info = new PlayerInfo();
     
-	// Use this for initialization
-	void Start () 
-	{
-        projectName = "LeaderboardTester3";
-		filename = "test1";
+    // Use this for initialization
+    void Start () 
+    {
+        projectName = "Lamplight";
+        filename = "test1";
 
-		if (Application.platform == RuntimePlatform.WindowsEditor)
-		{
+        if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
             filepath = "../" + projectName + "/Assets/" + filename + ".txt";
-		}
+        }
 
-		else if(Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.XBOX360 ||
+        else if(Application.platform == RuntimePlatform.Android ||
                 Application.platform == RuntimePlatform.WindowsPlayer)
-		{
-			filepath = Application.persistentDataPath + "/" + filename;
-		}
+        {
+            filepath = Application.persistentDataPath + "/" + filename;
+        }
 
         info.playerName = Player.instance.info.playerName;
         info.playerScore = Player.instance.info.playerScore;
@@ -87,16 +88,16 @@ public class LeaderboardManager : MonoBehaviour
         GetLeaderboards();
         //PrintLeaderboardContents(ref total);    
         DisplayLeaderboards();
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
+    }
+    
+    // Update is called once per frame
+    void Update () 
+    {
 
-	}
+    }
 
-	private void LoadScores()
-	{
+    private void LoadScores()
+    {
         infile = new StreamReader (filepath);
         string[] fileInfo = File.ReadAllLines(filepath);
         List<string> tempList;
@@ -136,21 +137,21 @@ public class LeaderboardManager : MonoBehaviour
             print("No data");
             WriteToFile(info);
         }
-	}
+    }
 
-	private void WriteScores(ref LeaderboardInfo leaderboard)
-	{
-		StreamWriter outfile = new StreamWriter (filepath);
+    private void WriteScores(ref LeaderboardInfo leaderboard)
+    {
+        StreamWriter outfile = new StreamWriter (filepath);
         //StreamWriter outfile = new StreamWriter (filepath2, true); // this is for appending
-		//outfile.Write(""); for erasing contents
+        //outfile.Write(""); for erasing contents
 
         for (int i = 0; i < leaderboard.playersInfo.Length; i++) 
-		{
+        {
             outfile.WriteLine(leaderboard.playersInfo[i].playerName + charSeparators[0] + leaderboard.playersInfo[i].playerScore);
-		}
+        }
 
-		outfile.Close ();
-	}
+        outfile.Close ();
+    }
 
     private void WriteToFile(PlayerInfo info)
     {
@@ -236,6 +237,8 @@ public class LeaderboardManager : MonoBehaviour
         playerRanking.playersInfo = new PlayerInfo[numTopScores];
         PlayerInfo tempInfo = new PlayerInfo();
 
+        print("Total " + total.playersInfo.Length);
+
         for (int i = 0; i < numTopScores; i++)
         {
             playerRanking.playersInfo[i] = new PlayerInfo();
@@ -267,6 +270,7 @@ public class LeaderboardManager : MonoBehaviour
         {
             topFive.playersInfo[i] = new PlayerInfo();
             topFive.playersInfo[i] = total.playersInfo[i];
+            topFive.playersInfo[i].rank = i + 1;
         }
 
         print("pos " + position);
@@ -292,8 +296,8 @@ public class LeaderboardManager : MonoBehaviour
 
                 else if (position == (total.playersInfo.Length - 1))
                 {
-                    upperBound = total.playersInfo.Length - 1;
-                    lowerBound = position - numTopScores;
+                    upperBound = position + 1 ;
+                    lowerBound = position - (numTopScores - 2);
                 }
 
                 else
@@ -317,9 +321,20 @@ public class LeaderboardManager : MonoBehaviour
 
         List<PlayerInfo> tempList = new List<PlayerInfo>();
 
-        for (int k = lowerBound; k < upperBound; k++)
+        for (int k = lowerBound; k <= upperBound; k++)
         {
-            tempList.Add(total.playersInfo[k]);
+            total.playersInfo[k - 1].rank = k;
+            tempList.Add(total.playersInfo[k - 1]);
+            //print(total.playersInfo[k - 1].playerName + " " + total.playersInfo[k - 1].playerScore);
+            print("K " + k);
+        }
+
+        PlayerInfo[] tempArray = tempList.ToArray();
+        print(tempArray.Length);
+
+        for (int q = 0; q < tempArray.Length; q++)
+        {
+           print(tempArray[q].rank + " " + tempArray[q].playerName + " " + tempArray[q].playerScore);
         }
 
         playerRanking.playersInfo = tempList.ToArray();
@@ -330,7 +345,7 @@ public class LeaderboardManager : MonoBehaviour
     {
         startPoint.position = Camera.main.ViewportToWorldPoint(new Vector3(0,0,0));
         numLeaderboards = leaderboardList.Count;
-        //print(numLeaderboards);
+        print(numLeaderboards);
 
         GameObject tempBoard = Instantiate(leaderboardPrefab) as GameObject;
         leaderboardPrefabBounds = tempBoard.GetComponent<BoxCollider2D>().bounds;
@@ -364,10 +379,10 @@ public class LeaderboardManager : MonoBehaviour
                 Transform child = leaderboards[i].transform.GetChild(j);
                 if(child.gameObject.tag == "PlayerInfo")
                 {
-     
                     child.gameObject.GetComponent<Text>().text = 
-                            leaderboardList[i].playersInfo[j].playerName + " " + leaderboardList[i].playersInfo[j].playerScore; 
-
+                    leaderboardList[i].playersInfo[j].rank + " " +
+                    leaderboardList[i].playersInfo[j].playerName + " " + 
+                    leaderboardList[i].playersInfo[j].playerScore; 
                 }
             }
         }
