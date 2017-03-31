@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 public class LightController : MonoBehaviour
 {
 
+	private GameObject gameController;
+
     public GameObject audioManager;
     public GameObject godRod1;
     public GameObject godRod2;
@@ -85,6 +87,9 @@ public class LightController : MonoBehaviour
     [SerializeField]
     private bool endSong = false;
 
+    //Dumb pause check bool
+    private bool isPaused = false;
+
     // Use this for initialization
     void Start()
     {
@@ -102,13 +107,16 @@ public class LightController : MonoBehaviour
 
         lerpPositionRandomNumber1 = Random.Range(clipLength / 4.0f, clipLength);
         lerpPositionRandomNumber2 = Random.Range(clipLength / 4.0f, clipLength);
+
+        gameController = GameObject.FindGameObjectWithTag("GameController");
     }
 
     // Update is called once per frame
     void Update()
     {
+    	isPaused = gameController.GetComponent<PauseController>().isPaused;
 
-        if (startGame)
+        if (startGame && !isPaused)
         {
             lightOfMyLife.color = Color.Lerp(nightLightColour, dayLightColour, lightLerpControl);
             skyMaterial.GetComponent<MeshRenderer>().material.color = Color.Lerp(nightSkyColor, daySkyColor, lightLerpControl);

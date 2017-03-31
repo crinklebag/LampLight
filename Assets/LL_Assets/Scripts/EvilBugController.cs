@@ -36,6 +36,8 @@ public class EvilBugController : MonoBehaviour {
 
 	[SerializeField] private bool pointyBoy = false;
 
+	private bool isPaused = false;
+
 	//Create pool of evil bugs, instantiate, add to pool, give them a name, disable them
 	void Awake ()
 	{
@@ -67,15 +69,19 @@ public class EvilBugController : MonoBehaviour {
 
 	void Update ()
 	{
-		counter ();
+		isPaused = gameController.gameObject.GetComponent<PauseController>().isPaused;
 
-		if (countTime >= instantiateTime)
+		if(!isPaused)
 		{
-			reset();
+			counter ();
 
-			if(canEnable && enabledBugCount < bugsAllowed)
-				StartCoroutine(bugLyfe());
+			if (countTime >= instantiateTime)
+			{
+				reset();
 
+				if(canEnable && enabledBugCount < bugsAllowed)
+					StartCoroutine(bugLyfe());
+			}
 		}
 	}
 
@@ -147,12 +153,24 @@ public class EvilBugController : MonoBehaviour {
 	IEnumerator endLyfe(int index, float waitTime)
 	{
 		//wait until the bug has finished its life cycle
-		yield return new WaitForSeconds(waitTime);
+		//yield return new WaitForSeconds(waitTime);
+
+		float timeCount = waitTime;
+
+		//wait for life cycle time to reach 0, only decrease time if the game isn't paused
+		while(timeCount > 0.0f)
+		{
+			if(!isPaused)
+			{
+				timeCount -= Time.deltaTime;
+			}
+			yield return null;
+		}
 
 		//disable the bug
 		bugPool[index].SetActive(false);
 		enabledBugCount--;
-
+		yield return null;
 		//Debug.Log("life cycle over: " + index);
 	}
 }
