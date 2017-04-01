@@ -132,21 +132,21 @@ public class LightController : MonoBehaviour
             	
             	if(percentageDone < 0.25f)
             	{
-            		Debug.Log("Step 1");
+            		//Debug.Log("Step 1");
 					lightLerpControl += Time.deltaTime / (duration * 1.15f);
             	}
 				else if(percentageDone < 0.5f)
             	{
-					Debug.Log("Step 2");
+					//Debug.Log("Step 2");
 					lightLerpControl += Time.deltaTime / (duration * 0.85f);
             	}
             	else
             	{
-					Debug.Log("Step 3");
+					//Debug.Log("Step 3");
 					lightLerpControl += Time.deltaTime / (duration * 0.55f);
             	}
 
-                Debug.Log("LLC: " + lightLerpControl);
+                //Debug.Log("LLC: " + lightLerpControl);
 
                 if (lightLerpControl > 0.6f && SceneManager.GetActiveScene().name != "Beach")
                 {

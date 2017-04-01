@@ -30,6 +30,8 @@ public class UI : MonoBehaviour {
     public Image progressBar;
     [SerializeField] private float progressFlashSpeed = 5.0f;
 
+    [SerializeField] private Sprite[] finalPanelBgs;
+    [SerializeField] private GameObject[] finalScoreObjs;
 
     //Wave panel stuffs
 	[SerializeField]
@@ -100,6 +102,8 @@ public class UI : MonoBehaviour {
 
     [SerializeField] private float FinalScoreFinishWait = 5.0f;
 	private float timeRemaining; 
+
+	private bool calledFadeCoroutine = false;
 
     void Awake()
     {
@@ -227,6 +231,7 @@ public class UI : MonoBehaviour {
         {
 			timeRemaining = am.GetComponent<AudioSource>().clip.length - am.GetComponent<AudioSource>().time;
 
+			wavePanelUpdate();
             progressBarUpdate();
             endGameUpdate();
         }
@@ -441,9 +446,13 @@ public class UI : MonoBehaviour {
         bugsCaughtFG.text = (score).ToString();
         jarsFilledFG.text = scoreMultiplier.ToString();
 
-        //AE - FGOverlay.gameObject.SetActive(true); - want to move this as the timing seems to be off, as in the level will become dark sometimes before the overlay is up
+        setFinalImage();
 
-        FGOverlay.gameObject.SetActive(true);
+        if(!calledFadeCoroutine)
+        {
+        	calledFadeCoroutine = true;
+			StartCoroutine(fadeInScorePanel());
+        }
 
         if (multiplier > 0)
         {
@@ -511,6 +520,7 @@ public class UI : MonoBehaviour {
         theState = IngameMenuStates.PAUSE;
     }
 
+    //Not needed?
     public void showFGOverlay()
     {
 		bugsCaughtFG.text = (score/10).ToString();
@@ -633,4 +643,51 @@ public class UI : MonoBehaviour {
         WavePanelMoveCount++;
     }
 
+	void setFinalImage()
+	{
+		switch (PlayerPrefs.GetInt("bgNumber"))
+        {
+            case 1:
+				FGOverlay.sprite = finalPanelBgs[0];
+                break;
+            case 2:
+				FGOverlay.sprite = finalPanelBgs[1];
+                break;
+            case 3:
+				FGOverlay.sprite = finalPanelBgs[2];
+                break;
+            case 4:
+				FGOverlay.sprite = finalPanelBgs[3];
+                break;
+        }
+	}
+
+	IEnumerator fadeInScorePanel()
+	{
+		for(int i = 0; i < finalScoreObjs.Length; i++)
+		{
+			finalScoreObjs[i].SetActive(false);
+		}
+
+		FGOverlay.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+		FGOverlay.gameObject.SetActive(true);
+
+		float tempA = FGOverlay.color.a;
+
+		while(tempA < 0.999f)
+		{
+			tempA = Mathf.MoveTowards(tempA, 1.0f, Time.deltaTime * 5.0f);
+
+			FGOverlay.color = new Color(1.0f, 1.0f, 1.0f, tempA);
+
+			yield return null;
+		}
+
+		for(int i = 0; i < finalScoreObjs.Length; i++)
+		{
+			finalScoreObjs[i].SetActive(true);
+		}
+
+		yield return null;
+	}
 }

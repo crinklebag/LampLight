@@ -141,7 +141,9 @@ public class AudioManager : MonoBehaviour {
 	void BeatCount ()
 	{
 		if(!isPaused)
+		{
 			beatCounter += 1;
+		}
 	}
 
 	//Cancel invokes when audio clip isnt playing, and the song hasnt been paused (end of audio)

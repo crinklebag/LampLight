@@ -32,7 +32,7 @@ public class EvilBugGlow : MonoBehaviour {
 
 	IEnumerator GlowUp ()
 	{
-		while (glowSize < 0.09f) 
+		while (glowSize < 0.089f) 
 		{
 			glowSize = Mathf.MoveTowards(glowSize, 0.09f, Time.deltaTime * glowSpeed);
 			this.GetComponent<ParticleSystemRenderer>().minParticleSize = glowSize;
@@ -43,7 +43,7 @@ public class EvilBugGlow : MonoBehaviour {
 
 	IEnumerator GlowDown ()
 	{
-		while (glowSize > 0.0f) 
+		while (glowSize > 0.01f) 
 		{
 			glowSize = Mathf.MoveTowards(glowSize, 0.0f, Time.deltaTime * glowSpeed);
 			this.GetComponent<ParticleSystemRenderer>().minParticleSize = glowSize;

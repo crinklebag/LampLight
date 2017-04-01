@@ -106,7 +106,10 @@ public class FireFly : MonoBehaviour {
 
         } else
         {
-            moveBug();
+        	if(!gameController.gameObject.GetComponent<PauseController>().isPaused)
+        	{
+				moveBug();
+        	}
         }
     }
 
