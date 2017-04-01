@@ -87,6 +87,10 @@ public class LightController : MonoBehaviour
     [SerializeField]
     private bool endSong = false;
 
+    [SerializeField]
+    private float increaseSongPercentage = 0.6f;
+    private float percentageDone;
+
     //Dumb pause check bool
     private bool isPaused = false;
 
@@ -115,6 +119,9 @@ public class LightController : MonoBehaviour
     void Update()
     {
     	isPaused = gameController.GetComponent<PauseController>().isPaused;
+		percentageDone = audioManager.GetComponent<AudioSource>().time / clipLength;
+
+		//Debug.Log("left: " + percentageDone);
 
         if (startGame && !isPaused)
         {
@@ -122,7 +129,25 @@ public class LightController : MonoBehaviour
             skyMaterial.GetComponent<MeshRenderer>().material.color = Color.Lerp(nightSkyColor, daySkyColor, lightLerpControl);
             if (lightLerpControl < 1)
             {
-                lightLerpControl += Time.deltaTime / duration;
+            	
+            	if(percentageDone < 0.25f)
+            	{
+            		Debug.Log("Step 1");
+					lightLerpControl += Time.deltaTime / (duration * 1.15f);
+            	}
+				else if(percentageDone < 0.5f)
+            	{
+					Debug.Log("Step 2");
+					lightLerpControl += Time.deltaTime / (duration * 0.85f);
+            	}
+            	else
+            	{
+					Debug.Log("Step 3");
+					lightLerpControl += Time.deltaTime / (duration * 0.55f);
+            	}
+
+                Debug.Log("LLC: " + lightLerpControl);
+
                 if (lightLerpControl > 0.6f && SceneManager.GetActiveScene().name != "Beach")
                 {
                     // Start God Rays
@@ -244,6 +269,8 @@ public class LightController : MonoBehaviour
 
     public void SetGame()
     {
+		//duration = audioManager.GetComponent<AudioSource>().clip.length;
+
         clipLength = audioManager.GetComponent<AudioSource>().clip.length;
         startGame = true;
     }

@@ -45,6 +45,7 @@ public class AudioManager : MonoBehaviour {
 	{
 		aSource = this.GetComponent<AudioSource>();
 		audioFade = false;
+		setAudioClip();
 	}
 
 	void Update ()
@@ -55,6 +56,13 @@ public class AudioManager : MonoBehaviour {
 		beatCheckEighth = GetEighthBeat();
 	}
 
+	public void setAudioClip()
+	{
+		//Set song index to selected index, set audio clip for audio source,
+		aSource.clip = Resources.Load<AudioClip> ("Audio/OGG_1Min/" + PlayerPrefs.GetString ("sceneNumber"));
+		clipLength = aSource.clip.length;
+	}
+
 	public void startAudioCoroutine(int index)
 	{
 		return;
@@ -62,9 +70,8 @@ public class AudioManager : MonoBehaviour {
 
 	public IEnumerator StartAudio ()
 	{
-		//Set song index to selected index, set audio clip for audio source, set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
-		aSource.clip = Resources.Load<AudioClip> ("Audio/OGG_1Min/" + PlayerPrefs.GetString ("sceneNumber"));
-		clipLength = aSource.clip.length;
+		 //set clip length for countdown, set the beat counter back to 0 and the time between beats for BPM detection
+
 		beatCounter = 0;
 
 		//songIndex now only used to determine which bpm the audioManager need to use
@@ -89,8 +96,6 @@ public class AudioManager : MonoBehaviour {
 		timeBetweenBeats = 60.0f / bpm[songIndex];
 
 		aSource.PlayScheduled(AudioSettings.dspTime + _startDelay);
-
-
 
 		InvokeRepeating("BeatCount", _startDelay, timeBetweenBeats);
 

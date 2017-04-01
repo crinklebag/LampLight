@@ -7,6 +7,8 @@ public class EvilBugGlow : MonoBehaviour {
 	private float glowSize = 0.0f;
 	[SerializeField] float glowSpeed = 5.0f;
 
+	private bool isGlowing = false;
+
 	void Awake ()
 	{
 		this.GetComponent<ParticleSystemRenderer>().minParticleSize = 0.0f;
@@ -14,8 +16,9 @@ public class EvilBugGlow : MonoBehaviour {
 
 	void Update ()
 	{
-		if (AudioManager.beatCheck) 
+		if (AudioManager.beatCheck && !isGlowing) 
 		{
+			isGlowing = true;
 			StartCoroutine(GlowCycle());
 		}	
 	}
@@ -24,7 +27,7 @@ public class EvilBugGlow : MonoBehaviour {
 	{
 		yield return StartCoroutine(GlowUp());
 		yield return StartCoroutine(GlowDown());
-
+		isGlowing = false;
 	}
 
 	IEnumerator GlowUp ()

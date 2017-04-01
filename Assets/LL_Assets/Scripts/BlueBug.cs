@@ -30,6 +30,7 @@ public class BlueBug : MonoBehaviour {
 	[SerializeField] GameObject glow;
 	[SerializeField] GameObject sprite;
 	[SerializeField] GameObject hitParticle;
+	[SerializeField] GameObject innerGlow;
 
 	//Movement Variables
     [SerializeField] float speed = 1.25f;
@@ -41,7 +42,12 @@ public class BlueBug : MonoBehaviour {
 	//Hacky Pause Bool
     private bool isPaused = false;
 
-	
+    //Inner glow circle
+    [SerializeField] float innerGlowSpeed = 5.0f;
+    [SerializeField] float innerGlowMaxSize = 2.5f;
+    [SerializeField] float innerGlowMinSize = 1.5f;
+    private bool isInnerGlowing = false;
+
 
 	//Find game controller and find sfx controller
     void Awake ()
@@ -60,6 +66,12 @@ public class BlueBug : MonoBehaviour {
 			CountTime();
 			RandomPosition();
 			lookAtPosition();
+
+			if(AudioManager.beatCheck && !isInnerGlowing)
+			{
+				isInnerGlowing = true;
+				StartCoroutine(scaleInnerGlow());
+			}
 		}
 	}
 
@@ -181,19 +193,41 @@ public class BlueBug : MonoBehaviour {
 		BlueParticle.transform.position = this.transform.position;
 	}
 
+	//Scale up and down circle sprite on beat
+	IEnumerator scaleInnerGlow()
+	{
+		float scaleX = innerGlow.transform.localScale.x;
+
+		while(scaleX < innerGlowMaxSize - 0.01f)
+		{
+			scaleX = Mathf.MoveTowards(scaleX, innerGlowMaxSize, Time.deltaTime * innerGlowSpeed);
+			innerGlow.transform.localScale = new Vector3(scaleX, scaleX, 1.0f);
+			yield return null;
+		}
+
+		while(scaleX > innerGlowMinSize + 0.01f)
+		{
+			scaleX = Mathf.MoveTowards(scaleX, innerGlowMinSize, Time.deltaTime * innerGlowSpeed);
+			innerGlow.transform.localScale = new Vector3(scaleX, scaleX, 1.0f);
+			yield return null;
+		}
+
+		isInnerGlowing = false;
+		yield return null;
+	}
+
 	//Check it the bug has already been hit & check if it is colliding with the player
 	//Set bool to ensure no double hit, play sound effect, end bug life
 	//Tell game controller that the player has been hit, tell vibration controller to vibrate
 	void OnTriggerEnter2D(Collider2D other)
 	{
-
 		if(!beenHit)
 		{
 			beenHit = true;
 
 			if (other.gameObject.CompareTag("JarTop"))
 			{
-				aSFX.playDodo();
+				aSFX.playGreenDodo();
 				endLyfe();
 				gameController.makeLotsOfBugs();
 			}
