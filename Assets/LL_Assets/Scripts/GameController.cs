@@ -69,6 +69,7 @@ public class GameController : MonoBehaviour
 
         player.GetComponent<Jar>().enabled = false;
         player.GetComponent<Drag>().enabled = false;
+        //GameObject.FindGameObjectWithTag("AM").GetComponent<AudioManager>().setAudioClip();
     }
 
     // Update is called once per frame
@@ -302,6 +303,7 @@ public class GameController : MonoBehaviour
 
     public void makeLotsOfBugs()
     {
+    uiController.incWaveCount();
 		for(int j = 0; j < 10; j++)
 		{
             spawnIndex = Random.Range(0, spawnPoints.Length);

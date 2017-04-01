@@ -102,9 +102,9 @@ public class FireFly : MonoBehaviour {
                 gameController.CatchBug(randJar);
                 Destroy(this.gameObject);
             }
+           //  }
 
-        } 
-        else if (!gameController.gameObject.GetComponent<PauseController>().isPaused)
+        } else
         {
             moveBug();
         }

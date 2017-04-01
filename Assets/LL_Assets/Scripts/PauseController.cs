@@ -13,11 +13,13 @@ public class PauseController : MonoBehaviour {
 	[SerializeField] GameObject player;
 
 	[SerializeField] GameObject pausePanel;
+	[SerializeField] Image pausePanelImage;
 
 	public bool isPaused = false;
 
 	[SerializeField] float pauseFadeTime = 5.0f;
 
+	[SerializeField] Sprite[] PausePanelBgs;
 
 	public void ChangePauseState()
 	{
@@ -29,6 +31,7 @@ public class PauseController : MonoBehaviour {
 		else
 		{
 			isPaused = true;
+			setPausePanel();
 		}
 
 		playPauseAudio();
@@ -75,6 +78,24 @@ public class PauseController : MonoBehaviour {
         }
 	}
 
+	void setPausePanel()
+	{
+		switch (PlayerPrefs.GetInt("bgNumber"))
+        {
+            case 1:
+				pausePanelImage.sprite = PausePanelBgs[0];
+                break;
+            case 2:
+				pausePanelImage.sprite = PausePanelBgs[1];
+                break;
+            case 3:
+				pausePanelImage.sprite = PausePanelBgs[2];
+                break;
+            case 4:
+				pausePanelImage.sprite = PausePanelBgs[3];
+                break;
+        }
+	}
 
 	public void LoadMenu()
 	{

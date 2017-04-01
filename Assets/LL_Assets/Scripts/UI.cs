@@ -30,6 +30,24 @@ public class UI : MonoBehaviour {
     public Image progressBar;
     [SerializeField] private float progressFlashSpeed = 5.0f;
 
+
+    //Wave panel stuffs
+	[SerializeField]
+    private GameObject WavePanel;
+    [SerializeField]
+    private GameObject WaveText;
+    [SerializeField]
+    private float desiredPanelHeight = -500.0f;
+    [SerializeField]
+    private float wavePanelMoveSpeed = 10.0f;
+    [SerializeField]
+    private float panelUpTime = 1.0f;
+    private bool isMovingWave = false;
+    private int WavePanelMoveCount = 0;
+    private int WaveCount = 0;
+
+
+
     public ParticleSystem[] crackedJarFireflies;
 
     public Light[] pointLights;
@@ -463,7 +481,19 @@ public class UI : MonoBehaviour {
                 break;
             }
 
-            tempScoreCounter += 10;
+            if(tempScoreCounter < totalScore * 0.5f)
+            {
+				tempScoreCounter += 10;
+
+            }
+            else if(tempScoreCounter < totalScore * 0.25f)
+            {
+            	tempScoreCounter += 5;
+            }
+            else
+            {
+            	tempScoreCounter++;
+            }
 
 			yield return new WaitForSecondsRealtime(0.001f);
 		}
@@ -557,6 +587,50 @@ public class UI : MonoBehaviour {
 
 		countdown.gameObject.SetActive(false);
     	yield return null;
+    }
+
+
+    //Wave Panel shit
+	public void wavePanelUpdate()
+    {
+        WaveText.GetComponent<Text>().text = "WAVE " + WaveCount.ToString();
+
+        if (WavePanelMoveCount > 0 && !isMovingWave)
+        {
+            WavePanelMoveCount--;
+            isMovingWave = true;
+            StartCoroutine(moveWavePanel());
+        }
+    }
+
+    IEnumerator moveWavePanel()
+    {
+        float tempY = WavePanel.transform.localPosition.y;
+
+        while (tempY < (desiredPanelHeight - 0.01f))
+        {
+            tempY = Mathf.MoveTowards(tempY, desiredPanelHeight, Time.deltaTime * wavePanelMoveSpeed);
+            WavePanel.transform.localPosition = new Vector3(WavePanel.transform.localPosition.x, tempY, WavePanel.transform.localPosition.z);
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(panelUpTime);
+
+        while (tempY > -749.99f)
+        {
+            tempY = Mathf.MoveTowards(tempY, -750.0f, Time.deltaTime * wavePanelMoveSpeed);
+            WavePanel.transform.localPosition = new Vector3(WavePanel.transform.localPosition.x, tempY, WavePanel.transform.localPosition.z);
+            yield return null;
+        }
+
+        isMovingWave = false;
+        yield return null;
+    }
+
+    public void incWaveCount()
+    {
+        WaveCount++;
+        WavePanelMoveCount++;
     }
 
 }
