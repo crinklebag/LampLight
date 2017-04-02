@@ -60,7 +60,6 @@ public class LeaderboardManager : MonoBehaviour
     private LeaderboardInfo playerRanking = new LeaderboardInfo();
     public List<LeaderboardInfo> leaderboardList = new List<LeaderboardInfo>();
 
-    //private Player.SessionInfo info = new Player.SessionInfo();
     private PlayerInfo info = new PlayerInfo();
     
     // Use this for initialization
@@ -135,7 +134,17 @@ public class LeaderboardManager : MonoBehaviour
         {
             infile.Close();
             print("No data");
-            WriteToFile(info);
+            //WriteToFile(info);
+
+            total.playersInfo = new PlayerInfo[numTopScores];
+
+            for (int i = 0; i < numTopScores; i++)
+            {
+                total.playersInfo[i] = new PlayerInfo();
+            }
+
+            UpdateScores(info, ref total);
+            WriteScores(ref total);  
         }
     }
 
@@ -174,6 +183,11 @@ public class LeaderboardManager : MonoBehaviour
         }
 
         leaderboard.playersInfo = tempList.ToArray();
+
+        for (int i = 0; i < total.playersInfo.Length; i++)
+        {
+            total.playersInfo[i].rank = i + 1;
+        }
     }
 
     private void SortScores(ref List<PlayerInfo> current) //Custom list sort method
@@ -237,7 +251,7 @@ public class LeaderboardManager : MonoBehaviour
         playerRanking.playersInfo = new PlayerInfo[numTopScores];
         PlayerInfo tempInfo = new PlayerInfo();
 
-        print("Total " + total.playersInfo.Length);
+        //print("Total " + total.playersInfo.Length);
 
         for (int i = 0; i < numTopScores; i++)
         {
@@ -252,7 +266,7 @@ public class LeaderboardManager : MonoBehaviour
             }
         }
 
-        print(tempInfo.playerName + " " + tempInfo.playerScore);
+        //print(tempInfo.playerName + " " + tempInfo.playerScore);
 
         for (int j = 0; j < total.playersInfo.Length; j++)
         {
@@ -270,15 +284,14 @@ public class LeaderboardManager : MonoBehaviour
         {
             topFive.playersInfo[i] = new PlayerInfo();
             topFive.playersInfo[i] = total.playersInfo[i];
-            topFive.playersInfo[i].rank = i + 1;
         }
 
-        print("pos " + position);
+        //print("pos " + position);
 
         if(position > numTopScores)
         {
             int lowerOffset = (position - 1) - numTopScores;
-            print("lOff: " + lowerOffset);
+            //print("lOff: " + lowerOffset);
             if(lowerOffset < 2)
             {
                 lowerBound = numTopScores - 1;
@@ -291,7 +304,7 @@ public class LeaderboardManager : MonoBehaviour
                 {
                     upperBound = 0;
                     lowerBound = position - numTopScores;
-                    print("Equal");
+                    //print("Equal");
                 }
 
                 else if (position == (total.playersInfo.Length - 1))
@@ -316,26 +329,18 @@ public class LeaderboardManager : MonoBehaviour
             return;
         }
 
-        print("lBound: " + lowerBound);
-        print("uBound: " + upperBound);
+        /*print("lBound: " + lowerBound);
+        print("uBound: " + upperBound);*/
 
         List<PlayerInfo> tempList = new List<PlayerInfo>();
 
         for (int k = lowerBound; k <= upperBound; k++)
         {
-            total.playersInfo[k - 1].rank = k;
             tempList.Add(total.playersInfo[k - 1]);
-            //print(total.playersInfo[k - 1].playerName + " " + total.playersInfo[k - 1].playerScore);
-            print("K " + k);
         }
 
         PlayerInfo[] tempArray = tempList.ToArray();
-        print(tempArray.Length);
-
-        for (int q = 0; q < tempArray.Length; q++)
-        {
-           print(tempArray[q].rank + " " + tempArray[q].playerName + " " + tempArray[q].playerScore);
-        }
+        //print(tempArray.Length);
 
         playerRanking.playersInfo = tempList.ToArray();
         leaderboardList.Add(playerRanking);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 //TODO
 //Everytime the song changes, record the song name and final score
@@ -9,20 +10,19 @@ using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour 
 {
     public static Player instance = null;
+    [SerializeField]
+    private InputField playerNameText = null;
+
+    [SerializeField]
+    private Text scoreText = null;
+
+    public int score = 0; //for testing purposes
 
     public class PlayerInfo
     {
         public string playerName = "??";
         public int playerScore = 0;
     }
-
-    public class SessionInfo
-    {
-        public string playerName;
-        public List<PlayerInfo> playerInfo = new List<PlayerInfo>();
-    }
-
-    //public SessionInfo info = new SessionInfo();
 
     public PlayerInfo info = new PlayerInfo();
 
@@ -38,7 +38,7 @@ public class Player : MonoBehaviour
         //If instance already exists and it's not this:
         else if (instance != this)
         {
-            //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
+            //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance.
             Destroy(gameObject); 
         }
                
@@ -49,23 +49,19 @@ public class Player : MonoBehaviour
 	// Use this for initialization
 	void Start () 
     {
-		/*info.playerName = playerName;
-
-        AddInfo("song6", 32);
-        AddInfo("song3", 9000);
-        AddInfo("song1", 3);*/
-
-        info.playerName = "RGD";
-        info.playerScore = 500;
+        info.playerScore = score; //Get score from other script
+        scoreText.text = score.ToString();
 	}
 	
 	// Update is called once per frame
 	void Update () 
     {
-        if(Input.GetKey(KeyCode.Space) && SceneManager.GetActiveScene().name != "LeaderboardTester")
-        {
-            //Application.LoadLevel("LeaderboardTester");
-            SceneManager.LoadScene("LeaderboardTester");
-        }
+
 	}
+
+    public void GetName()
+    {
+        info.playerName = playerNameText.text;
+        SceneManager.LoadScene("LeaderboardTester");
+    }
 }
