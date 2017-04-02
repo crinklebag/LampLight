@@ -199,7 +199,7 @@ public class EvilBug : MonoBehaviour {
 		{
 			//Debug.Log("Left Side");
 
-			notification.transform.position = new Vector3(minMoveX + 0.5f, this.transform.position.y, this.transform.position.z);
+			notification.transform.position = new Vector3(minMoveX - 0.5f, this.transform.position.y, this.transform.position.z);
 			if(!isNotificationOn)
 			{
 				isNotificationOn = true;
@@ -210,7 +210,7 @@ public class EvilBug : MonoBehaviour {
 		{
 			//Debug.Log("Right Side");
 
-			notification.transform.position = new Vector3(maxMoveX - 0.5f, this.transform.position.y, this.transform.position.z);
+			notification.transform.position = new Vector3(maxMoveX + 0.5f, this.transform.position.y, this.transform.position.z);
 			if(!isNotificationOn)
 			{
 				isNotificationOn = true;
@@ -221,7 +221,7 @@ public class EvilBug : MonoBehaviour {
 		{
 			//Debug.Log("Top Side");
 
-			notification.transform.position = new Vector3(this.transform.position.x, maxMoveY - 0.5f, this.transform.position.z);
+			notification.transform.position = new Vector3(this.transform.position.x, maxMoveY + 0.5f, this.transform.position.z);
 			if(!isNotificationOn)
 			{
 				isNotificationOn = true;
@@ -232,7 +232,7 @@ public class EvilBug : MonoBehaviour {
 		{
 			//Debug.Log("Top Left Side");
 
-			notification.transform.position = new Vector3(minMoveX + 0.5f, maxMoveY - 0.5f, this.transform.position.z);
+			notification.transform.position = new Vector3(minMoveX - 0.5f, maxMoveY + 0.5f, this.transform.position.z);
 			if(!isNotificationOn)
 			{
 				isNotificationOn = true;
@@ -243,7 +243,7 @@ public class EvilBug : MonoBehaviour {
 		{
 			//Debug.Log("Top Right Side");
 
-			notification.transform.position = new Vector3(maxMoveX - 0.5f, maxMoveY - 0.5f, this.transform.position.z);
+			notification.transform.position = new Vector3(maxMoveX + 0.5f, maxMoveY + 0.5f, this.transform.position.z);
 			if(!isNotificationOn)
 			{
 				isNotificationOn = true;

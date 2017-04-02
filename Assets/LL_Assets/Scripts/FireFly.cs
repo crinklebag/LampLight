@@ -11,10 +11,12 @@ public class FireFly : MonoBehaviour {
     //[SerializeField] Light bugLight;
     [SerializeField] GameObject image;
     [SerializeField] GameObject glow;
+	[SerializeField] GameObject OuterGlow;
     [SerializeField] GameObject particles;
     [SerializeField] float speed = 0.05f;
 	[SerializeField] float rotSpeed = 2.5f;
     [SerializeField] GameObject destination;
+
 
 	public bool isOn;
     [SerializeField]
@@ -117,7 +119,7 @@ public class FireFly : MonoBehaviour {
         /*if(other.gameObject.CompareTag("JarTop")){
             Debug.Log("Hit Jar Top");
         }*/
-        
+
         if (other.gameObject.CompareTag("JarTop") && isOn ) {
 
             GameObject fireflySparkle = GameObject.Instantiate(fireflySparklePrefab);
@@ -128,6 +130,7 @@ public class FireFly : MonoBehaviour {
             // Turn off bug and glow
             image.SetActive(false);
             glow.SetActive(false);
+			OuterGlow.SetActive(false);
             // turn particles on
             particles.SetActive(true);
             // turn the collider into a trigger
