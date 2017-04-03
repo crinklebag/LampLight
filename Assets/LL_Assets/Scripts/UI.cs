@@ -223,7 +223,7 @@ public class UI : MonoBehaviour {
 
         if (winGame)
         {
-            Debug.Log("Won Game??");
+            //Debug.Log("Won Game??");
             ShowEndUI(gc.FilledJars);
         }
 
@@ -490,17 +490,19 @@ public class UI : MonoBehaviour {
                 break;
             }
 
-            if(tempScoreCounter < totalScore * 0.5f)
+            if(tempScoreCounter < totalScore * 0.5f)//under 1/2
             {
-				tempScoreCounter += 10;
-
+				tempScoreCounter += 20;
+				Debug.Log("under half");
             }
-            else if(tempScoreCounter < totalScore * 0.25f)
+            else if(tempScoreCounter < totalScore * 0.75f)//under 3/4
             {
-            	tempScoreCounter += 5;
+            	tempScoreCounter += 10;
+            	Debug.Log("under three quarter");
             }
             else
             {
+            	Debug.Log("the rest");
             	tempScoreCounter++;
             }
 
@@ -598,7 +600,6 @@ public class UI : MonoBehaviour {
 		countdown.gameObject.SetActive(false);
     	yield return null;
     }
-
 
     //Wave Panel shit
 	public void wavePanelUpdate()

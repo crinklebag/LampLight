@@ -299,6 +299,7 @@ public class MainMenuController : MonoBehaviour {
         {
             case 0:
                 currentState = MenuState.Intro;
+                Debug.Log("X");
                 ResetBackgroundSelection();
                 break;
             case 1:

@@ -34,11 +34,11 @@ public class GameController : MonoBehaviour
     public static int[] bandFrequencies;
     [SerializeField] int realAmountOfBugs;
     [SerializeField] int filledJars;
-    int maxBugs = 10;
+    int maxBugs = 5;
     int maxDragonflies = 2;
     int jarDamageLimit = 3;
     int bugCount = 0;
-    int maxBugCount = 30;
+    int maxBugCount = 20;
     [SerializeField] int jarCurrentDamage = 0;
     
     [SerializeField] bool hitAlready = false;

@@ -31,6 +31,7 @@ public class BlueBug : MonoBehaviour {
 	[SerializeField] GameObject sprite;
 	[SerializeField] GameObject hitParticle;
 	[SerializeField] GameObject innerGlow;
+	[SerializeField] GameObject followParticle;
 
 	//Movement Variables
     [SerializeField] float speed = 1.25f;
@@ -83,7 +84,7 @@ public class BlueBug : MonoBehaviour {
 			Physics2D.IgnoreCollision(gameController.BoundsGameObjects[i].GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
 		}
 
-		//StartCoroutine(RandomPosition());
+		followParticle.SetActive(true);
 		StartCoroutine(BugLyfe(inT, arT, outT));
 	}
 
@@ -187,7 +188,9 @@ public class BlueBug : MonoBehaviour {
 	void endLyfe()
 	{
 		glow.SetActive(false);
+		innerGlow.SetActive(false);
 		sprite.SetActive(false);
+		followParticle.SetActive(false);
 
 		GameObject BlueParticle = Instantiate(hitParticle) as GameObject;
 		BlueParticle.transform.position = this.transform.position;

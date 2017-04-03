@@ -87,8 +87,6 @@ public class LightController : MonoBehaviour
     [SerializeField]
     private bool endSong = false;
 
-    [SerializeField]
-    private float increaseSongPercentage = 0.6f;
     private float percentageDone;
 
     //Dumb pause check bool

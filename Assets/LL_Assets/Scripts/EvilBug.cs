@@ -31,6 +31,7 @@ public class EvilBug : MonoBehaviour {
 	[SerializeField] GameObject sprite;
 	[SerializeField] GameObject hitParticle;
 	[SerializeField] GameObject notification;
+	[SerializeField] GameObject followParticle;
 
 	//Movement Variables
     [SerializeField] private float speed = 1.25f;
@@ -88,6 +89,8 @@ public class EvilBug : MonoBehaviour {
 		{
 			Physics2D.IgnoreCollision(gameController.BoundsGameObjects[i].GetComponent<Collider2D>(), this.GetComponent<Collider2D>());
 		}
+
+		followParticle.SetActive(true);
 
 		//StartCoroutine(RandomPosition());
 		StartCoroutine(BugLyfe(inT, arT, outT));
@@ -267,6 +270,7 @@ public class EvilBug : MonoBehaviour {
 	{
 		glow.SetActive(false);
 		sprite.SetActive(false);
+		followParticle.SetActive(true);
 
 		GameObject RedParticle = Instantiate(hitParticle) as GameObject;
 		RedParticle.transform.position = this.transform.position;
