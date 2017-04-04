@@ -105,9 +105,16 @@ public class UI : MonoBehaviour {
 
 	private bool calledFadeCoroutine = false;
 
+	[SerializeField] Image toMenuFade;
+    [SerializeField] float toMenuFadeSpeed;
+    bool toMenuIsFading = false;
+
     void Awake()
     {
         countdown = GameObject.Find("Countdown").GetComponent<Text>();
+
+		toMenuFade.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+		toMenuFade.gameObject.SetActive(false);
 
         currentColor = new Color32[jars.Length];
         jarsY = new float[jars.Length];
@@ -691,4 +698,33 @@ public class UI : MonoBehaviour {
 
 		yield return null;
 	}
+
+
+	public void fadeToMenu()
+    {	
+    	if(!toMenuIsFading)
+    	{
+			toMenuFade.gameObject.SetActive(true);
+			StartCoroutine(fadeEm());
+    	}
+    }
+
+    IEnumerator fadeEm()
+    {
+    	float temp = toMenuFade.color.a;
+
+    	while(temp < 0.999f)
+    	{
+    		temp = Mathf.MoveTowards(temp, 1.0f, Time.deltaTime * toMenuFadeSpeed);
+
+    		toMenuFade.color = new Color(0.0f, 0.0f, 0.0f, temp);
+
+    		yield return null;
+    	}
+
+    	toMenuIsFading = false;
+    	this.GetComponent<SceneLoad>().LoadScene("MainMenu_Mobile");
+
+    	yield return null;
+    }
 }

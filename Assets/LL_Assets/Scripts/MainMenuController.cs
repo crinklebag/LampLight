@@ -55,10 +55,16 @@ public class MainMenuController : MonoBehaviour {
 
     [SerializeField] AudioSFX menuSFX;
 
+    [SerializeField] Image creditsFade;
+    [SerializeField] float creditsFadeSpeed;
+    bool isFading = false;
+
 	// Use this for initialization
 	void Start () {
         currentState = MenuState.Intro;
         xReplace.SetActive(false);
+		creditsFade.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+		creditsFade.gameObject.SetActive(false);
         PlayerPrefs.SetInt("bgNumber", -1);
         PlayerPrefs.SetInt("sceneNumber", -1);
         PlayerPrefs.Save();
@@ -386,4 +392,31 @@ public class MainMenuController : MonoBehaviour {
     	yield return null;
     }
 
+    public void fadeToCredits()
+    {	
+    	if(!isFading)
+    	{
+			creditsFade.gameObject.SetActive(true);
+			StartCoroutine(fadeEm());
+    	}
+    }
+
+    IEnumerator fadeEm()
+    {
+    	float temp = creditsFade.color.a;
+
+    	while(temp < 0.999f)
+    	{
+    		temp = Mathf.MoveTowards(temp, 1.0f, Time.deltaTime * creditsFadeSpeed);
+
+    		creditsFade.color = new Color(0.0f, 0.0f, 0.0f, temp);
+
+    		yield return null;
+    	}
+
+    	isFading = false;
+    	this.GetComponent<SceneLoad>().LoadScene("NewCredits");
+
+    	yield return null;
+    }
 }

@@ -18,6 +18,7 @@ public class NewCredits : MonoBehaviour {
 
 	[SerializeField] private float endHeight = 1000.0f;
 
+	[SerializeField] private float panelUpTime = 2.5f;
 	[SerializeField] private float animWaitTime = 2.45f;
 
 	void Awake()
@@ -51,14 +52,8 @@ public class NewCredits : MonoBehaviour {
 		lamplightAnimation.SetActive(true);
 
 		yield return new WaitForSeconds(animWaitTime);
-		/*while(!lamplightAnimation.GetComponent<IntroAnimController>().animIsDone)
-		{
-			Debug.Log("Waiting");
-			yield return null;
-		}*/
-		lamplightAnimation.SetActive(false);
 
-		//lamplightAnimation.SetActive(false);
+		lamplightAnimation.SetActive(false);
 
 		yield return null;
 	}
@@ -86,6 +81,8 @@ public class NewCredits : MonoBehaviour {
 		for(int i = 0; i < numOfPanels; i++)
 		{
 			yield return StartCoroutine(fadeInPanel(i));
+
+			yield return new WaitForSeconds(panelUpTime);
 
 			yield return StartCoroutine(fadeOutPanel(i));
 		}
