@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class SplashSceneController : MonoBehaviour {
 
+	/*
     public enum SplashScreenState { SHOW_HANDSOMEDOG_LOGO, SHOW_HANDSOMEDOG_GLOW, HIDE_HANDSOMEDOG_GLOW, HIDE_HANDSOMEDOG_LOGO,
                                     SHOW_ISTHESOUL_LOGO, SHOW_ISTHESOUL_GLOW, HIDE_ISTHESOUL_LOGO, HIDE_ISTHESOUL_GLOW };
     SplashScreenState currentState;
+    */
 
     [SerializeField] Image handsomeDogLogo;
     [SerializeField] Image handsomeDogGlow;
@@ -15,14 +17,111 @@ public class SplashSceneController : MonoBehaviour {
     [SerializeField] Image isthesoulDogGlow;
 
     [SerializeField] float speed;
-
+    /*
     bool canFade = false;
 
     float startTime;
     float journeyLength;
     Image currentUIPiece;
+    */
+
+    void Start()
+    {
+    	StartCoroutine(fadeRoutine());
+    }
+
+    IEnumerator fadeRoutine()
+    {
+    	for(int i = 0; i < 2; i++)
+    	{
+			yield return StartCoroutine(fadeIn(i));
+			yield return StartCoroutine(fadeOut(i));
+    	}
+
+		this.GetComponent<SceneLoad>().LoadScene("MainMenu_Mobile");
+
+    	yield return null;
+    }
+
+
+    IEnumerator fadeIn(int index)
+    {
+    	float tempLogo;
+    	float tempGlow;
+    	if(index == 0)
+    	{
+    		tempLogo = handsomeDogLogo.color.a;
+    		tempGlow = handsomeDogGlow.color.a;
+    		while(tempLogo < 0.999f)
+    		{
+    			tempLogo = Mathf.MoveTowards(tempLogo, 1.0f, Time.deltaTime * speed);
+    			handsomeDogLogo.color = new Color(1.0f, 1.0f, 1.0f, tempLogo);
+    			yield return null;
+    		}
+			while(tempGlow < 0.999f)
+    		{
+    			tempGlow = Mathf.MoveTowards(tempGlow, 1.0f, Time.deltaTime * speed);
+    			handsomeDogGlow.color = new Color(1.0f, 1.0f, 1.0f, tempGlow);
+    			yield return null;
+    		}
+    	}
+    	else
+    	{
+			tempLogo = isthesoulDogLogo.color.a;
+    		tempGlow = isthesoulDogGlow.color.a;
+    		while(tempLogo < 0.999f)
+    		{
+    			tempLogo = Mathf.MoveTowards(tempLogo, 1.0f, Time.deltaTime * speed);
+    			isthesoulDogLogo.color = new Color(1.0f, 1.0f, 1.0f, tempLogo);
+    			yield return null;
+    		}
+			while(tempGlow < 0.999f)
+    		{
+    			tempGlow = Mathf.MoveTowards(tempGlow, 1.0f, Time.deltaTime * speed);
+    			isthesoulDogGlow.color = new Color(1.0f, 1.0f, 1.0f, tempGlow);
+    			yield return null;
+    		}
+    	}
+
+    	yield return null;
+    }
+
+    IEnumerator fadeOut(int index)
+    {
+    	Debug.Log("fade out");
+
+		float tempLogo;
+    	float tempGlow;
+    	if(index == 0)
+    	{
+    		tempLogo = handsomeDogLogo.color.a;
+    		tempGlow = handsomeDogGlow.color.a;
+    		while(tempLogo > 0.001f)
+    		{
+    			tempLogo = Mathf.MoveTowards(tempLogo, 0.0f, Time.deltaTime * speed);
+    			handsomeDogLogo.color = new Color(1.0f, 1.0f, 1.0f, tempLogo);
+    			handsomeDogGlow.color = new Color(1.0f, 1.0f, 1.0f, tempLogo);
+    			yield return null;
+    		}
+    	}
+    	else
+    	{
+			tempLogo = isthesoulDogLogo.color.a;
+    		tempGlow = isthesoulDogGlow.color.a;
+    		while(tempLogo > 0.001f)
+    		{
+    			tempLogo = Mathf.MoveTowards(tempLogo, 0.0f, Time.deltaTime * speed);
+    			isthesoulDogLogo.color = new Color(1.0f, 1.0f, 1.0f, tempLogo);
+    			isthesoulDogGlow.color = new Color(1.0f, 1.0f, 1.0f, tempLogo);
+    			yield return null;
+    		}
+    	}
+
+    	yield return null;
+    }
 
     // Use this for initialization
+    /*
 	void Start () {
         canFade = false;
         Initialize();
@@ -123,7 +222,7 @@ public class SplashSceneController : MonoBehaviour {
                 currentState = SplashScreenState.HIDE_ISTHESOUL_LOGO;
                 startTime = Time.time;
             } else if (currentState == SplashScreenState.HIDE_ISTHESOUL_LOGO) {
-                Debug.Log("Load Level");
+                //Debug.Log("Load Level");
                 GetComponent<SceneLoad>().LoadScene("MainMenu_Mobile");
             }
         }
@@ -145,4 +244,5 @@ public class SplashSceneController : MonoBehaviour {
             currentState = SplashScreenState.HIDE_ISTHESOUL_GLOW;
         }
     }
+    */
 }

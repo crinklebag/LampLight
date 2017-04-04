@@ -7,19 +7,17 @@ public class IntroAnimController : MonoBehaviour {
 	[SerializeField] GameObject IntroAnim;
 	[SerializeField] float time;
 
-	// Use this for initialization
-	void Start () {
-		//StartCoroutine(StopAnim());
-	}
-	
-	// Update is called once per frame
-	void Update () {
+	public bool animIsDone = false;
+
+	void Awake()
+	{
 		StartCoroutine(StopAnim());
-	
 	}
 
-	IEnumerator StopAnim(){
-	yield return new WaitForSeconds(time);
-	IntroAnim.SetActive(false);
+	IEnumerator StopAnim()
+	{
+		yield return new WaitForSeconds(time);
+		animIsDone = true;
+		IntroAnim.SetActive(false);
 	}
 }

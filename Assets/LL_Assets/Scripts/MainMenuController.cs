@@ -48,8 +48,9 @@ public class MainMenuController : MonoBehaviour {
     Vector3 menuVelocity = Vector3.zero;
     [SerializeField] RectTransform menuHolder;
     [SerializeField] GameObject[] bgOptions;
+    [SerializeField] GameObject xReplace;
 
-    public enum MenuState { Intro = 0, BGSelect, SongSelect, PlayGame, Count };
+    public enum MenuState { Intro = 0, BGSelect, SongSelect, PlayGame, Count};
     [SerializeField] MenuState currentState;
 
     [SerializeField] AudioSFX menuSFX;
@@ -57,7 +58,7 @@ public class MainMenuController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         currentState = MenuState.Intro;
-
+        xReplace.SetActive(false);
         PlayerPrefs.SetInt("bgNumber", -1);
         PlayerPrefs.SetInt("sceneNumber", -1);
         PlayerPrefs.Save();
@@ -176,6 +177,9 @@ public class MainMenuController : MonoBehaviour {
 
         topBarOpaque.color = Color.Lerp(Color.clear, Color.white, fracJourney);
         topBarTransparent.color = Color.Lerp(Color.clear, transparentBarTarget, fracJourney);
+        //xReplace.GetComponent<Image>().color = Color.Lerp(Color.clear, transparentBarTarget, 10.0f);
+        StartCoroutine(fadeDot());
+        xReplace.SetActive(true);
 
         // When the lerp is completed
         if (fracJourney >= 1) {
@@ -359,5 +363,27 @@ public class MainMenuController : MonoBehaviour {
     public int GetCurrentState() {
         return (int)currentState;
     }
-    
+
+
+    IEnumerator fadeDot()
+    {
+    	float temp = 0.0f;
+    	while(temp < 0.085f)
+    	{
+    		temp = Mathf.MoveTowards(temp, 1.0f, Time.deltaTime * 0.075f);
+    		xReplace.GetComponent<Image>().color = new Color(1.0f, 1.0f, 1.0f, temp);
+    		yield return null;
+    	}
+
+		while(temp < 0.999f)
+    	{
+    		temp = Mathf.MoveTowards(temp, 1.0f, Time.deltaTime * 4.0f);
+    		xReplace.GetComponent<Image>().color = new Color(1.0f, 1.0f, 1.0f, temp);
+    		yield return null;
+    	}
+
+
+    	yield return null;
+    }
+
 }
