@@ -74,7 +74,8 @@ public class LeaderboardManager : MonoBehaviour
         }
 
         else if(Application.platform == RuntimePlatform.Android ||
-                Application.platform == RuntimePlatform.WindowsPlayer)
+                Application.platform == RuntimePlatform.WindowsPlayer ||
+                Application.platform == RuntimePlatform.IPhonePlayer)
         {
             filepath = Application.persistentDataPath + "/" + filename;
         }
