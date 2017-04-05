@@ -22,7 +22,7 @@ public class UI : MonoBehaviour {
     public Text scoreText;
     public Text bugsCaughtFG;
 	public Text jarsFilledFG;
-	public Text totalScoreMulFG;
+	//public Text totalScoreMulFG;
     public Text totalScoreFG;
     public Text countdown;
 
@@ -463,13 +463,13 @@ public class UI : MonoBehaviour {
 
         if (multiplier > 0)
         {
-			totalScoreMulFG.text = (score).ToString() + " x " + multiplier.ToString ();
+			//totalScoreMulFG.text = (score).ToString() + " x " + multiplier.ToString ();
 			totalScoreFG.text = tempScoreCounter.ToString ();
             totalScore = score * multiplier;
         }
         else
         {
-			totalScoreMulFG.text = tempScoreCounter.ToString ();
+			//totalScoreMulFG.text = tempScoreCounter.ToString ();
 			totalScoreFG.text = "";
             totalScore = score;
         }
