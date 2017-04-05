@@ -64,6 +64,8 @@ public class NewCredits : MonoBehaviour {
 
 		float tempAlpha = lamplightAnimImage.color.a;
 
+		yield return new WaitForSeconds(1.0f);
+
 		while(tempAlpha > 0.001f)
 		{
 			tempAlpha = Mathf.MoveTowards(tempAlpha, 0.0f, Time.deltaTime * textFadeOutSpeed);
