@@ -296,6 +296,10 @@ public class UI : MonoBehaviour {
                 jarsY[i] = beginningJarPos[i].y;
             }
         }
+        else
+        {
+            jarsYSetAlready[0] = true;
+        }
         
         countdown.gameObject.SetActive(false);
         startedGame = false;
