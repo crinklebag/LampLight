@@ -6,6 +6,7 @@ public class BlueBug : MonoBehaviour {
 
 	//Controllers
 	private GameController gameController;
+	private BugController bugController;
 	AudioSFX aSFX;
 
 	//Movement Positions
@@ -54,6 +55,7 @@ public class BlueBug : MonoBehaviour {
     void Awake ()
 	{
 		gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+		bugController = GameObject.FindGameObjectWithTag("GameController").GetComponent<BugController>();
 		aSFX = GameObject.Find("SFXController").GetComponent<AudioSFX>();
 	}
 
@@ -191,6 +193,7 @@ public class BlueBug : MonoBehaviour {
 		innerGlow.SetActive(false);
 		sprite.SetActive(false);
 		followParticle.SetActive(false);
+		beenHit = false;
 
 		GameObject BlueParticle = Instantiate(hitParticle) as GameObject;
 		BlueParticle.transform.position = this.transform.position;
@@ -226,13 +229,16 @@ public class BlueBug : MonoBehaviour {
 	{
 		if(!beenHit)
 		{
-			beenHit = true;
-
 			if (other.gameObject.CompareTag("JarTop"))
 			{
+				beenHit = true;
+				Debug.Log("Green Hit");
+
 				aSFX.playGreenDodo();
 				endLyfe();
-				gameController.makeLotsOfBugs();
+				//gameController.makeLotsOfBugs();
+
+				bugController.clearWave();
 			}
 		}
 	}

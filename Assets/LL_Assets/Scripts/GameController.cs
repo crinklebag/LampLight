@@ -19,6 +19,8 @@ public class GameController : MonoBehaviour
     //Jar player;
     UI uiController;
 
+    private BugController bugController;
+
     private AudioSFX aSFX;
 
     GameObject player;
@@ -70,11 +72,8 @@ public class GameController : MonoBehaviour
         player.GetComponent<Jar>().enabled = false;
         player.GetComponent<Drag>().enabled = false;
         //GameObject.FindGameObjectWithTag("AM").GetComponent<AudioManager>().setAudioClip();
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
+        bugController = this.GetComponent<BugController>();
 
     }
 
@@ -95,9 +94,11 @@ public class GameController : MonoBehaviour
 
 		GameObject.Find("Directional light").GetComponent<LightController>().SetGame();
 
-        InitializeBugs();
+		bugController.startWaveCoroutine();
+        //InitializeBugs();
     }
 
+    /*
     void InstantiateBug()
     {
         for(int j = 0; j < maxBugs; j++) {
@@ -116,7 +117,8 @@ public class GameController : MonoBehaviour
             bugCount++;
         }
     }
-
+    */
+    /*
     IEnumerator InstantiateNewBugs() {
         for (int j = 0; j < maxBugs; j++)
         {
@@ -138,7 +140,8 @@ public class GameController : MonoBehaviour
             yield return new WaitForSeconds(randWaitTime);
         }
     }
-
+    */
+    /*
     void InitializeBugs()
     {
         for (int i = 0; i < maxBugs; i++)
@@ -175,6 +178,7 @@ public class GameController : MonoBehaviour
 
         StartCoroutine("CheckToMakeNewFirefly");
     }
+    */
 
     public void CatchBug(int jar)
     {
@@ -219,7 +223,7 @@ public class GameController : MonoBehaviour
 
             if (uiController.TimesFireflyWentHere[bugNumber] > 0)
             {
-                InstantiateBug();
+                //InstantiateBug();
                 // decrease the counter
                 realAmountOfBugs--;
             }
@@ -267,6 +271,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+    /*
     IEnumerator CheckToMakeNewFirefly()
     {
         if (!stopDoingThis)
@@ -284,6 +289,7 @@ public class GameController : MonoBehaviour
             StartCoroutine("CheckToMakeNewFirefly");
         }
     }
+    */
 
     IEnumerator PlayerDragonflyCooldown()
     {
@@ -301,9 +307,12 @@ public class GameController : MonoBehaviour
         return filledJars % 5;
     }
 
+    /*
     public void makeLotsOfBugs()
     {
-    uiController.incWaveCount();
+    	Debug.Log("MakeLotsOfBugs");
+
+    	uiController.incWaveCount();
 		for(int j = 0; j < 10; j++)
 		{
             spawnIndex = Random.Range(0, spawnPoints.Length);
@@ -314,6 +323,7 @@ public class GameController : MonoBehaviour
             bugCount++;
         }
     }
+    */
 
     //Call on exit button press
     //fade audio back out, change to fun facts loading scene
