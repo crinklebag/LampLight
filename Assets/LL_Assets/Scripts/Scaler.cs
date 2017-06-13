@@ -22,7 +22,7 @@ public class Scaler : MonoBehaviour
 
     float baseY = 0.0f;
 
-    void Start()
+    void Awake()
     {
         baseY = nightLayers.transform.position.y;
 

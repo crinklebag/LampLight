@@ -83,6 +83,9 @@ public class UI : MonoBehaviour {
     [Header("Wave Notification Text")]
     [Tooltip("Used to indicate what number the wave is at.")]
     [SerializeField] private GameObject WaveText;
+	[Header("Top Bound")]
+	[Tooltip("Used as a reference point for the hanging jars in the forest scene.")]
+	[SerializeField] private GameObject topBound;
 
     // TEXT -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -280,6 +283,32 @@ public class UI : MonoBehaviour {
             glows[i] = jars[i].GetComponentsInChildren<SpriteRenderer>()[1];
         }
 
+		// 5:4
+		if (Camera.main.aspect <= 1.3f)
+		{
+			jarDistanceOffset = 0.5f;
+		}
+		// 4:3
+		else if (Camera.main.aspect <= 1.4f)
+		{
+			jarDistanceOffset = 0.5f;
+		}
+		// 3:2
+		else if (Camera.main.aspect == 1.5f)
+		{
+			jarDistanceOffset = -0.5f;
+		}
+		// 16:10
+		else if (Camera.main.aspect == 1.6f)
+		{
+			jarDistanceOffset = -2.2f;
+		}
+		// 16:9
+		else if (Camera.main.aspect <= 1.8f)
+		{
+			jarDistanceOffset = -2.2f;
+		}
+
         if (SceneManager.GetActiveScene().name == "Main_Mobile_DeepForest")
         {
             for (int i = 0; i < jars.Length; i++)
@@ -289,11 +318,15 @@ public class UI : MonoBehaviour {
                 jarsYSetAlready[i] = false;
                 jarsPulseAlready[i] = false;
 
-                jars[i].gameObject.transform.position = new Vector3(jars[i].gameObject.transform.position.x, jars[i].gameObject.transform.position.y + (jarDistance - jarDistanceOffset), jars[i].gameObject.transform.position.z);
+				float variedDistance = Mathf.Abs (jars [i].gameObject.transform.position.y - topBound.transform.position.y);
+
+				jars[i].gameObject.transform.position = new Vector3(jars[i].gameObject.transform.position.x, topBound.transform.position.y + variedDistance + 1, jars[i].gameObject.transform.position.z);
 
                 beginningJarPos[i] = new Vector3(jars[i].gameObject.transform.position.x, jars[i].gameObject.transform.position.y, jars[i].gameObject.transform.position.z);
 
                 jarsY[i] = beginningJarPos[i].y;
+
+				//SetJarYPos(i);
             }
         }
         else
@@ -426,10 +459,15 @@ public class UI : MonoBehaviour {
 
     public void SetJarYPos(int val)
     {
+		if (jarsYSetAlready [val] == true)
+		{
+			return;
+		}
+
         if (val < jars.Length)
         {
             jarsYLerpTime = 0;
-            jarsY[val] = beginningJarPos[val].y - jarDistance;
+			jarsY[val] = Mathf.Abs(beginningJarPos[val].y - topBound.transform.position.y) - jarDistanceOffset;
             jarsYSetAlready[val] = true;
         }
     }
@@ -757,11 +795,6 @@ public class UI : MonoBehaviour {
     {
         WaveCount++;
         WavePanelMoveCount++;
-    }
-
-    public int getWaveCount()
-    {
-    	return WaveCount;
     }
 
 	void setFinalImage()
