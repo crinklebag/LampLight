@@ -79,6 +79,7 @@ public class BugController : MonoBehaviour {
 
 	IEnumerator startWave()
 	{
+
 		uiController.incWaveCount();
 
 		//reset
@@ -89,6 +90,8 @@ public class BugController : MonoBehaviour {
 		bugsAllowed += 5;
 
 		Debug.Log("Wave " + uiController.getWaveCount() + " Start\n" + bugsAllowed + " bugs");
+
+		yield return new WaitForSeconds(1.0f);
 
 		//spawn 3/4 of the wave right away
 		for(int i = 0; i < bugsAllowed * 0.75f; i++)
