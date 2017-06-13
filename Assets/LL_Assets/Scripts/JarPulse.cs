@@ -35,7 +35,8 @@ public class JarPulse : MonoBehaviour {
 	[SerializeField] float[] multiplierNumbers;
 
 	// Use this for initialization
-	void Start () {
+	void Awake ()
+	{
 		originalScale = transform.localScale;
 		maxScale = new Vector3(originalScale.x + 0.02f, originalScale.y + 0.02f, originalScale.z);
 
@@ -120,6 +121,7 @@ public class JarPulse : MonoBehaviour {
 
 				temp.transform.position = transform.position;
 				temp.transform.localScale = transform.localScale;
+				temp.transform.rotation = transform.rotation;
 
 				maxScaleJarCopies = new Vector3(maxScale.x + 0.09f, maxScale.y + 0.09f, 0.2f);
 

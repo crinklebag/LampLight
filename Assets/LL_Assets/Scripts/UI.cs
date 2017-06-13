@@ -6,9 +6,18 @@ using UnityEngine.SceneManagement;
 
 public class UI : MonoBehaviour {
 
+    // GETS/SETS ----------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Used to check how many fireflies are in what jar
     public int[] TimesFireflyWentHere { get { return timesFireflyWentHere; } set { timesFireflyWentHere = value; } }
+    
+    // Used to check if a jar has been lowered already
     public bool[] JarsYSetAlready { get { return jarsYSetAlready; } set { jarsYSetAlready = value; } }
+
+    // Used to set the gameover
     public bool WinGame { get { return winGame; } set { winGame = value; } }
+
+    // INGAME MENU STATES -------------------------------------------------------------------------------------------------------------------------------------------
 
     public enum IngameMenuStates
     {
@@ -17,96 +26,222 @@ public class UI : MonoBehaviour {
         EXIT
     }
 
+    [Header("Current Menu State")]
+    [Tooltip("This is used to let the game call and put away the pause menu.")]
     public IngameMenuStates theState;
 
-    public Text scoreText;
-    public Text bugsCaughtFG;
-	public Text jarsFilledFG;
-	//public Text totalScoreMulFG;
-    public Text totalScoreFG;
-    public Text countdown;
+    // GAMECONTROLLER -----------------------------------------------------------------------------------------------------------------------------------------------
 
-    public Image FGOverlay;
-    public Image progressBar;
-    [SerializeField] private float progressFlashSpeed = 5.0f;
-
-    [SerializeField] private Sprite[] finalPanelBgs;
-    [SerializeField] private GameObject[] finalScoreObjs;
-
-    //Wave panel stuffs
-	[SerializeField]
-    private GameObject WavePanel;
-    [SerializeField]
-    private GameObject WaveText;
-    [SerializeField]
-    private float desiredPanelHeight = -500.0f;
-    [SerializeField]
-    private float wavePanelMoveSpeed = 10.0f;
-    [SerializeField]
-    private float panelUpTime = 1.0f;
-    private bool isMovingWave = false;
-    private int WavePanelMoveCount = 0;
-    private int WaveCount = 0;
-
-
-
-    public ParticleSystem[] crackedJarFireflies;
-
-    public Light[] pointLights;
-
-    public SpriteRenderer[] glows;
-    public SpriteRenderer[] jars;
-
-    public Sprite[] jarImages; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
-    //public Sprite[] jarImagesMultiplier; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
-
-    public GameObject[] brokenHalfJars;
-    public GameObject am;
-    public GameObject exitButtonFG;
-
-    public GameObject jar1Pos;
-
+    [Header("GameController")]
+    [Tooltip("A reference to the GameController in the scene.")]
     GameController gc;
 
+    // PARTICLE SYSTEM ----------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("Jar Particle System")]
+    [Tooltip("These are the particle system references from the jars in the scene.")]
+    public ParticleSystem[] crackedJarFireflies;
+
+    // LIGHT --------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("Jar Lights")]
+    [Tooltip("These are the light references from the jars in the scene.")]
+    public Light[] pointLights;
+
+    // COLOR --------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("Jar Colors")]
+    [Tooltip("These are the colors used for the firefly sprites in the jars.")]
     [SerializeField] private Color32[] currentColor;
 
+    // VECTOR -------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("Hanging Jar Beginning Positions")]
+    [Tooltip("These are used to put the jars back up where they were when the jars are reset.")]
     [SerializeField] Vector3[] beginningJarPos;
 
-    [SerializeField] float[] intensities;
-    [SerializeField] float[] fireflyColorConvert;
-    [SerializeField] float[] jarsY;
-    [SerializeField] float jarDistance;
-    [SerializeField] float jarDistanceOffset;
-    float lerpColorTime = 0;
-    float fireflyColorConvertUI;
-    float maxLightIntensity = 0.6f;
-    float jarsYLerpTime = 0;
+    // GAMEOBJECT ----------------------------------------------------------------------------------------------------------------------------------------------------
 
+    [Header("Broken Halves of the Jars")]
+    [Tooltip("These are references to the cracked lower half of the jar which will fly off when the player loses.")]
+    public GameObject[] brokenHalfJars;
+    [Header("Audio Manager GameObject")]
+    [Tooltip("Reference to the audio manager.")]
+    public GameObject am;
+    [Header("Exit Button (Score Screen)")]
+    [Tooltip("The button the player can press to get out of the score screen (in the canvas it's under FinishGame)")]
+    public GameObject exitButtonFG;
+    [Header("Jar 1 Position (if scene is forest)")]
+    [Tooltip("This jar reference is used to compare distances between the first jar in the jars array and the empty gameobject. If it is around the same position, the jar will lower.")]
+    public GameObject jar1Pos;
+    [Header("Score Screen GameObjects")]
+    [Tooltip("This just holds the references to all the things in the score screen so it can be set active at the end or set unactive at the beginning.")]
+    [SerializeField] private GameObject[] finalScoreObjs;
+    [Header("Wave Notification")]
+    [Tooltip("This is the reference to the wave notification that pops up whenever you get a green firefly.")]
+	[SerializeField] private GameObject WavePanel;
+    [Header("Wave Notification Text")]
+    [Tooltip("Used to indicate what number the wave is at.")]
+    [SerializeField] private GameObject WaveText;
+
+    // TEXT -----------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("Score Text")]
+    [Tooltip("Shows the current score.")]
+    public Text scoreText;
+    [Header("Bugs Caught (Score Screen)")]
+    [Tooltip("Shows the amount of bugs you caught at the end of the game.")]
+    public Text bugsCaughtFG;
+    [Header("Jars Filled (Score Screen)")]
+    [Tooltip("Shows the amount of jars you filled at the end of the game.")]
+	public Text jarsFilledFG;
+    [Header("Total Score (Score Screen)")]
+    [Tooltip("Shows the total score at the end of the game.")]
+    public Text totalScoreFG;
+    [Header("Countdown to Start of Game")]
+    [Tooltip("Shows the countdown at the beginning of the game.")]
+    public Text countdown;
+
+    // IMAGE ----------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("Finished Game Overlay")]
+    [Tooltip("This is the kind of transparent image that shows the score screen. Only this needs to be set active because the texts and whatnot are under it.")]
+    public Image FGOverlay;
+    [Header("Progress Bar")]
+    [Tooltip("This is basically a seeker, but it's not interactable. Used to trigger FinishGame in GameController as well.")]
+    public Image progressBar;
+    [Header("Menu Fade")]
+    [Tooltip("Sets this gameobject to true when you want to fade to the menu.")]
+	[SerializeField] Image toMenuFade;
+
+    // SPRITE RENDERER -------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("Firefly Glows")]
+    [Tooltip("These are the glows in the jars that turn brighter every time you collect a firefly. They also reset back to 0 when the jars are reset.")]
+    public SpriteRenderer[] glows;
+    [Header("Jars")]
+    [Tooltip("These are the references to the jars sprites so they can change when the player gets hit by a bad firefly.")]
+    public SpriteRenderer[] jars;
+
+    // SPRITE -----------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("Jar Images")]
+    [Tooltip("Holds a reference to all the jar images used in the game.")]
+    public Sprite[] jarImages; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
+    //public Sprite[] jarImagesMultiplier; // 0 = not cracked, 1 = a little crack, 2 = halfway, 3 = broken
+    [Header("Score Screen BGs")]
+    [Tooltip("The image shown during the score screen when the game is over.")]
+    [SerializeField] private Sprite[] finalPanelBgs;
+
+    // FLOAT ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("Light Intensities")]
+    [Tooltip("Used to set the lights in the jars.")]
+    [SerializeField] float[] intensities;
+    [Header("Glow Alphas")]
+    [Tooltip("These contain the alphas from the glows in the jars.")]
+    [SerializeField] float[] fireflyColorConvert;
+    [Header("Jars Y Positions")]
+    [Tooltip("These are the y positions of the jars. They're used for dropping down the jars and resetting the jars.")]
+    [SerializeField] float[] jarsY;
+    [Header("Jar Distance")]
+    [Tooltip("The height the jars are supposed to be when they aren't active.")]
+    [SerializeField] float jarDistance;
+    [Header("Jar Distance Offset")]
+    [Tooltip("Set this number so the jars can drop lower/higher.")]
+    [SerializeField] float jarDistanceOffset;
+    [Header("Color Lerp Float")]
+    [Tooltip("Used to lerp the glows and intensities.")]
+    float lerpColorTime = 0;
+    [Header("Max Light Intensity")]
+    [Tooltip("Sets the max intensity the lights in the jars can go up to.")]
+    float maxLightIntensity = 0.6f;
+    [Header("Jars Y Lerp Float")]
+    [Tooltip("Used to lerp the hanging jars y position.")]
+    float jarsYLerpTime = 0;
+    [Header("Wave Panel Height")]
+    [Tooltip("The amount where the wave panel will stop when moving up.")]
+    [SerializeField] private float desiredPanelHeight = -500.0f;
+    [Header("Wave Panel Move Speed")]
+    [Tooltip("How fast the panel moves up.")]
+    [SerializeField] private float wavePanelMoveSpeed = 10.0f;
+    [Header("Wave Panel Show Time")]
+    [Tooltip("How long the wave panel is on the screen for.")]
+    [SerializeField] private float panelUpTime = 1.0f;
+    [Header("Progress Bar Flash Speed")]
+    [Tooltip("How fast the flashing is in the progress bar when the song is almost over.")]
+    [SerializeField] private float progressFlashSpeed = 5.0f;
+    [Header("Score Screen Wait")]
+    [Tooltip("Used to pause the score screen.")]
+    [SerializeField] float FinalScoreFinishWait = 5.0f;
+    [Header("Song Time Remaining")]
+    [Tooltip("A variable that is used to check when the song is almost over.")]
+	private float timeRemaining; 
+    [Header("Menu Fade Speed")]
+    [Tooltip("How fast the fade is for the toMenuFade image.")]
+    [SerializeField] float toMenuFadeSpeed;
+
+    // INT --------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("Max Fireflies Per Jar")]
+    [Tooltip("The amount of fireflies needed per jar so the jars can switch when full.")]
     int maxFireflies = 10;
+    [Header("Score")]
+    [Tooltip("A counter for the score.")]
     int score = 0;
+    [Header("Total Score")]
+    [Tooltip("The score after being multiplied with the jars filled.")]
     int totalScore = 0;
+    [Header("Score Counter")]
+    [Tooltip("A counter that shows the score being counted up in the score screen.")]
     int tempScoreCounter = 0;
+    [Header("Wave Panel Move Count")]
+    [Tooltip("Used to check if the player has hit a green firefly so it can trigger the moveWavePanel coroutine.")]
+    private int WavePanelMoveCount = 0;
+    [Header("Wave Counter")]
+    [Tooltip("Keeps track of the times you've hit the green firefly.")]
+    private int WaveCount = 0;
+    [Header("Score Multiplier")]
+    [Tooltip("Is basically the jars filled.")]
+    private int scoreMultiplier = 1;
+    [Header("Firefly counter per Jar")]
+    [Tooltip("This is just used to see how many fireflies are in each jar. When all the jars have been filled, it will reset to 0. The last element is just for us to see how many jars are filled.")]
     [SerializeField] int[] timesFireflyWentHere;
 
+    // BOOL -------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Header("End Signal")]
+    [Tooltip("This is the bool that checks if the player has touched the screen (or when testing, has pressed L) when the game is at the score counting screen.")]
     [SerializeField] bool hasTouchedAtEnd = false;
+    [Header("Hanging Jars Bools")]
+    [Tooltip("This gets set to true when the jars have been dropped down.")]
     [SerializeField] bool[] jarsYSetAlready;
+    [Header("Starting Jar Pulse Bools")]
+    [Tooltip("Every time a jar has been filled, a new jar will drop (in certain scenes), and the jar pulses to indicate that is the current jar you're filling up.")]
     [SerializeField] bool[] jarsPulseAlready;
+    [Header("Score Counting Bool")]
+    [Tooltip("This value is here so the CountUpScore coroutine gets called only once.")]
     bool calledCountUpCoroutine = false;
+    [Header("Win/Lose Bool Condition")]
+    [Tooltip("A bool used to set the game to end. There are various places where this variable is used: progress bar (to call GameController's FinishGame), GameController (FinishGame)")]
     [SerializeField] bool winGame = false;
+    [Header("When the game actually starts")]
+    [Tooltip("this bool will be set to true. Used in the countdown at the beginning to prevent the player from doing certain things.")]
     bool startedGame = false;
-
+    [Header("Progress Bar Warning")]
+    [Tooltip("Flashes the progress bar to tell you the song is almost over.")]
     bool startedProgressBarFlash = false;
+    [Header("Final Countdown")]
+    [Tooltip("Plays the countdown near the end of the song.")]
     bool startedFinalCountdown = false;
-
-    private int scoreMultiplier = 1;
-
-    [SerializeField] private float FinalScoreFinishWait = 5.0f;
-	private float timeRemaining; 
-
-	private bool calledFadeCoroutine = false;
-
-	[SerializeField] Image toMenuFade;
-    [SerializeField] float toMenuFadeSpeed;
+    [Header("Call Fade Coroutine")]
+    [Tooltip("Sets whether to call fadeInScorePanel.")]
+	bool calledFadeCoroutine = false;
+    [Header("Is Moving Wave Panel")]
+    [Tooltip("Checks if it is in the middle of moving the wave panel. If it is false, it will show the wave panel.")]
+    private bool isMovingWave = false;
+    [Header("If Menu is Fading")]
+    [Tooltip("Checks if the menu is fading. If it's not, then it will call fadeEm.")]
     bool toMenuIsFading = false;
 
     void Awake()
@@ -161,6 +296,10 @@ public class UI : MonoBehaviour {
                 jarsY[i] = beginningJarPos[i].y;
             }
         }
+        else
+        {
+            jarsYSetAlready[0] = true;
+        }
         
         countdown.gameObject.SetActive(false);
         startedGame = false;
@@ -185,9 +324,6 @@ public class UI : MonoBehaviour {
 
         if (SceneManager.GetActiveScene().name == "Main_Mobile_DeepForest")
         {
-            //Debug.Log(Vector3.Distance(jars[0].gameObject.transform.position, jar1Pos.transform.position));
-
-            //if (Vector3.Distance(jars[0].gameObject.transform.position, beginningJarPos[0]) >= 0.54f && Vector3.Distance(jars[0].gameObject.transform.position, beginningJarPos[0]) <= 0.65f && jarsYSetAlready[0] == false)
             if (Vector3.Distance(jars[0].gameObject.transform.position, jar1Pos.transform.position) < 0.5f && jarsYSetAlready[0] == false)
             {
                 SetJarYPos(0);
@@ -230,7 +366,6 @@ public class UI : MonoBehaviour {
 
         if (winGame)
         {
-            //Debug.Log("Won Game??");
             ShowEndUI(gc.FilledJars);
         }
 
@@ -245,8 +380,6 @@ public class UI : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.L))
         {
-            //ResetGlow();
-
             if (!hasTouchedAtEnd)
             {
                 Debug.Log("Touched at end using key");
@@ -317,7 +450,6 @@ public class UI : MonoBehaviour {
     public void ResetGlow()
     {
         lerpColorTime = 0;
-        //currentColorMultiplier = Color.clear;
 
         for (int i = 0; i < glows.Length; i++)
         {
@@ -379,16 +511,6 @@ public class UI : MonoBehaviour {
             fireflyColorConvert[bugNumber] = 255;
         }
 
-        if (fireflyColorConvertUI >= 0 && fireflyColorConvertUI < 255)
-        {
-            fireflyColorConvertUI += 25.5f;
-        }
-
-        if (fireflyColorConvertUI > 255)
-        {
-            fireflyColorConvertUI = 255;
-        }
-
         if (pointLights[bugNumber].intensity < maxLightIntensity)
         {
             intensities[bugNumber] += 0.05f;
@@ -419,16 +541,6 @@ public class UI : MonoBehaviour {
         if (fireflyColorConvert[bugNumber] < 0)
         {
             fireflyColorConvert[bugNumber] = 0;
-        }
-
-        if (fireflyColorConvertUI > 0)
-        {
-            fireflyColorConvertUI -= 25.5f;
-        }
-
-        if (fireflyColorConvertUI < 0)
-        {
-            fireflyColorConvertUI = 0;
         }
 
         intensities[bugNumber] -= 0.05f;
@@ -463,13 +575,11 @@ public class UI : MonoBehaviour {
 
         if (multiplier > 0)
         {
-			//totalScoreMulFG.text = (score).ToString() + " x " + multiplier.ToString ();
 			totalScoreFG.text = tempScoreCounter.ToString ();
             totalScore = score * multiplier;
         }
         else
         {
-			//totalScoreMulFG.text = tempScoreCounter.ToString ();
 			totalScoreFG.text = "";
             totalScore = score;
         }
@@ -541,8 +651,6 @@ public class UI : MonoBehaviour {
     void progressBarUpdate()
     {
 		progressBar.fillAmount = am.GetComponent<AudioSource>().time / am.GetComponent<AudioSource>().clip.length;
-
-		//Debug.Log("t: " + timeRemaining);
 
 		if(timeRemaining <= 10.0f && !startedProgressBarFlash)
 		{
