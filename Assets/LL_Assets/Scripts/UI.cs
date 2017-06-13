@@ -797,6 +797,11 @@ public class UI : MonoBehaviour {
         WavePanelMoveCount++;
     }
 
+	public int getWaveCount()
+	{
+		return WaveCount;
+	}
+
 	void setFinalImage()
 	{
 		switch (PlayerPrefs.GetInt("bgNumber"))
