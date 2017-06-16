@@ -50,7 +50,7 @@ public class MainMenuController : MonoBehaviour {
     [SerializeField] GameObject[] bgOptions;
     [SerializeField] GameObject xReplace;
 
-    public enum MenuState { Intro = 0, BGSelect, SongSelect, PlayGame, Count};
+    public enum MenuState { Intro = 0, BGSelect, SongSelect, PlayGame, Achievements, Scores, Count};
     [SerializeField] MenuState currentState;
 
     [SerializeField] AudioSFX menuSFX;
@@ -166,6 +166,12 @@ public class MainMenuController : MonoBehaviour {
                 break;
             case MenuState.BGSelect:
                 newPos = new Vector3(-1920, 0, 0);
+                break;
+            case MenuState.Achievements:
+                newPos = new Vector3(0, -1080, 0);
+                break;
+            case MenuState.Scores:
+                newPos = new Vector3(0, 1080, 0);
                 break;
         }
         
@@ -324,6 +330,14 @@ public class MainMenuController : MonoBehaviour {
             case 3:
                 currentState = MenuState.PlayGame;
                 // Load Game
+                break;
+            case 4:
+                // Show Achievements
+                currentState = MenuState.Achievements;
+                break;
+            case 5:
+                // Show Score Board
+                currentState = MenuState.Scores;
                 break;
             default:
                 break;
