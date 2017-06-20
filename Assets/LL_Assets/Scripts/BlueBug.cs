@@ -87,6 +87,7 @@ public class BlueBug : MonoBehaviour {
 		}
 
 		followParticle.SetActive(true);
+		this.GetComponent<CircleCollider2D>().enabled = true;
 		StartCoroutine(BugLyfe(inT, arT, outT));
 	}
 
@@ -193,6 +194,7 @@ public class BlueBug : MonoBehaviour {
 		innerGlow.SetActive(false);
 		sprite.SetActive(false);
 		followParticle.SetActive(false);
+		this.GetComponent<CircleCollider2D>().enabled = false;
 		beenHit = false;
 
 		GameObject BlueParticle = Instantiate(hitParticle) as GameObject;

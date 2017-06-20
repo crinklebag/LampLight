@@ -403,7 +403,7 @@ public class UI : MonoBehaviour {
 
         if (winGame)
         {
-            ShowEndUI(gc.FilledJars);
+            ShowEndUI(WaveCount);
         }
 
         if (startedGame)
@@ -604,7 +604,7 @@ public class UI : MonoBehaviour {
     public void ShowEndUI (int multiplier)
 	{
 		scoreMultiplier = multiplier;
-        bugsCaughtFG.text = (score).ToString();
+        bugsCaughtFG.text = gc.GetAmountOfBugs().ToString();
         jarsFilledFG.text = scoreMultiplier.ToString();
 
         setFinalImage();
@@ -618,12 +618,12 @@ public class UI : MonoBehaviour {
         if (multiplier > 0)
         {
 			totalScoreFG.text = tempScoreCounter.ToString ();
-            totalScore = score * multiplier;
+			totalScore = gc.GetAmountOfBugs() * multiplier;
         }
         else
         {
 			totalScoreFG.text = "";
-            totalScore = score;
+			totalScore = gc.GetAmountOfBugs();
         }
 
 		if (!calledCountUpCoroutine)
