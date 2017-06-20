@@ -25,10 +25,12 @@ public class MainMenuController : MonoBehaviour {
     float speed = 1;
 
     // Use for lerping the float values
-    float topBarFillMin = 0;
-    float topBarFillMax = 0;
-    float bottomBarFillMin = 0;
-    float bottomBarFillMax = 0;
+	[SerializeField] float topBarFillMin = 0;
+	[SerializeField] float topBarFillMax = 0;
+	[SerializeField] float topBarPreviousMax = 0;
+	[SerializeField] float bottomBarFillMin = 0;
+	[SerializeField] float bottomBarFillMax = 0;
+
     float topBarT = 0;
     float bottomBarT = 0;
     float smoothTime = 0.5f;
@@ -40,6 +42,7 @@ public class MainMenuController : MonoBehaviour {
     bool startGame = false;
     bool updateTopBar = false;
     bool updateBottomBar = false;
+	bool canGoBack = false;
 
     // Turn this into a player pref eventually.
     int unlockedLevels = 3;
@@ -52,7 +55,7 @@ public class MainMenuController : MonoBehaviour {
 
     public enum MenuState { Intro = 0, BGSelect, SongSelect, PlayGame, Achievements, Scores, Count};
     [SerializeField] MenuState currentState;
-
+	[SerializeField] MenuState previousState;
     [SerializeField] AudioSFX menuSFX;
 
     [SerializeField] Image creditsFade;
@@ -77,7 +80,12 @@ public class MainMenuController : MonoBehaviour {
         if (updateTopBar) {
             switch (currentState) {
                 case MenuState.Intro:
-                    FadeOutTopBar();
+
+					if (topBarOpaque.color.a > 0)
+					{
+						FadeOutTopBar();
+					}
+
                     ResetTopBar();
                     break;
                 case MenuState.BGSelect:
@@ -99,7 +107,12 @@ public class MainMenuController : MonoBehaviour {
         if (updateBottomBar) {
             switch (currentState) {
                 case MenuState.Intro:
-                    FadeOutBottomBar();
+
+					if (bottomBarOpaque.color.a > 0)
+					{
+						FadeOutBottomBar();
+					}
+					
                     ResetBottomBar();
                     break;
                 case MenuState.BGSelect:
@@ -121,21 +134,30 @@ public class MainMenuController : MonoBehaviour {
             // If menu state is intro - Fade both the top and bottom(only if on) bar to clear - reset all fill values
             case MenuState.Intro:
                 updateTopBar = true;
+				topBarPreviousMax = topBarFillMax;
                 topBarFillMax = 0;
                 if (bottomBarOpaque.color.a < 0.1f) { updateBottomBar = true; }
                 FadeOutDots(3);
                 break;
             // When going to BG Select: Update Nav Bar - Use the enum to pull from the position array
-            case MenuState.BGSelect:
-                updateTopBar = true;
-                updateBottomBar = true;
+			case MenuState.BGSelect:
+				updateTopBar = true;
+				updateBottomBar = true;
+				topBarPreviousMax = topBarFillMax;
                 topBarFillMax = topBarFillTargets[1];
                 topBarFillMin = topBarFillTargets[0];
+				
+				if ((int)previousState > 1)
+				{
+					startTopBarUpdate = true;
+				}
+
                 break;
             // When at Song Select - Update the nav bar - fade out bottom bar
             case MenuState.SongSelect:
                 // Fade in X Button
                 updateTopBar = true;
+				topBarPreviousMax = topBarFillMax;
                 topBarFillMax = topBarFillTargets[2];
                 topBarFillMin = topBarFillTargets[1];
                 FadeOutDots(3);
@@ -143,6 +165,7 @@ public class MainMenuController : MonoBehaviour {
             // Fill the rest of the top bar - then start the game
             case MenuState.PlayGame:
                 updateTopBar = true;
+				topBarPreviousMax = topBarFillMax;
                 topBarFillMax = topBarFillTargets[3];
                 topBarFillMin = topBarFillTargets[2];
                 break;
@@ -190,14 +213,14 @@ public class MainMenuController : MonoBehaviour {
         topBarOpaque.color = Color.Lerp(Color.clear, Color.white, fracJourney);
         topBarTransparent.color = Color.Lerp(Color.clear, transparentBarTarget, fracJourney);
         //xReplace.GetComponent<Image>().color = Color.Lerp(Color.clear, transparentBarTarget, 10.0f);
-        StartCoroutine(fadeDot());
+        //StartCoroutine(fadeDot());
         xReplace.SetActive(true);
 
         // When the lerp is completed
         if (fracJourney >= 1) {
             canFadeIn = false;
             // Debug.Log("Setting Can Fade to true");
-            if (currentState == MenuState.BGSelect && !startTopBarUpdate) { startTopBarUpdate = true; }
+			if (currentState == MenuState.BGSelect && !startTopBarUpdate) { startTopBarUpdate = true; }
         }
     }
 
@@ -253,31 +276,65 @@ public class MainMenuController : MonoBehaviour {
                 break;
         }
 
-        bottomBarOpaque.fillAmount = Mathf.Lerp(bottomBarFillMin, bottomBarFillMax, bottomBarT);
-        bottomBarT += speed * Time.deltaTime;
+			bottomBarOpaque.fillAmount = Mathf.Lerp(bottomBarFillMin, bottomBarFillMax, bottomBarT);
 
-        if (bottomBarOpaque.fillAmount == bottomBarFillMax) {
-            startBottomBarUpdate = false;
-        }
+			bottomBarT += speed * Time.deltaTime;
+
+			if (bottomBarOpaque.fillAmount == bottomBarFillMax) {
+				startBottomBarUpdate = false;
+			}
     }
 
     void UpdateTopBar() {
-        topBarOpaque.fillAmount = Mathf.Lerp(topBarFillMin, topBarFillMax, topBarT);
-        topBarT += speed * Time.deltaTime;
 
-        if (topBarOpaque.fillAmount == topBarFillMax) {
-            startTopBarUpdate = false;
-            updateTopBar = false;
-            topBarT = 0;
+		if ((int)previousState > (int)currentState)
+		{
+			topBarOpaque.fillAmount = Mathf.Lerp(topBarPreviousMax, topBarFillMax, topBarT);
 
-            if (currentState == MenuState.PlayGame) {
-                StartCoroutine(LoadScene());
-            }
+			topBarT += speed * Time.deltaTime;
 
-            if (currentState == MenuState.BGSelect) {
-                buttons.SetActive(true);
-            }
-        }
+			if (topBarOpaque.fillAmount == topBarFillMax) {
+				startTopBarUpdate = false;
+				updateTopBar = false;
+				topBarT = 0;
+
+				if (currentState == MenuState.PlayGame) {
+					StartCoroutine(LoadScene());
+				}
+
+				if (currentState == MenuState.BGSelect) {
+					buttons.SetActive (true);
+				}
+				else
+				{
+					buttons.SetActive(false);
+				}
+			}
+
+		} else
+		{
+			topBarOpaque.fillAmount = Mathf.Lerp(topBarFillMin, topBarFillMax, topBarT);
+
+			topBarT += speed * Time.deltaTime;
+
+			if (topBarOpaque.fillAmount == topBarFillMax) {
+				startTopBarUpdate = false;
+				updateTopBar = false;
+				topBarT = 0;
+
+				if (currentState == MenuState.PlayGame) {
+					StartCoroutine(LoadScene());
+				}
+
+				if (currentState == MenuState.BGSelect) {
+					buttons.SetActive(true);
+				}
+				else
+				{
+					buttons.SetActive(false);
+				}
+			}
+		}
     }
 
     void ResetTopBar() {
@@ -287,6 +344,7 @@ public class MainMenuController : MonoBehaviour {
 
     void ResetBottomBar() {
         bottomBarOpaque.fillAmount = 0;
+		bottomBarT = 0;
     }
 
     void FadeInDot(int dotIndex) {
@@ -315,13 +373,19 @@ public class MainMenuController : MonoBehaviour {
         {
             case 0:
                 currentState = MenuState.Intro;
-                Debug.Log("X");
+                //Debug.Log("X");
                 ResetBackgroundSelection();
+				buttons.SetActive(false);
                 break;
             case 1:
-                canFadeIn = true;
+				if (currentState == MenuState.Intro)
+				{
+					canFadeIn = true;
+				}
+
                 currentState = MenuState.BGSelect;
                 ResetBackgroundSelection();
+				buttons.SetActive(false);
                 break;
             case 2:
                 currentState = MenuState.SongSelect;
@@ -330,14 +394,17 @@ public class MainMenuController : MonoBehaviour {
             case 3:
                 currentState = MenuState.PlayGame;
                 // Load Game
+				buttons.SetActive(false);
                 break;
             case 4:
                 // Show Achievements
                 currentState = MenuState.Achievements;
+				buttons.SetActive(false);
                 break;
             case 5:
                 // Show Score Board
                 currentState = MenuState.Scores;
+				buttons.SetActive(false);
                 break;
             default:
                 break;
@@ -347,6 +414,24 @@ public class MainMenuController : MonoBehaviour {
         UpdateMenuState();
         RegisterUpdate();
     }
+
+	public void RunAwayAndNeverReturn()
+	{
+		if (currentState == MenuState.PlayGame) {
+			return;
+		}
+
+		int cs = (int)currentState;
+
+		if (cs > 0)
+		{
+			previousState = (MenuState)cs;
+
+			cs -= 1;
+
+			ButtonClick(cs);
+		}
+	}
 
     public void ChooseSong(string songTitle) {
         PlayerPrefs.SetString("sceneNumber", songTitle);
