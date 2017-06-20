@@ -78,8 +78,8 @@ public class Scaler : MonoBehaviour
         nightLayers.transform.localScale = new Vector3(Mathf.Abs(width / 19.1f), Mathf.Abs(width / 19.1f), nightLayers.transform.localScale.z);
 
         nightLayers.transform.position = new Vector3(nightLayers.transform.position.x, baseY / aspectHeight, nightLayers.transform.position.x);
-        Debug.Log(Camera.main.aspect);
-        Debug.Log(aspectHeight);
+        //Debug.Log(Camera.main.aspect);
+        //Debug.Log(aspectHeight);
 
         width = bounds[0].transform.localScale.y * Screen.width / Camera.main.orthographicSize;
 
@@ -168,8 +168,8 @@ public class Scaler : MonoBehaviour
             nightLayers.transform.localScale = new Vector3(Mathf.Abs(width / 19.1f), Mathf.Abs(width / 19.1f), nightLayers.transform.localScale.z);
 
             nightLayers.transform.position = new Vector3(nightLayers.transform.position.x, baseY / aspectHeight, nightLayers.transform.position.x);
-            Debug.Log(Camera.main.aspect);
-            Debug.Log(aspectHeight);
+            //Debug.Log(Camera.main.aspect);
+            //Debug.Log(aspectHeight);
 
             width = bounds[0].transform.localScale.y * Screen.width / Camera.main.orthographicSize;
 

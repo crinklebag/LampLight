@@ -133,7 +133,7 @@ public class BugController : MonoBehaviour {
 	public void incCaughtCounter()
 	{
 		bugsCaught++;
-		//Debug.Log(bugsCaught + "/" + bugsAllowed);
+		Debug.Log(bugsCaught + "/" + bugsAllowed);
 	}
 
 	//Called on update
