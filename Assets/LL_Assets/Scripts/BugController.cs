@@ -141,6 +141,7 @@ public class BugController : MonoBehaviour {
 	{
 		if(bugsCaught >= bugsAllowed)
 		{
+			Debug.Log("Start Wave");
 			StartCoroutine(startWave());
 		}
 	}
@@ -150,6 +151,8 @@ public class BugController : MonoBehaviour {
 	public void clearWave()
 	{
 		GameObject[] bugs = GameObject.FindGameObjectsWithTag("Bug");
+
+		Debug.Log("Clear Wave");
 
 		for(int i = 0; i < bugs.Length; i++)
 		{

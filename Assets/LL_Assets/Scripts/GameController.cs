@@ -242,10 +242,13 @@ public class GameController : MonoBehaviour
             return;
         }
 
+        //Commented for now to test wave spawning, ensuring the correct amount of bugs are spawned each wave
+        /*
         if (uiController.GetBugInJarColor(filledJars % 5).a > 0)
         {
             ReleaseBug(filledJars % 5);
         }
+        */
 
         jarCurrentDamage++;
 
