@@ -1,9 +1,13 @@
 fileFormatVersion: 2
 guid: 64f79ac7e80596045b9c84b6fa4aa6dc
-timeCreated: 1497555781
+timeCreated: 1497974833
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: Lamplight Achievement Icons-01_0
+    21300002: Lamplight Achievement Icons-01_1
+    21300004: Lamplight Achievement Icons-01_2
+    21300006: Lamplight Achievement Icons-01_3
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -34,7 +38,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -92,7 +96,59 @@ TextureImporter:
     overridden: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Lamplight Achievement Icons-01_0
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 6214
+        width: 7717
+        height: 1588
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Lamplight Achievement Icons-01_1
+      rect:
+        serializedVersion: 2
+        x: 515
+        y: 4239
+        width: 7720
+        height: 1829
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Lamplight Achievement Icons-01_2
+      rect:
+        serializedVersion: 2
+        x: 515
+        y: 2482
+        width: 7720
+        height: 1587
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Lamplight Achievement Icons-01_3
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 615
+        width: 7898
+        height: 1620
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
     outline: []
   spritePackingTag: 
   userData: 

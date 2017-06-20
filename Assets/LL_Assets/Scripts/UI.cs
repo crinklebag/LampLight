@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
+
 public class UI : MonoBehaviour {
 
     // GETS/SETS ----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -246,6 +247,9 @@ public class UI : MonoBehaviour {
     [Header("If Menu is Fading")]
     [Tooltip("Checks if the menu is fading. If it's not, then it will call fadeEm.")]
     bool toMenuIsFading = false;
+
+
+
 
     void Awake()
     {
@@ -763,7 +767,9 @@ public class UI : MonoBehaviour {
         {
             WavePanelMoveCount--;
             isMovingWave = true;
-            StartCoroutine(moveWavePanel());
+			//WavePanel.GetComponent<Animator> ().SetTrigger ("PlayAnim");
+			//WavePanel.GetComponent<Animator> ().Play ("waveAnim");
+           // StartCoroutine(moveWavePanel());
         }
     }
 
@@ -795,6 +801,7 @@ public class UI : MonoBehaviour {
     {
         WaveCount++;
         WavePanelMoveCount++;
+		//WavePanel.GetComponent<Animator> ().Play("waveAnim");
     }
 
 	public int getWaveCount()

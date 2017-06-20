@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BugController : MonoBehaviour {
 
+	[SerializeField] private GameObject WavePanel;
+
 	GameController gameController;
 	UI uiController;
 
@@ -90,7 +92,10 @@ public class BugController : MonoBehaviour {
 		bugsAllowed += 5;
 
 		Debug.Log("Wave " + uiController.getWaveCount() + " Start\n" + bugsAllowed + " bugs");
-
+		WavePanel.SetActive (true);
+		WavePanel.GetComponent<Animator> ().SetTrigger ("PlayAnim");
+	
+		Debug.Log ("waveUp");
 		yield return new WaitForSeconds(1.0f);
 
 		//spawn 3/4 of the wave right away
