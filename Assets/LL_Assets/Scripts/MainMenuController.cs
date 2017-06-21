@@ -62,6 +62,10 @@ public class MainMenuController : MonoBehaviour {
     [SerializeField] float creditsFadeSpeed;
     bool isFading = false;
 
+	public RectTransform achievementsBoard; 
+	public RectTransform scoreBoard;
+	public RectTransform mainMenuBoard;
+
 	// Use this for initialization
 	void Start () {
         currentState = MenuState.Intro;
@@ -71,6 +75,12 @@ public class MainMenuController : MonoBehaviour {
         PlayerPrefs.SetInt("bgNumber", -1);
         PlayerPrefs.SetInt("sceneNumber", -1);
         PlayerPrefs.Save();
+
+		achievementsBoard.rect.Set (mainMenuBoard.rect.position.x, -(mainMenuBoard.rect.position.y * 2), mainMenuBoard.rect.width, mainMenuBoard.rect.height);
+		scoreBoard.rect.Set (mainMenuBoard.rect.position.x, (mainMenuBoard.rect.position.y * 2), mainMenuBoard.rect.width, mainMenuBoard.rect.height);
+
+		achievementsBoard.anchoredPosition = new Vector2 (0, mainMenuBoard.rect.height);
+		scoreBoard.anchoredPosition = new Vector2 (0, -mainMenuBoard.rect.height);
     }
 
     void Update() {
@@ -190,11 +200,11 @@ public class MainMenuController : MonoBehaviour {
             case MenuState.BGSelect:
                 newPos = new Vector3(-1920, 0, 0);
                 break;
-            case MenuState.Achievements:
-                newPos = new Vector3(0, -1080, 0);
+		case MenuState.Achievements:
+			newPos = new Vector3 (0, -mainMenuBoard.rect.height, 0);
                 break;
             case MenuState.Scores:
-                newPos = new Vector3(0, 1080, 0);
+			newPos = new Vector3(0, mainMenuBoard.rect.height, 0);
                 break;
         }
         
