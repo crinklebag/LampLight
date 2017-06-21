@@ -7,11 +7,9 @@ public class BugController : MonoBehaviour {
 	GameController gameController;
 	UI uiController;
 
-    //private List<GameObject> bugPool;//object pool
-	//[SerializeField] int bugCount = 8;//pool size
 	[SerializeField] GameObject bug;//firefly prefab
-	//private int indexToUse = 0;//bug to enable
-	public int bugsCaught = 0;
+	private int bugsCaught = 0;
+	private int bugsEaten = 0;
 
 	[SerializeField] int bugsAllowed = 3;//Allow only this many bugs per wave
 	public int enabledBugCount = 0;//amonut of currently enabled bugs
@@ -21,13 +19,8 @@ public class BugController : MonoBehaviour {
 	private float instantiateTime = 5.0f;//the instantiate time
 
 	private float countTime;//counter to check for instatiation
-	//private bool canEnable = true;//check if the previous bug has finised being enabled
-
-	//[SerializeField] Transform[] spawnPoints;//points to spawn the bugs at
 	private int spawnIndex = 0;//which point to spawn at
-
 	private bool isPaused = false;//for spawn counter
-
 	[SerializeField] Transform[] spawnPoints;//For the fireflies
 
 	void Awake ()
@@ -84,6 +77,7 @@ public class BugController : MonoBehaviour {
 
 		//reset
 		bugsCaught = 0;
+		bugsEaten = 0;
 		enabledBugCount = 0;
 
 		//set bugs allowed
@@ -136,12 +130,18 @@ public class BugController : MonoBehaviour {
 		Debug.Log(bugsCaught + "/" + bugsAllowed);
 	}
 
+	public void incEatenCounter()
+	{
+		bugsEaten++;
+		Debug.Log("Bug Eaten");
+	}
+
 	//Called on update
 	void checkIfAllCaught()
 	{
-		if(bugsCaught >= bugsAllowed)
+		if((bugsCaught + bugsEaten) >= bugsAllowed)
 		{
-			Debug.Log("Start Wave");
+			//Debug.Log("Start Wave");
 			StartCoroutine(startWave());
 		}
 	}
@@ -152,7 +152,7 @@ public class BugController : MonoBehaviour {
 	{
 		GameObject[] bugs = GameObject.FindGameObjectsWithTag("Bug");
 
-		Debug.Log("Clear Wave");
+		//Debug.Log("Clear Wave");
 
 		for(int i = 0; i < bugs.Length; i++)
 		{

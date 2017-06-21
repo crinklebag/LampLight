@@ -373,7 +373,7 @@ public class MainMenuController : MonoBehaviour {
             //Debug.Log(PlayerPrefs.GetInt("bgNumber"));
             //Debug.Log(PlayerPrefs.GetString("sceneNumber"));
 
-            SceneManager.LoadScene("Loading");
+            SceneManager.LoadScene("LoadingFacts");
         } else {
 
             startGame = false;
