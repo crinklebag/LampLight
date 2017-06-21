@@ -33,7 +33,7 @@ public class FunFactController : MonoBehaviour {
 	{
 		factsText.text = facts[Random.Range(0, facts.Length)];
 
-		StartCoroutine(Wait());
+		//StartCoroutine(Wait());
 	}
 
 	private IEnumerator Wait()

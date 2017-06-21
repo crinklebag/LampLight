@@ -332,7 +332,7 @@ public class GameController : MonoBehaviour
     //fade audio back out, change to fun facts loading scene
     public void ReturnToMenu()
     {
-    	SceneManager.LoadScene("LoadingFacts");
+    	SceneManager.LoadScene("MainMenu_Mobile");
 
     	return;
     }

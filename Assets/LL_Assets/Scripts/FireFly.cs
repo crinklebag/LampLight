@@ -165,7 +165,10 @@ public class FireFly : MonoBehaviour {
            {
            		catchBug();
            }
-            
+        }
+        else if (other.gameObject.CompareTag("Spider") && !caught)
+        {
+        	StartCoroutine(CaughtBySpider());
         }
     }
 
@@ -362,5 +365,19 @@ public class FireFly : MonoBehaviour {
         startMarker = this.transform.position;
         startTime = Time.time;
         journeyLength = Vector3.Distance(startMarker, destination.transform.position);
+    }
+
+    IEnumerator CaughtBySpider()
+    {
+		//caught = true;
+		canMove = false;
+
+		yield return new WaitForSeconds(0.5f);
+
+		bugController.incEatenCounter();
+
+		Destroy(this.gameObject);
+
+		yield return null;
     }
 }
