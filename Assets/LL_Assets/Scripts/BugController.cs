@@ -25,11 +25,24 @@ public class BugController : MonoBehaviour {
 	private bool isPaused = false;//for spawn counter
 	[SerializeField] Transform[] spawnPoints;//For the fireflies
 
+	float _startScale;
+	[SerializeField] float[] scales;
+
 	void Awake ()
 	{
 		gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		uiController = GameObject.FindGameObjectWithTag("UIController").GetComponent<UI>();
 		instantiateTime = 10.0f;
+
+		//Define scale sizes for bugs
+		//scales [2.0, 2.4, 2.8, 3.2, 3.6, 4.0]
+		scales = new float[6];
+		scales[0] = 2.6f;
+		scales[1] = 2.3f;
+		scales[2] = 2.0f;
+		scales[3] = 1.7f;
+		scales[4] = 1.4f;
+		scales[5] = 1.1f;
 	}
 
 
@@ -102,10 +115,12 @@ public class BugController : MonoBehaviour {
 			if(i > 5)
 			{
 				newBug.GetComponentInChildren<Flicker>()._band = i % 6;
+				newBug.GetComponentInChildren<Flicker>().setStartScale(scales[i % 6]);
 			}
 			else
 			{
 				newBug.GetComponentInChildren<Flicker>()._band = i;
+				newBug.GetComponentInChildren<Flicker>().setStartScale(scales[i]);
 			}
 
 			newBug.GetComponent<FireFly>().startFireflyLife();
@@ -123,6 +138,7 @@ public class BugController : MonoBehaviour {
 
 		GameObject newBug = Instantiate(bug, spawnPoints[spawnIndex].position, Quaternion.identity) as GameObject;
 		newBug.GetComponentInChildren<Flicker>()._band = ran;
+		newBug.GetComponentInChildren<Flicker>().setStartScale(scales[ran]);
 		newBug.GetComponent<FireFly>().startFireflyLife();
 
 		enabledBugCount++;

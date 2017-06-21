@@ -95,7 +95,7 @@ public class Spider : MonoBehaviour {
 		
 		while(this.transform.position.y >= desiredPosition + 0.1f)
 		{
-			Debug.Log("Moving Down");
+			//Debug.Log("Moving Down");
 
 			float temp = Mathf.MoveTowards(this.transform.position.y, desiredPosition, Time.deltaTime * speed);
 
@@ -113,7 +113,7 @@ public class Spider : MonoBehaviour {
 
 		while(this.transform.position.y <= desiredPosition - 0.1f)
 		{
-			Debug.Log("Moving Up");
+			//Debug.Log("Moving Up");
 
 			float temp = Mathf.MoveTowards(this.transform.position.y, desiredPosition, Time.deltaTime * speed);
 
@@ -133,7 +133,7 @@ public class Spider : MonoBehaviour {
 
 		while(count <= downTime)
 		{
-			Debug.Log("Hanging");
+			//Debug.Log("Hanging");
 
 			if(AudioManager.beatCheck && !isBobbing)
 			{
@@ -217,13 +217,21 @@ public class Spider : MonoBehaviour {
 
 	IEnumerator ResetLyfeCycle()
 	{
-		StopAllCoroutines();
+		//yield return StartCoroutine(MoveUp());
+		//MoveUp()
+		desiredPosition = topBound + 1.0f;
+		while(this.transform.position.y <= desiredPosition - 0.1f)
+		{
+			//Debug.Log("Moving Up");
 
-		yield return StartCoroutine(MoveUp());
+			float temp = Mathf.MoveTowards(this.transform.position.y, desiredPosition, Time.deltaTime * speed);
+
+			this.transform.position = new Vector3(this.transform.position.x, temp, this.transform.position.z);
+
+			yield return null;
+		}
 
 		beenHit = false;
-
-		Debug.Log("HEY");
 
 		StartCoroutine(LyfeCycle());
 
@@ -238,7 +246,9 @@ public class Spider : MonoBehaviour {
 			{
 				beenHit = true;
 
-				//StartCoroutine(ResetLyfeCycle());
+				StopAllCoroutines();
+
+				StartCoroutine(ResetLyfeCycle());
 
 				//aSFX.playDodo();
 
