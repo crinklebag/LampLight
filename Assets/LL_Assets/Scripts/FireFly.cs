@@ -6,7 +6,7 @@ public class FireFly : MonoBehaviour {
 
     public GameObject fireflySparklePrefab;
 
-    public 
+    private GameObject spider;
 
     GameController gameController;
     BugController bugController;
@@ -32,6 +32,7 @@ public class FireFly : MonoBehaviour {
 	public bool isOn;
     [SerializeField]
     bool caught = false;
+    bool caughtBySpider = false;
     float minMoveX = -10.0f;
     float maxMoveX = 10.0f;
 	float minMoveY = -5.5f;
@@ -55,6 +56,8 @@ public class FireFly : MonoBehaviour {
     int randJar = 0;
 
     private bool canMove = true;
+
+    private bool beingAutoCaught = false;
 
     // Use this for initialization
     void Start () {
@@ -118,7 +121,7 @@ public class FireFly : MonoBehaviour {
     {
         SetDestination();
 
-        if (caught)
+        if (caught && !caughtBySpider)
         {
             // if (this.transform.position.x < destination.transform.position.x - 0.1f)
             //  {
@@ -159,15 +162,16 @@ public class FireFly : MonoBehaviour {
             Debug.Log("Hit Jar Top");
         }*/
 
-        if (other.gameObject.CompareTag("JarTop") && isOn ) 
+        if (other.gameObject.CompareTag("JarTop") && isOn) 
         {
            if(!caught)
            {
            		catchBug();
            }
         }
-        else if (other.gameObject.CompareTag("Spider") && !caught)
+        else if (other.gameObject.CompareTag("Spider") && !caught && !beingAutoCaught)
         {
+        	spider = other.gameObject;
         	StartCoroutine(CaughtBySpider());
         }
     }
@@ -285,12 +289,14 @@ public class FireFly : MonoBehaviour {
 
     public void StartAutoCatch()
     {
-    	StartCoroutine(AutoCatchBug());
+    	if(!caughtBySpider)
+    		StartCoroutine(AutoCatchBug());
     }
 
     IEnumerator AutoCatchBug()
     {
     	canMove = false;
+    	beingAutoCaught = true;
 		this.GetComponent<CircleCollider2D>().enabled = false;
 
 		Vector2	pos = new Vector2(this.gameObject.GetComponent<Transform>().position.x, this.gameObject.GetComponent<Transform>().position.y);
@@ -370,9 +376,23 @@ public class FireFly : MonoBehaviour {
     IEnumerator CaughtBySpider()
     {
 		//caught = true;
+		caughtBySpider = true;
 		canMove = false;
 
-		yield return new WaitForSeconds(0.5f);
+		while((this.transform.position.x >= spider.transform.position.x + 0.01f || this.transform.position.x <= spider.transform.position.x - 0.01f) &&
+			(this.transform.position.y >= spider.transform.position.y + 0.01f || this.transform.position.y >= spider.transform.position.y -0.01f))
+		{
+			this.transform.position = Vector3.Lerp(this.transform.position, spider.transform.position, Time.deltaTime * 2.0f);
+
+			yield return null;
+		}
+
+		while(this.transform.position.y <= GameObject.Find("Top").transform.position.y + 0.5f)
+		{
+			this.transform.position = spider.transform.position;
+
+			yield return null;
+		}
 
 		bugController.incEatenCounter();
 
