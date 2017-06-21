@@ -37,7 +37,7 @@ public class MainMenuController : MonoBehaviour {
 
     bool startTopBarUpdate = false;
     bool startBottomBarUpdate = false;
-    bool canFadeIn = false;
+	[SerializeField] bool canFadeIn = false;
     bool moveUI = false;
     bool startGame = false;
     bool updateTopBar = false;
@@ -90,16 +90,14 @@ public class MainMenuController : MonoBehaviour {
         if (updateTopBar) {
             switch (currentState) {
                 case MenuState.Intro:
-
-					if (topBarOpaque.color.a > 0)
-					{
-						FadeOutTopBar();
-					}
-
+					FadeOutTopBar();
                     ResetTopBar();
                     break;
                 case MenuState.BGSelect:
-                    if (canFadeIn) FadeInTopBar();
+                    if (canFadeIn)
+					{
+						FadeInTopBar ();
+					}
                     if (startTopBarUpdate) {
                         UpdateTopBar();
                     }
@@ -116,13 +114,9 @@ public class MainMenuController : MonoBehaviour {
 
         if (updateBottomBar) {
             switch (currentState) {
-                case MenuState.Intro:
-
-					if (bottomBarOpaque.color.a > 0)
-					{
-						FadeOutBottomBar();
-					}
-					
+				case MenuState.Intro:
+					FadeOutDots (3);
+					FadeOutBottomBar();
                     ResetBottomBar();
                     break;
                 case MenuState.BGSelect:
@@ -227,11 +221,15 @@ public class MainMenuController : MonoBehaviour {
         xReplace.SetActive(true);
 
         // When the lerp is completed
-        if (fracJourney >= 1) {
-            canFadeIn = false;
-            // Debug.Log("Setting Can Fade to true");
-			if (currentState == MenuState.BGSelect && !startTopBarUpdate) { startTopBarUpdate = true; }
-        }
+		if (fracJourney >= 1) {
+			topBarOpaque.color = Color.white;
+			topBarTransparent.color = transparentBarTarget;
+			canFadeIn = false;
+			// Debug.Log("Setting Can Fade to true");
+			if (currentState == MenuState.BGSelect && !startTopBarUpdate) {
+				startTopBarUpdate = true;
+			}
+		}
     }
 
     void FadeInBottomBar() {
@@ -253,7 +251,6 @@ public class MainMenuController : MonoBehaviour {
 
         topBarOpaque.color = Color.Lerp(Color.white, Color.clear, fracJourney);
         topBarTransparent.color = Color.Lerp( transparentBarTarget, Color.clear, fracJourney);
-        
     }
 
     void FadeOutBottomBar() {
@@ -297,6 +294,10 @@ public class MainMenuController : MonoBehaviour {
 
     void UpdateTopBar() {
 
+		if (topBarOpaque.fillAmount == topBarFillMax && !startTopBarUpdate) {
+			return;
+		}
+
 		if ((int)previousState > (int)currentState)
 		{
 			topBarOpaque.fillAmount = Mathf.Lerp(topBarPreviousMax, topBarFillMax, topBarT);
@@ -305,7 +306,7 @@ public class MainMenuController : MonoBehaviour {
 
 			if (topBarOpaque.fillAmount == topBarFillMax) {
 				startTopBarUpdate = false;
-				updateTopBar = false;
+				//updateTopBar = false;
 				topBarT = 0;
 
 				if (currentState == MenuState.PlayGame) {
@@ -329,7 +330,7 @@ public class MainMenuController : MonoBehaviour {
 
 			if (topBarOpaque.fillAmount == topBarFillMax) {
 				startTopBarUpdate = false;
-				updateTopBar = false;
+				//updateTopBar = false;
 				topBarT = 0;
 
 				if (currentState == MenuState.PlayGame) {
@@ -378,6 +379,12 @@ public class MainMenuController : MonoBehaviour {
     public void ButtonClick(int val)
     {
         menuSFX.playTap();
+
+		previousState = (MenuState)val - 1;
+
+		if ((int)previousState < 0) {
+			previousState = MenuState.Intro;
+		}
 
         switch (val)
         {
