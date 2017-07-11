@@ -90,7 +90,12 @@ public class MainMenuController : MonoBehaviour {
         if (updateTopBar) {
             switch (currentState) {
                 case MenuState.Intro:
-					FadeOutTopBar();
+
+					if (topBarOpaque.color.a > 0)
+					{
+						FadeOutTopBar();
+					}
+
                     ResetTopBar();
                     break;
                 case MenuState.BGSelect:
@@ -115,8 +120,12 @@ public class MainMenuController : MonoBehaviour {
         if (updateBottomBar) {
             switch (currentState) {
 				case MenuState.Intro:
-					FadeOutDots (3);
-					FadeOutBottomBar();
+
+					if (bottomBarOpaque.color.a > 0) {
+						FadeOutDots (3);
+						FadeOutBottomBar();
+					}
+
                     ResetBottomBar();
                     break;
                 case MenuState.BGSelect:
@@ -380,11 +389,7 @@ public class MainMenuController : MonoBehaviour {
     {
         menuSFX.playTap();
 
-		previousState = (MenuState)val - 1;
-
-		if ((int)previousState < 0) {
-			previousState = MenuState.Intro;
-		}
+		previousState = currentState;
 
         switch (val)
         {
@@ -440,10 +445,10 @@ public class MainMenuController : MonoBehaviour {
 
 		int cs = (int)currentState;
 
+		previousState = currentState;
+
 		if (cs > 0)
 		{
-			previousState = (MenuState)cs;
-
 			cs -= 1;
 
 			ButtonClick(cs);
