@@ -7,13 +7,14 @@ public class Flicker : MonoBehaviour {
 	[SerializeField] GameObject bugParent;
 	[SerializeField] float minAudioFreq;
 
-	[SerializeField] float _startScale;
+	float _startScale;
 	[SerializeField] float _scaleMultiplier;
 
 	[SerializeField] bool _useLerp = false;
 	[SerializeField] float _scaleSpeed = 5.0f;
 	[SerializeField] float _colourLerpSpeed = 5.0f;
 
+	[SerializeField] GameObject glow;
 
 	void Start ()
 	{
@@ -24,6 +25,11 @@ public class Flicker : MonoBehaviour {
 	{
 		audioFlicker();
 		audioScale();
+	}
+
+	public void setStartScale(float scale)
+	{
+		_startScale = scale;
 	}
 
 	//Adjusts the bug's glow sprite's alpha value to match its frequency band's levels
