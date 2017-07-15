@@ -336,4 +336,9 @@ public class GameController : MonoBehaviour
 
     	return;
     }
+
+	public bool GetStopDoingThis()
+	{
+		return stopDoingThis;
+	}
 }
