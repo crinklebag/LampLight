@@ -761,16 +761,16 @@ public class UI : MonoBehaviour {
     //Wave Panel shit
 	public void wavePanelUpdate()
     {
-        WaveText.GetComponent<Text>().text = "WAVE " + WaveCount.ToString();
+		if(!gc.GetStopDoingThis())
+		{
+			WaveText.GetComponent<Text>().text = "WAVE " + WaveCount.ToString();
 
-        if (WavePanelMoveCount > 0 && !isMovingWave)
-        {
-            WavePanelMoveCount--;
-            isMovingWave = true;
-			//WavePanel.GetComponent<Animator> ().SetTrigger ("PlayAnim");
-			//WavePanel.GetComponent<Animator> ().Play ("waveAnim");
-           // StartCoroutine(moveWavePanel());
-        }
+			if (WavePanelMoveCount > 0 && !isMovingWave)
+			{
+				WavePanelMoveCount--;
+				isMovingWave = true;
+			}
+		}
     }
 
     IEnumerator moveWavePanel()
@@ -799,9 +799,11 @@ public class UI : MonoBehaviour {
 
     public void incWaveCount()
     {
-        WaveCount++;
-        WavePanelMoveCount++;
-		//WavePanel.GetComponent<Animator> ().Play("waveAnim");
+		if(!gc.GetStopDoingThis())
+		{
+			WaveCount++;
+			WavePanelMoveCount++;
+		}
     }
 
 	public int getWaveCount()
