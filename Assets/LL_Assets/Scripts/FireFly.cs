@@ -172,7 +172,12 @@ public class FireFly : MonoBehaviour {
         else if (other.gameObject.CompareTag("Spider") && !caught && !beingAutoCaught)
         {
         	spider = other.gameObject;
-        	StartCoroutine(CaughtBySpider());
+			bool temp = spider.GetComponent<Spider>().GetHasFirefly();
+			if (!temp)
+			{
+				spider.GetComponent<Spider>().SetHasFirefly();
+				StartCoroutine(CaughtBySpider());
+			}
         }
     }
 
@@ -183,18 +188,6 @@ public class FireFly : MonoBehaviour {
         //Debug.Log(randJar);
         destination = jars[randJar];
     }
-
-    /*
-    void OnTriggerStay2D(Collider2D other) {
-        if (other.gameObject.CompareTag("Dragonfly") && isOn)
-        {
-            //Debug.Log("Hit Dragonfly");
-            //Destroy(other.gameObject);
-            Destroy(this.gameObject);
-            //gameController.CatchBug("Firefly");
-        }
-    }
-    */
 
     //Check if band frequency is above the threshold, if so give it a new target position
     IEnumerator ChoosePath() 
@@ -375,7 +368,6 @@ public class FireFly : MonoBehaviour {
 
     IEnumerator CaughtBySpider()
     {
-		//caught = true;
 		caughtBySpider = true;
 		canMove = false;
 
@@ -387,14 +379,14 @@ public class FireFly : MonoBehaviour {
 			yield return null;
 		}
 
+		bugController.incEatenCounter();
+
 		while(this.transform.position.y <= GameObject.Find("Top").transform.position.y + 0.5f)
 		{
 			this.transform.position = spider.transform.position;
 
 			yield return null;
 		}
-
-		bugController.incEatenCounter();
 
 		Destroy(this.gameObject);
 
